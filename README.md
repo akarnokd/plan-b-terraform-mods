@@ -1,5 +1,5 @@
 # plan-b-terraformer-mods
-Unity/BepInEx mods for the game **Plan B Terraformer** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
+Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
 
 ### Supported version: Demo
 
