@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoUnlocker", "DemoUnlocke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.csproj", "{E58044C8-684D-4949-A4F8-62388CC4700A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78} = {AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}
 		{EA817A66-B866-49A2-9994-8ED1A18F9B47} = {EA817A66-B866-49A2-9994-8ED1A18F9B47}
 	EndProjectSection
 EndProject
@@ -14,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgressSpeed", "ProgressSpeed\ProgressSpeed.csproj", "{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +32,10 @@ Global
 		{E58044C8-684D-4949-A4F8-62388CC4700A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E58044C8-684D-4949-A4F8-62388CC4700A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E58044C8-684D-4949-A4F8-62388CC4700A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

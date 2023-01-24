@@ -25,6 +25,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 ### Current Mods
 
 - [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
+- [Progress Speed](#progressspeed) - speed up extractors and factories.
 
 
 ## Mod details
@@ -38,3 +39,51 @@ Apparently, the demo is the full game with all data and assets?!
 #### Configuration
 
 None.
+
+### Progress Speed
+
+Speed up extractors and factories by an integer multiplier.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.processspeed.cfg`
+
+```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## The speed multiplier of Extractors.
+# Setting type: Int32
+# Default value: 1
+ExtractorSpeed = 1
+
+## The speed multiplier of Deep Extractors.
+# Setting type: Int32
+# Default value: 1
+DeepExtractorSpeed = 1
+
+## The speed multiplier of Factories (includes Assemblers, Greenhouses, Ice Extractors).
+# Setting type: Int32
+# Default value: 1
+FactorySpeed = 1
+
+## The speed multiplier of Cities.
+# Setting type: Int32
+# Default value: 1
+CitySpeed = 1
+
+## Adds to the global drone speed.
+# Setting type: Single
+# Default value: 0
+DroneSpeedAdd = 0
+
+## Adds to the global drone takeoff duration. Use negative to speed it up.
+# Setting type: Single
+# Default value: 0
+DroneTakeoffDurationAdd = 0
+
+```
