@@ -9,7 +9,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
 ### Installation
 
-1. Download the 64-bit BepInEx 5.4.21+ from https://github.com/BepInEx/BepInEx/releases
+1. Download the 64-bit BepInEx 5.4.21+ from [BepInEx releases](https://github.com/BepInEx/BepInEx/releases)
     - Make sure you **don't download** the latest, which is the 6.x.y line.
     - Make sure you download the correct version for your operating system.
 2. Unpack the BepInEx zip into the game's folder
