@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <AssemblyName>DemoUnlocker</AssemblyName>
     <Description>(Cheat) Unlock the Demo</Description>
     <Version>1.0.0.0</Version>
