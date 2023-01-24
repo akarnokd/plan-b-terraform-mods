@@ -31,7 +31,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
 ### Demo Unlocker
 
-The Steam Demo features an `isDemo` flag. Forcing it to false enables gameplay beyound the first few tech levels and tasks.
+The Steam Demo features an `isDemo` flag. Forcing it to false enables gameplay beyond the first few tech levels and tasks.
 
 Apparently, the demo is the full game with all data and assets?!
 
