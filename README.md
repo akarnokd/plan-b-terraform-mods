@@ -17,7 +17,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 3. Run the game. Quit the game
     - You should now see the `BepInEx\plugins` directory in the game's directory
 4. Unpack the mod zip into the `BepInEx\plugins` directory.
-    - I highly recommend keeping the directory structure of the zip intact, so, for example, it will look like `BepInEx\plugins\(Cheat) Unlock Demo\UnlockDemo.dll`
+    - I highly recommend keeping the directory structure of the zip intact, so, for example, it will look like `BepInEx\plugins\(Cheat) Demo Unlocker\DemoUnlocker.dll`
     - It makes updating or removing mods much easier.
 5. If the mods don't appear to work, check the `BepInEx\OutputLog.log` for errors.
     - Also check the game's own log in `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\Player.log`
