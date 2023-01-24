@@ -25,7 +25,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 ### Current Mods
 
 - [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
-- [Progress Speed](#progressspeed) - speed up extractors and factories.
+- [Progress Speed](#progressspeed) - speed up extractors, factories and drones.
 
 
 ## Mod details
@@ -42,7 +42,9 @@ None.
 
 ### Progress Speed
 
-Speed up extractors and factories by an integer multiplier.
+Speed up extractors, factories and drones.
+
+Extractors and factories can produce 2x, 3x, etc. (integer) rate.
 
 #### Configuration
 
