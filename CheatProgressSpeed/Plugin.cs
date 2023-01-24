@@ -20,6 +20,8 @@ namespace CheatProgressSpeed
 
         static MethodInfo IsExtracting;
         static MethodInfo IsExtractingDeep;
+        static MethodInfo CheckStocks2;
+        static MethodInfo ProcessStocks;
 
         private void Awake()
         {
@@ -37,6 +39,9 @@ namespace CheatProgressSpeed
 
             IsExtracting = AccessTools.Method(typeof(CItem_ContentExtractor), "IsExtracting", new Type[] { typeof(int2) });
             IsExtractingDeep = AccessTools.Method(typeof(CItem_ContentExtractorDeep), "IsExtracting", new Type[] { typeof(int2) });
+
+            CheckStocks2 = AccessTools.Method(typeof(CItem_ContentFactory), "CheckStocks2", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
+            ProcessStocks = AccessTools.Method(typeof(CItem_ContentFactory), "ProcessStocks", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
 
             Harmony.CreateAndPatchAll(typeof(Plugin));
         }
@@ -77,6 +82,34 @@ namespace CheatProgressSpeed
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
+        static bool CItem_ContentFactory_Update01s(CItem_ContentFactory __instance, ref int2 coords)
+        {
+            if (!modEnabled.Value)
+            {
+                return true;
+            }
+            int c = factorySpeed.Value;
+            for (int i = 0; i < c; i++)
+            {
+                if (GHexes.water[coords.x, coords.y] < GItems.waterLevelStopBuildings)
+                {
+                    CRecipe recipe = __instance.GetRecipe(coords);
+                    int value = __instance.dataProgress.GetValue(coords);
+                    if ((bool)CheckStocks2.Invoke(__instance, new object[] { coords, recipe, value }))
+                    {
+                        ProcessStocks.Invoke(__instance, new object[] { coords, recipe, value });
+                    }
+                }
+            }
+
+            int counterPlaced = __instance.CounterPlaced;
+            __instance.CounterPlaced = counterPlaced + 1;
+
+            return false;
+        }
+        /*
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), "ProcessStocks")]
         static void CItem_ContentFactory_ProcessStocks(CItem_ContentFactory __instance, CRecipe recipe, int2 coords, int progressFrame)
@@ -102,6 +135,7 @@ namespace CheatProgressSpeed
                 __instance.dataProgress.SetValue(coords, newProgress);
             }
         }
+        */
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.Update01s))]
