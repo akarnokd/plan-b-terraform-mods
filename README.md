@@ -26,6 +26,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
 - [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
 - [Progress Speed](#progressspeed) - speed up extractors, factories and drones.
+- [Production Limiter](#productionlimiter) - limit the production items that go into the global storage.
 
 
 ## Mod details
@@ -46,9 +47,11 @@ Speed up extractors, factories and drones.
 
 Extractors and factories can produce 2x, 3x, etc. (integer) rate.
 
+Drones have increased speed and (if negative) decreased takeoff time.
+
 #### Configuration
 
-`akarnokd.planbterraformmods.processspeed.cfg`
+`akarnokd.planbterraformmods.cheatprogressspeed.cfg`
 
 ```
 [General]
@@ -88,4 +91,138 @@ DroneSpeedAdd = 0
 # Default value: 0
 DroneTakeoffDurationAdd = 0
 
+```
+
+### Production Limiter
+
+Limit the production items that go into the global storage.
+
+The default is 500. Currently, the following items are supported:
+
+- roadway
+- roadstop
+- truck
+- railway
+- railwaystop
+- train
+- extractor
+- iceExtractor
+- pumpingStation
+- depot
+- depotMK2
+- depotMK3
+- factory
+- factoryAssemblyPlant
+- factoryAtmExtractor
+- factoryGreenhouse
+- factoryRecycle
+- factoryFood
+- landmark
+
+#### Configuration
+
+`akarnokd.planbterraformmods.featproductionlimiter`
+
+```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## Limit the production of roadway
+# Setting type: Int32
+# Default value: 500
+roadway = 500
+
+## Limit the production of roadstop
+# Setting type: Int32
+# Default value: 500
+roadstop = 500
+
+## Limit the production of truck
+# Setting type: Int32
+# Default value: 500
+truck = 500
+
+## Limit the production of railway
+# Setting type: Int32
+# Default value: 500
+railway = 500
+
+## Limit the production of railwaystop
+# Setting type: Int32
+# Default value: 500
+railwaystop = 500
+
+## Limit the production of train
+# Setting type: Int32
+# Default value: 500
+train = 500
+
+## Limit the production of extractor
+# Setting type: Int32
+# Default value: 500
+extractor = 500
+
+## Limit the production of iceExtractor
+# Setting type: Int32
+# Default value: 500
+iceExtractor = 500
+
+## Limit the production of pumpingStation
+# Setting type: Int32
+# Default value: 500
+pumpingStation = 500
+
+## Limit the production of depot
+# Setting type: Int32
+# Default value: 500
+depot = 500
+
+## Limit the production of depotMK2
+# Setting type: Int32
+# Default value: 500
+depotMK2 = 500
+
+## Limit the production of depotMK3
+# Setting type: Int32
+# Default value: 500
+depotMK3 = 500
+
+## Limit the production of factory
+# Setting type: Int32
+# Default value: 500
+factory = 500
+
+## Limit the production of factoryAssemblyPlant
+# Setting type: Int32
+# Default value: 500
+factoryAssemblyPlant = 500
+
+## Limit the production of factoryAtmExtractor
+# Setting type: Int32
+# Default value: 500
+factoryAtmExtractor = 500
+
+## Limit the production of factoryGreenhouse
+# Setting type: Int32
+# Default value: 500
+factoryGreenhouse = 500
+
+## Limit the production of factoryRecycle
+# Setting type: Int32
+# Default value: 500
+factoryRecycle = 500
+
+## Limit the production of factoryFood
+# Setting type: Int32
+# Default value: 500
+factoryFood = 500
+
+## Limit the production of landmark
+# Setting type: Int32
+# Default value: 500
+landmark = 500
 ```

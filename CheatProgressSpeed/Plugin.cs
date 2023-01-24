@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using HarmonyLib;
 using System;
@@ -6,7 +7,7 @@ using System.Reflection;
 
 namespace CheatProgressSpeed
 {
-    [BepInPlugin("akarnokd.planbterraformmods.progressspeed", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin("akarnokd.planbterraformmods.cheatprogressspeed", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
         static ConfigEntry<bool> modEnabled;
@@ -78,7 +79,7 @@ namespace CheatProgressSpeed
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), "ProcessStocks")]
-        static void CItem_ContentFactory_ProcessStocks(CItem_ContentFactory __instance, int2 coords, int progressFrame)
+        static void CItem_ContentFactory_ProcessStocks(CItem_ContentFactory __instance, CRecipe recipe, int2 coords, int progressFrame)
         {
             if (!modEnabled.Value)
             {

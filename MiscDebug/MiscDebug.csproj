@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>CheatProgressSpeed</AssemblyName>
-    <Description>(Cheat) Progress Speed</Description>
-    <Version>1.0.0.2</Version>
+    <AssemblyName>MiscDebug</AssemblyName>
+    <Description>(Misc) Debug</Description>
+    <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
