@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoUnlocker", "DemoUnlocker\DemoUnlocker.csproj", "{EA817A66-B866-49A2-9994-8ED1A18F9B47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatDemoUnlocker", "CheatDemoUnlocker\CheatDemoUnlocker.csproj", "{EA817A66-B866-49A2-9994-8ED1A18F9B47}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.csproj", "{E58044C8-684D-4949-A4F8-62388CC4700A}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgressSpeed", "ProgressSpeed\ProgressSpeed.csproj", "{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatProgressSpeed", "CheatProgressSpeed\CheatProgressSpeed.csproj", "{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

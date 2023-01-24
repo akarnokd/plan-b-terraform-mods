@@ -1,9 +1,9 @@
 ﻿using BepInEx;
 using HarmonyLib;
 
-namespace DemoUnlocker
+namespace CheatDemoUnlocker
 {
-    [BepInPlugin("akarnokd.planbterraformmods.demounlocker", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin("akarnokd.planbterraformmods.cheatdemounlocker", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
         private void Awake()

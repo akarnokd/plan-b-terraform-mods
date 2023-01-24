@@ -4,7 +4,7 @@ using HarmonyLib;
 using System;
 using System.Reflection;
 
-namespace ProgressSpeed
+namespace CheatProgressSpeed
 {
     [BepInPlugin("akarnokd.planbterraformmods.progressspeed", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
@@ -87,12 +87,17 @@ namespace ProgressSpeed
             int c = factorySpeed.Value - 1;
             if (c > 0)
             {
-
-                int newProgress = progressFrame + c;
-                if (newProgress >= __instance.dataProgress.valueMax)
+                int m = __instance.dataProgress.valueMax;
+                int newProgress;
+                if (progressFrame < m)
+                {
+                    newProgress = Math.Min(progressFrame + c, m);
+                }
+                else
                 {
                     newProgress = 0;
                 }
+
                 __instance.dataProgress.SetValue(coords, newProgress);
             }
         }

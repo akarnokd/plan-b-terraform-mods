@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>DemoUnlocker</AssemblyName>
+    <AssemblyName>CheatDemoUnlocker</AssemblyName>
     <Description>(Cheat) Unlock the Demo</Description>
     <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
