@@ -60,6 +60,9 @@ namespace UITranslationHungarian
         {
             DumpLabels(____dicoLoc);
 
+            logger.LogInfo("Applying language " + languageId);
+
+            logger.LogInfo("  Checking the translation matrix");
             CSentence csentence = ____dicoLoc["String Identifier"];
             int languageIndex = csentence.words.IndexOf(languageId);
 
@@ -67,9 +70,10 @@ namespace UITranslationHungarian
             {
                 languageIndex = csentence.words.Count;
 
+                logger.LogInfo("    Expanding the language matrix with column " + languageIndex);
                 foreach (var cs in ____dicoLoc.Values)
                 {
-                    while (cs.words.Count < languageIndex)
+                    while (cs.words.Count <= languageIndex)
                     {
                         cs.words.Add("");
                     }
@@ -80,6 +84,8 @@ namespace UITranslationHungarian
             Assembly me = Assembly.GetExecutingAssembly();
             string dir = Path.GetDirectoryName(me.Location);
             string file = Path.Combine(dir, "labels-" + languageId + ".txt");
+
+            logger.LogInfo("  Loading translation file " + file);
 
             var lines = File.ReadAllLines(file, Encoding.UTF8);
 
@@ -98,6 +104,7 @@ namespace UITranslationHungarian
                     cs.words[languageIndex] = kv[1].Replace("\\n", "\n");
                 }
             }
+            logger.LogInfo("  Language matrix updated.");
         }
 
         private static void DumpLabels(Dictionary<string, CSentence> ____dicoLoc)

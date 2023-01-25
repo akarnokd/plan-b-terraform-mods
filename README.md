@@ -31,6 +31,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
+- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás)
 
 
 ## Mod details
@@ -335,3 +336,11 @@ Additive = true
 # Default value: Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Warsaw,Lisbon,Rome,Brussels,Athens,Berlin
 Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Warsaw,Lisbon,Rome,Brussels,Athens,Berlin
 ```
+
+### Hungarian Translation
+
+Add the Hungarian (Magyar) language option and translated labels to the game.
+
+#### Configuration
+
+Not relevant for end users; contains an option to dump languages to see the diffs between versions.
