@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatProductionLimiter</AssemblyName>
-    <Description>(Feat) ProductionLimiter</Description>
+    <Description>(Feat) Production Limiter</Description>
     <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
