@@ -1,7 +1,9 @@
 # plan-b-terraform-mods
 Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
 
-### Supported version: Demo
+### Supported version: Demo, Full(?)
+
+:information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
 
 Save file location: `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\{yoursteamid}\Saves`
 
