@@ -12,6 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.
 		{8F76FEB9-B66E-40FB-8BF6-F0B3D20BDB64} = {8F76FEB9-B66E-40FB-8BF6-F0B3D20BDB64}
 		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78} = {AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}
 		{EA817A66-B866-49A2-9994-8ED1A18F9B47} = {EA817A66-B866-49A2-9994-8ED1A18F9B47}
+		{F2978D74-1388-447F-81A3-EEF3F845FC46} = {F2978D74-1388-447F-81A3-EEF3F845FC46}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{762217C3-5A9D-4668-A8DD-3D33846AC114}"
@@ -26,6 +27,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatProductionLimiter", "FeatProductionLimiter\FeatProductionLimiter.csproj", "{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatEndlessResources", "CheatEndlessResources\CheatEndlessResources.csproj", "{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatAddCityNames", "FeatAddCityNames\FeatAddCityNames.csproj", "{F2978D74-1388-447F-81A3-EEF3F845FC46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +60,10 @@ Global
 		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2978D74-1388-447F-81A3-EEF3F845FC46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2978D74-1388-447F-81A3-EEF3F845FC46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2978D74-1388-447F-81A3-EEF3F845FC46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2978D74-1388-447F-81A3-EEF3F845FC46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

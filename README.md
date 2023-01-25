@@ -30,6 +30,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 - [Progress Speed](#progressspeed) - speed up extractors, factories, drones and vehicles.
 - [Production Limiter](#productionlimiter) - limit the production items that go into the global storage.
 - [Endless Resources](#endlessresources) - all resource nodes being extracted will have a minimum amount and never run out.
+- [Add City Names](#addcitynames) - customize the selection of city names the game will use to generate the map.
 
 
 ## Mod details
@@ -304,4 +305,33 @@ Enabled = true
 # Setting type: Int32
 # Default value: 500
 MinResources = 500
+```
+
+### Add City Names
+
+Customize the selection of city names the game will use to generate the map. The names are randomly picked by the game.
+
+In the configuration, list the city names (comma separated). The mod then can add these names to the default game list or overwrite it.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.feataddcitynames.cfg`
+
+```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## If true, the city names will be added to the pool. If false, only the city names will be in the pool.
+# Setting type: Boolean
+# Default value: true
+Additive = true
+
+## The comma separated list of city names. Whitespaces around commas are ignored
+# Setting type: String
+# Default value: Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Warsaw,Lisbon,Rome,Brussels,Athens,Berlin
+Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Warsaw,Lisbon,Rome,Brussels,Athens,Berlin
 ```
