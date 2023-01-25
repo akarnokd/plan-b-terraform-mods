@@ -339,7 +339,7 @@ Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Wa
 
 ### Hungarian Translation
 
-Add the Hungarian (Magyar) language option and translated labels to the game.
+Adds the **Hungarian (Magyar)** language option and translated labels to the game.
 
 #### Configuration
 
