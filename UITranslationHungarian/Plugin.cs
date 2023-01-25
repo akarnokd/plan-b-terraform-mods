@@ -97,11 +97,15 @@ namespace UITranslationHungarian
                     continue;
                 }
 
-                var kv = line.Split('=');
+                var first = line.IndexOf("=");
 
-                if (____dicoLoc.TryGetValue(kv[0], out var cs))
+                var lkey = line.Substring(0, first);
+                var lvalue = line.Substring(first + 1);
+
+                if (____dicoLoc.TryGetValue(lkey, out var cs))
                 {
-                    cs.words[languageIndex] = kv[1].Replace("\\n", "\n");
+                    cs.words[languageIndex] = lvalue.Replace("\\n", "\n");
+                    cs.CheckValidity();
                 }
             }
             logger.LogInfo("  Language matrix updated.");
