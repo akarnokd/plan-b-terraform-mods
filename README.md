@@ -341,6 +341,8 @@ Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Wa
 
 Adds the **Hungarian (Magyar)** language option and translated labels to the game.
 
+Magyar fordítás. Az **Options (Beállítások)** menüben lehet kiválasztani a játék nyelvét.
+
 #### Configuration
 
 Not relevant for end users; contains an option to dump languages to see the diffs between versions.
