@@ -135,6 +135,13 @@ The default is 500. Currently, the following items are supported:
 - factoryRecycle
 - factoryFood
 - landmark
+- cityDam
+- forest_pine
+- forest_leavesHigh
+- forest_leavesMultiple
+- forest_cactus
+- forest_savannah
+- forest_coconut
 
 #### Configuration
 
@@ -242,6 +249,41 @@ factoryFood = 500
 # Setting type: Int32
 # Default value: 500
 landmark = 500
+
+## Limit the production of cityDam
+# Setting type: Int32
+# Default value: 500
+cityDam = 500
+
+## Limit the production of forest_pine
+# Setting type: Int32
+# Default value: 500
+forest_pine = 500
+
+## Limit the production of forest_leavesHigh
+# Setting type: Int32
+# Default value: 500
+forest_leavesHigh = 500
+
+## Limit the production of forest_leavesMultiple
+# Setting type: Int32
+# Default value: 500
+forest_leavesMultiple = 500
+
+## Limit the production of forest_cactus
+# Setting type: Int32
+# Default value: 500
+forest_cactus = 500
+
+## Limit the production of forest_savannah
+# Setting type: Int32
+# Default value: 500
+forest_savannah = 500
+
+## Limit the production of forest_coconut
+# Setting type: Int32
+# Default value: 500
+forest_coconut = 500
 ```
 
 ### Endless Resources

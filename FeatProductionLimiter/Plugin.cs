@@ -34,7 +34,14 @@ namespace FeatProductionLimiter
                 "factoryGreenhouse",
                 "factoryRecycle",
                 "factoryFood",
-                "landmark"
+                "landmark",
+                "cityDam",
+                "forest_pine",
+                "forest_leavesHigh",
+                "forest_leavesMultiple",
+                "forest_cactus",
+                "forest_savannah",
+                "forest_coconut"
             };
         static Dictionary<string, ConfigEntry<int>> limits = new();
 
