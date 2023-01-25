@@ -27,7 +27,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 ### Current Mods
 
 - [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
-- [Progress Speed](#progressspeed) - speed up extractors, factories and drones.
+- [Progress Speed](#progressspeed) - speed up extractors, factories, drones and vehicles.
 - [Production Limiter](#productionlimiter) - limit the production items that go into the global storage.
 - [Endless Resources](#endlessresources) - all resource nodes being extracted will have a minimum amount and never run out.
 
@@ -46,7 +46,7 @@ None.
 
 ### Progress Speed
 
-Speed up extractors, factories and drones.
+Speed up extractors, factories, drones and vehicles.
 
 Extractors and factories can produce 2x, 3x, etc. (integer) rate.
 
