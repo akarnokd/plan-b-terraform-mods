@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatDemoUnlocker", "CheatD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.csproj", "{E58044C8-684D-4949-A4F8-62388CC4700A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2} = {2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}
 		{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A} = {2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}
 		{8F76FEB9-B66E-40FB-8BF6-F0B3D20BDB64} = {8F76FEB9-B66E-40FB-8BF6-F0B3D20BDB64}
 		{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78} = {AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}
@@ -23,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiscDebug", "MiscDebug\MiscDebug.csproj", "{8F76FEB9-B66E-40FB-8BF6-F0B3D20BDB64}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatProductionLimiter", "FeatProductionLimiter\FeatProductionLimiter.csproj", "{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatEndlessResources", "CheatEndlessResources\CheatEndlessResources.csproj", "{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +53,10 @@ Global
 		{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

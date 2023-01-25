@@ -27,6 +27,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 - [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
 - [Progress Speed](#progressspeed) - speed up extractors, factories and drones.
 - [Production Limiter](#productionlimiter) - limit the production items that go into the global storage.
+- [Endless Resources](#endlessresources) - all resource nodes being extracted will have a minimum amount and never run out.
 
 
 ## Mod details
@@ -225,4 +226,24 @@ factoryFood = 500
 # Setting type: Int32
 # Default value: 500
 landmark = 500
+```
+
+### Endless Resources
+
+All resource nodes being extracted will have a minimum amount and never run out. Default is minimum 500 units.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.cheatendlessresources.cfg`
+
+```
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## Minimum resource amount.
+# Setting type: Int32
+# Default value: 500
+MinResources = 500
 ```
