@@ -94,6 +94,20 @@ DroneSpeedAdd = 0
 # Default value: 0
 DroneTakeoffDurationAdd = 0
 
+## Adds to the vehicle's low speed.
+# Setting type: Single
+# Default value: 0
+VehicleSpeedLowAdd = 0
+
+## Adds to the vehicle's medium speed.
+# Setting type: Single
+# Default value: 0
+VehicleSpeedMediumAdd = 0
+
+## Adds to the vehicle's medium speed.
+# Setting type: Single
+# Default value: 0
+VehicleSpeedMaxAdd = 0
 ```
 
 ### Production Limiter

@@ -17,6 +17,9 @@ namespace CheatProgressSpeed
         static ConfigEntry<int> citySpeed;
         static ConfigEntry<float> droneSpeed;
         static ConfigEntry<float> droneTakeoffDuration;
+        static ConfigEntry<float> vehicleSpeedLow;
+        static ConfigEntry<float> vehicleSpeedMedium;
+        static ConfigEntry<float> vehicleSpeedMax;
 
         static MethodInfo IsExtracting;
         static MethodInfo IsExtractingDeep;
@@ -36,6 +39,10 @@ namespace CheatProgressSpeed
             citySpeed = Config.Bind("General", "CitySpeed", 1, "The speed multiplier of Cities.");
             droneSpeed = Config.Bind("General", "DroneSpeedAdd", 0f, "Adds to the global drone speed.");
             droneTakeoffDuration = Config.Bind("General", "DroneTakeoffDurationAdd", 0f, "Adds to the global drone takeoff duration. Use negative to speed it up.");
+
+            vehicleSpeedLow = Config.Bind("General", "VehicleSpeedLowAdd", 0f, "Adds to the vehicle's low speed.");
+            vehicleSpeedMedium = Config.Bind("General", "VehicleSpeedMediumAdd", 0f, "Adds to the vehicle's medium speed.");
+            vehicleSpeedMax = Config.Bind("General", "VehicleSpeedMaxAdd", 0f, "Adds to the vehicle's medium speed.");
 
             IsExtracting = AccessTools.Method(typeof(CItem_ContentExtractor), "IsExtracting", new Type[] { typeof(int2) });
             IsExtractingDeep = AccessTools.Method(typeof(CItem_ContentExtractorDeep), "IsExtracting", new Type[] { typeof(int2) });
@@ -109,33 +116,6 @@ namespace CheatProgressSpeed
 
             return false;
         }
-        /*
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_ContentFactory), "ProcessStocks")]
-        static void CItem_ContentFactory_ProcessStocks(CItem_ContentFactory __instance, CRecipe recipe, int2 coords, int progressFrame)
-        {
-            if (!modEnabled.Value)
-            {
-                return;
-            }
-            int c = factorySpeed.Value - 1;
-            if (c > 0)
-            {
-                int m = __instance.dataProgress.valueMax;
-                int newProgress;
-                if (progressFrame < m)
-                {
-                    newProgress = Math.Min(progressFrame + c, m);
-                }
-                else
-                {
-                    newProgress = 0;
-                }
-
-                __instance.dataProgress.SetValue(coords, newProgress);
-            }
-        }
-        */
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.Update01s))]
@@ -174,6 +154,19 @@ namespace CheatProgressSpeed
             ___endTime = ___startTime 
                 + (double)(GDrones.durationTakeOff + droneTakeoffDuration.Value)
                 + (double)(magnitude / (GDrones.speed + droneSpeed.Value));
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_Vehicle), nameof(CItem_Vehicle.Init))]
+        static void CItem_Vehicle_Init(CItem_Vehicle __instance)
+        {
+            if (!modEnabled.Value)
+            {
+                return;
+            }
+            __instance.speedLow += vehicleSpeedLow.Value;
+            __instance.speedMedium += vehicleSpeedMedium.Value;
+            __instance.speedMax += vehicleSpeedMax.Value;
         }
     }
 }
