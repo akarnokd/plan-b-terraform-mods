@@ -26,11 +26,11 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
 ### Current Mods
 
-- [Demo Unlocker](#demounlocker) - removes the demo restriction of the game.
-- [Progress Speed](#progressspeed) - speed up extractors, factories, drones and vehicles.
-- [Production Limiter](#productionlimiter) - limit the production items that go into the global storage.
-- [Endless Resources](#endlessresources) - all resource nodes being extracted will have a minimum amount and never run out.
-- [Add City Names](#addcitynames) - customize the selection of city names the game will use to generate the map.
+- [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
+- [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
+- [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
+- [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
+- [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
 
 
 ## Mod details
