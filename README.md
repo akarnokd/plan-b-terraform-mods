@@ -37,9 +37,9 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 #### Cheats
 
 - [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
+- [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
-- [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
 
 
 ## Mod details
