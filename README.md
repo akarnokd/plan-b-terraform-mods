@@ -7,11 +7,11 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 #### Notable file paths
 
-**Game istall directory (usually):**
+**Game install directory (usually):**
 
 `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\`
 
-**Save file location: **
+**Save file location:**
 
 `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\{yoursteamid}\Saves`
 
