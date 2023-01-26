@@ -39,6 +39,7 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 - [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
+- [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
 
 
 ## Mod details
@@ -508,4 +509,34 @@ MaxHexesAdd = 0
 # Setting type: Int32
 # Default value: 0
 MineralMaxAdd = 0
+```
+
+### Edit Ore Cells
+
+Add or remove various ores by clicking on the surface.
+
+1. Enable the edit mode via <kbd>Numpad *</kbd>. An information panel will show up at the bottom of the screen.
+2. Select the ore via <kbd>Numpad +</kbd> or <kbd>Numpad -</kbd>
+3. <kbd>Left click</kbd> on a cell to change it to the specified ore and add some amount to it. The amount can be configured.
+4. <kbd>Right click</kbd> to remove some amount from the cell or completely remove the ore if it reaches zero.
+5. Disable the edit mode via <kbd>Numpad *</kbd>.
+
+:information_source: Note: configuring the keys will be possible in future updates to this mod.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.cheateditorecells.cfg`
+
+```
+[General]
+
+## Is the mod enabled
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## How much ore to add or remove from the hex.
+# Setting type: Int32
+# Default value: 100
+AmountChange = 100
 ```

@@ -75,7 +75,7 @@ namespace FeatMoreOreFields
             {
                 return;
             }
-            //logger.LogInfo(mineral.codeName);
+            logger.LogInfo(mineral.codeName + " = " + mineral.id);
 
 
             generationPeriod += allGenerationPeriodAdd.Value;
