@@ -1,28 +1,54 @@
 # plan-b-terraform-mods
 Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
 
-### Supported version: Demo, Full(?)
+### Supported version: Demo (0.6.0-610), Full (0.6.0-615)
 
 :information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
 
-Save file location: `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\{yoursteamid}\Saves`
+#### Notable file paths
 
-where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
+**Game istall directory (usually):**
+
+`c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\`
+
+**Save file location: **
+
+`%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\{yoursteamid}\Saves`
+
+:information_source: where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
+
+**Game log location:**
+
+`%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\Player.log`
+
 
 ### Installation
 
-1. Download the 64-bit BepInEx 5.4.21+ from [BepInEx releases](https://github.com/BepInEx/BepInEx/releases)
+1. *[One time only]* Download the 64-bit **BepInEx 5.4.21+** from [BepInEx releases](https://github.com/BepInEx/BepInEx/releases)
     - Make sure you **don't download** the latest, which is the 6.x.y line.
     - Make sure you download the correct version for your operating system.
-2. Unpack the BepInEx zip into the game's folder
+2. *[One time only]* Unpack the BepInEx zip into the game's folder
     - Example: `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\`
-3. Run the game. Quit the game
+3. *[One time only]* Run the game. Quit the game
     - You should now see the `BepInEx\plugins` directory in the game's directory
 4. Unpack the mod zip into the `BepInEx\plugins` directory.
-    - I highly recommend keeping the directory structure of the zip intact, so, for example, it will look like `BepInEx\plugins\akarnokd - (Cheat) Demo Unlocker\DemoUnlocker.dll`
+    - I highly recommend keeping the directory structure of the zip intact, so, for example, it will look like `BepInEx\plugins\akarnokd - (Feat) Add City Names`
     - It makes updating or removing mods much easier.
 5. If the mods don't appear to work, check the `BepInEx\OutputLog.log` for errors.
     - Also check the game's own log in `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\Player.log`
+6. Many mods have configuration files you can edit under `BepInEx\config`.
+    - *[Once per mod]* For the config file to show up, run the game and quit in the main menu.
+    - The config file will be under the `BepInEx\config` (for example, `BepInEx\config\akarnokd.planbterraformmods.feataddcitynames.cfg`). You can edit with any text editor.
+    - If something stops working, delete the `cfg` file and the mod will create a default one the next time the game is run.
+
+#### Uninstallation
+
+1. Locate the `BepInEx\plugins` directory (or files if you haven't kept the directory structure from the zip).
+   - Example: `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\BepInEx\plugins`
+2. Delete the plugin's directory, including all files inside it
+   - Example: `BepInEx\plugins\akarnokd - (Feat) Add City Names`
+3. *[Optional]* Delete the mod's configuration from the `BepInEx\config` directory
+   - Example: `BepInEx\config\akarnokd.planbterraformmods.feataddcitynames.cfg`
 
 ### Current Mods
 
