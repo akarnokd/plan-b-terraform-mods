@@ -31,7 +31,8 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
-- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás)
+- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [More Cities](#more-cities) - Generate more cities for a new game.
 
 
 ## Mod details
@@ -346,3 +347,21 @@ Magyar fordítás. Az **Options (Beállítások)** menüben lehet kiválasztani a játék
 #### Configuration
 
 Not relevant for end users; contains an option to dump languages to see the diffs between versions.
+
+### More Cities
+
+Generate more cities for a new game.
+
+The game currently defaults to 3 cities per planet. This mod increases the number of cities generated additively via configuration option. I.e., `CityCountAdd = 2` will generate 5 cities total.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.featmorecities.cfg`
+
+```
+## How many more cities to generate for a new game
+# Setting type: Int32
+# Default value: 0
+CityCountAdd = 0
+```
+
