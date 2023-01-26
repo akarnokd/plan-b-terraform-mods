@@ -26,13 +26,19 @@ where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
 ### Current Mods
 
-- [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
-- [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
-- [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
-- [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
+#### Features
+
 - [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
-- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
 - [More Cities](#more-cities) - Generate more cities for a new game.
+- [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
+- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
+
+#### Cheats
+
+- [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
+- [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
+- [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
 
 
 ## Mod details
@@ -365,3 +371,141 @@ The game currently defaults to 3 cities per planet. This mod increases the numbe
 CityCountAdd = 0
 ```
 
+### More Ore Fields
+
+Adjust the ore field generation logic by changing the field frequency and size range of the ore fields via configuration.
+
+The numbers can be adjusted globally and/or per ore type:
+
+- `GenerationPeriodAdd` - the game generates fields proportional to the number of all hexes, thus to increase the frequency of fields, set this number to negative.
+- `MinHexesAdd` - increase the minimum number of hexes per ore field.
+- `MaxHexesAdd` - increase the maximum number of hexes per ore field.
+- `MineralMaxAdd` - the maximum number of minerals inside each hex.
+
+Supported ore types (see them in separate config sections):
+
+- `sulfur`
+- `iron`
+- `aluminumOre`
+- `fluorite`
+
+#### Configuration
+
+`akarnokd.planbterraformmods.featmoreorefields.cfg`
+
+```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## Positive value decreases field frequency, negative value increases field frequency.
+# Setting type: Int32
+# Default value: 0
+GenerationPeriodAdd = 0
+
+## Add to the minimum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MinHexesAdd = 0
+
+## Add to the maximum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MaxHexesAdd = 0
+
+## Add to the maximum number of minerals in a cell.
+# Setting type: Int32
+# Default value: 0
+MineralMaxAdd = 0
+
+[Ore-aluminumOre]
+
+## Positive value decreases field frequency, negative value increases field frequency.
+# Setting type: Int32
+# Default value: 0
+GenerationPeriodAdd = 0
+
+## Add to the minimum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MinHexesAdd = 0
+
+## Add to the maximum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MaxHexesAdd = 0
+
+## Add to the maximum number of minerals in a cell.
+# Setting type: Int32
+# Default value: 0
+MineralMaxAdd = 0
+
+[Ore-fluorite]
+
+## Positive value decreases field frequency, negative value increases field frequency.
+# Setting type: Int32
+# Default value: 0
+GenerationPeriodAdd = 0
+
+## Add to the minimum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MinHexesAdd = 0
+
+## Add to the maximum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MaxHexesAdd = 0
+
+## Add to the maximum number of minerals in a cell.
+# Setting type: Int32
+# Default value: 0
+MineralMaxAdd = 0
+
+[Ore-iron]
+
+## Positive value decreases field frequency, negative value increases field frequency.
+# Setting type: Int32
+# Default value: 0
+GenerationPeriodAdd = 0
+
+## Add to the minimum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MinHexesAdd = 0
+
+## Add to the maximum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MaxHexesAdd = 0
+
+## Add to the maximum number of minerals in a cell.
+# Setting type: Int32
+# Default value: 0
+MineralMaxAdd = 0
+
+[Ore-sulfur]
+
+## Positive value decreases field frequency, negative value increases field frequency.
+# Setting type: Int32
+# Default value: 0
+GenerationPeriodAdd = 0
+
+## Add to the minimum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MinHexesAdd = 0
+
+## Add to the maximum size of generated fields.
+# Setting type: Int32
+# Default value: 0
+MaxHexesAdd = 0
+
+## Add to the maximum number of minerals in a cell.
+# Setting type: Int32
+# Default value: 0
+MineralMaxAdd = 0
+```
