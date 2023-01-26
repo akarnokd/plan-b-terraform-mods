@@ -1,7 +1,7 @@
 # plan-b-terraform-mods
 Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
 
-### Supported version: Demo (0.6.0-610), Full (0.6.0-615)
+## Supported version: Demo (0.6.0-610), Full (0.6.0-615)
 
 :information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
 
@@ -22,7 +22,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\Player.log`
 
 
-### Installation
+## Installation
 
 1. *[One time only]* Download the 64-bit **BepInEx 5.4.21+** from [BepInEx releases](https://github.com/BepInEx/BepInEx/releases)
     - Make sure you **don't download** the latest, which is the 6.x.y line.
@@ -41,7 +41,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
     - The config file will be under the `BepInEx\config` (for example, `BepInEx\config\akarnokd.planbterraformmods.feataddcitynames.cfg`). You can edit with any text editor.
     - If something stops working, delete the `cfg` file and the mod will create a default one the next time the game is run.
 
-#### Uninstallation
+## Uninstallation
 
 1. Locate the `BepInEx\plugins` directory (or files if you haven't kept the directory structure from the zip).
    - Example: `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\BepInEx\plugins`
@@ -50,9 +50,9 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 3. *[Optional]* Delete the mod's configuration from the `BepInEx\config` directory
    - Example: `BepInEx\config\akarnokd.planbterraformmods.feataddcitynames.cfg`
 
-### Current Mods
+# Current Mods
 
-#### Features
+### Features
 
 - [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
 - [More Cities](#more-cities) - Generate more cities for a new game.
@@ -60,7 +60,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
 
-#### Cheats
+### Cheats
 
 - [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
 - [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
