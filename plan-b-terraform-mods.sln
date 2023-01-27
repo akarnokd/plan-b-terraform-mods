@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatDemoUnlocker", "CheatD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.csproj", "{E58044C8-684D-4949-A4F8-62388CC4700A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2165A9AE-D505-46B0-9257-C762A42B2971} = {2165A9AE-D505-46B0-9257-C762A42B2971}
 		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2} = {2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}
 		{2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A} = {2E3D882F-8CBA-40C2-9E33-E6F54FA63B8A}
 		{73D50B9B-498D-4EBD-9C32-F0AE38B20597} = {73D50B9B-498D-4EBD-9C32-F0AE38B20597}
@@ -41,6 +42,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatMoreOreFields", "FeatMoreOreFields\FeatMoreOreFields.csproj", "{C98AC232-0668-4FE4-9374-83431B0BAA80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatEditOreCells", "CheatEditOreCells\CheatEditOreCells.csproj", "{73D50B9B-498D-4EBD-9C32-F0AE38B20597}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatBuildIceExtractorsAnywhere", "CheatBuildIceExtractorsAnywhere\CheatBuildIceExtractorsAnywhere.csproj", "{2165A9AE-D505-46B0-9257-C762A42B2971}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +95,10 @@ Global
 		{73D50B9B-498D-4EBD-9C32-F0AE38B20597}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73D50B9B-498D-4EBD-9C32-F0AE38B20597}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73D50B9B-498D-4EBD-9C32-F0AE38B20597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2165A9AE-D505-46B0-9257-C762A42B2971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2165A9AE-D505-46B0-9257-C762A42B2971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2165A9AE-D505-46B0-9257-C762A42B2971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2165A9AE-D505-46B0-9257-C762A42B2971}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,7 +20,7 @@ namespace FeatProductionLimiter
                 "roadstop",
                 "truck",
                 "railway",
-                "railwaystop",
+                "railstop",
                 "train",
                 "extractor",
                 "iceExtractor",

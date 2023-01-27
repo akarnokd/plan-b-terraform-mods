@@ -62,6 +62,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 ### Cheats
 
+- [Build Ice Extractors Anywhere](#build-ice-extractors-anywhere) - allows building Ice Extractors anywhere on the map, not just on ice.
 - [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
 - [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
@@ -156,7 +157,7 @@ The default is 500. Currently, the following items are supported:
 - roadstop
 - truck
 - railway
-- railwaystop
+- railstop
 - train
 - extractor
 - iceExtractor
@@ -211,10 +212,10 @@ truck = 500
 # Default value: 500
 railway = 500
 
-## Limit the production of railwaystop
+## Limit the production of railstop
 # Setting type: Int32
 # Default value: 500
-railwaystop = 500
+railstop = 500
 
 ## Limit the production of train
 # Setting type: Int32
@@ -565,4 +566,21 @@ Enabled = true
 # Setting type: Int32
 # Default value: 100
 AmountChange = 100
+```
+
+### Build Ice Extractors Anywhere
+
+Allows building Ice Extractors anywhere on the map, not just on ice.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.cheatbuildiceextractorsanywhere.cfg`
+
+```
+[General]
+
+## Is the mod enabled
+# Setting type: Boolean
+# Default value: true
+Enabled = true
 ```
