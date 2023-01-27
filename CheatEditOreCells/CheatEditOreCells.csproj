@@ -32,9 +32,9 @@
 		  <HintPath>$(GameManaged)unityengine.ui.dll</HintPath>
 		  <Private>False</Private>
 	  </Reference>
-	  <Reference Include="Unity.InputSystem">
+	  <Reference Include="UnityEngine.InputLegacyModule">
 		  <SpecificVersion>False</SpecificVersion>
-		  <HintPath>$(GameManaged)unity.inputsystem.dll</HintPath>
+		  <HintPath>$(GameManaged)UnityEngine.InputLegacyModule.dll</HintPath>
 		  <Private>False</Private>
 	  </Reference>
   </ItemGroup>
