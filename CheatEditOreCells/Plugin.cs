@@ -56,7 +56,7 @@ namespace CheatEditOreCells
         static bool IsKeyDown(KeyCode keyCode)
         {
             GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || currentSelectedGameObject.TryGetComponent<InputField>(out _))
+            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
                 && Input.GetKeyDown(keyCode);
         }
 
