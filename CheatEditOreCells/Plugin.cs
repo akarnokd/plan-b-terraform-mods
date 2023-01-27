@@ -86,7 +86,7 @@ namespace CheatEditOreCells
                             {
                                 currentOreIndex = 0;
                             }
-                            FlashPanel("Place ore: " + oreNames[currentOreIndex]);
+                            FlashPanel();
                         }
                         else
                         if (IsKeyDown(prevOreInput))
@@ -96,7 +96,7 @@ namespace CheatEditOreCells
                             {
                                 currentOreIndex = oreIndices.Length - 1;
                             }
-                            FlashPanel("Place ore: " + oreNames[currentOreIndex]);
+                            FlashPanel();
                         }
 
                         bool add = IsKeyDown(placeOreInput);
@@ -146,7 +146,7 @@ namespace CheatEditOreCells
                         {
                             placementMode = true;
                             logger.LogInfo("Placement mode ON");
-                            FlashPanel("Place ore: " + oreNames[currentOreIndex]);
+                            FlashPanel();
                             return true;
                         }
                     }
@@ -165,7 +165,10 @@ namespace CheatEditOreCells
         static GameObject placementModePanelText;
         static GameObject placementModePanelHint;
 
-
+        static void FlashPanel()
+        {
+            FlashPanel("Place ore: " + oreNames[currentOreIndex] + " (±" + oreAmountChange.Value + ")");
+        }
         static void FlashPanel(string title)
         {
             if (title == null)
