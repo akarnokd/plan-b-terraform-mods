@@ -58,6 +58,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [More Cities](#more-cities) - Generate more cities for a new game.
 - [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
 - [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
 
 ### Cheats
@@ -595,4 +596,21 @@ Allows building Ice Extractors anywhere on the map, not just on ice.
 # Setting type: Boolean
 # Default value: true
 Enabled = true
+```
+
+### Navigate to Points of Interest
+
+Adds a panel on the right side of the screen with cities and landmarks.
+
+You can click on a line and the map will center on that point of interest.
+
+You can use the <kbd>Mouse Scroll</kbd> while hovering over the panel to scroll up or down if there are more than the preset limit of lines.
+
+Use <kbd>L</kbd> (configurable) to hide the panel.
+
+#### Configuration
+
+`akarnokd.planbterraformmods.featnavigatetopoi`
+
+```
 ```
