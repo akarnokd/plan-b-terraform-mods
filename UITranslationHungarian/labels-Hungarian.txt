@@ -279,7 +279,7 @@ OBJ_BUILT_PLURAL=Építs {1} {0}-t és helyezd mind a talajra.
 OBJ_EDIT_DEPOT=Raktár anyagtípus megváltoztatása {0}-re.
 OBJ_MOVE=Kamera mozgatása {input=scroll}.
 OBJ_SCROLL=Kicsinyítsd a térképet az [Egér Görgővel] az átfogó bolygónézethez.
-OBJ_SELECT=Válassz ki egy {0} a {input=action}-vel.
+OBJ_SELECT=Válassz ki egy {0}-t a(z) {input=action}-vel.
 OBJ_LEVEL=Teljesítsd a(z) {0}. szintet.
 OBJ_POP=A teljes lakosság érje el a(z) {0} főt
 OBJ_POPCITY=A legnagyobb városod lakossága érje el a(z) {0} főt.
