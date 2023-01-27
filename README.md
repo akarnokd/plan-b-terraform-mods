@@ -179,6 +179,8 @@ The default is 500. Currently, the following items are supported:
 - forest_cactus
 - forest_savannah
 - forest_coconut
+- cityIn
+- cityOut
 
 #### Configuration
 
@@ -321,6 +323,16 @@ forest_savannah = 500
 # Setting type: Int32
 # Default value: 500
 forest_coconut = 500
+
+## Limit the production of cityIn
+# Setting type: Int32
+# Default value: 500
+cityIn = 500
+
+## Limit the production of cityOut
+# Setting type: Int32
+# Default value: 500
+cityOut = 500
 ```
 
 ### Endless Resources

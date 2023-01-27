@@ -41,7 +41,9 @@ namespace FeatProductionLimiter
                 "forest_leavesMultiple",
                 "forest_cactus",
                 "forest_savannah",
-                "forest_coconut"
+                "forest_coconut",
+                "cityIn",
+                "cityOut"
             };
         static Dictionary<string, ConfigEntry<int>> limits = new();
 
