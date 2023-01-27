@@ -66,7 +66,7 @@ namespace CheatEditOreCells
         {
             if (modEnabled.Value)
             {
-                logger.LogInfo("SSceneHud_OnUpdate() start");
+                //logger.LogInfo("SSceneHud_OnUpdate() start");
                 try
                 {
                     if (placementMode)
