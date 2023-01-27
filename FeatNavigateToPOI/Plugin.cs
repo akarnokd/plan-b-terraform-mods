@@ -72,7 +72,6 @@ namespace FeatNavigateToPOI
         static GameObject poiPanelScrollUp;
         static GameObject poiPanelScrollDown;
         static int scrollTop;
-        static bool once;
 
         static void UpdatePanel()
         {
@@ -137,14 +136,6 @@ namespace FeatNavigateToPOI
 
             pois.Sort((a, b) => a.name.CompareTo(b.name));
 
-            if (once)
-            {
-                //return;
-            }
-            if (!once && pois.Count != 0)
-            {
-                once = true;
-            }
             for (int i = poiPanelBackground.transform.childCount - 1; i >= 0; i--)
             {
                 Destroy(poiPanelBackground.transform.GetChild(i).gameObject);
