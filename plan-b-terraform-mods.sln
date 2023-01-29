@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatGotoExhaustedExtractors
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatDisableBuilding", "FeatDisableBuilding\FeatDisableBuilding.csproj", "{C17479B2-DFC8-46EF-AA88-5E3988DB1DD1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatProductionStats", "FeatProductionStats\FeatProductionStats.csproj", "{DB7F97CB-7F0D-427E-8E6F-F34F115B8A17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,6 +122,10 @@ Global
 		{C17479B2-DFC8-46EF-AA88-5E3988DB1DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C17479B2-DFC8-46EF-AA88-5E3988DB1DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C17479B2-DFC8-46EF-AA88-5E3988DB1DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB7F97CB-7F0D-427E-8E6F-F34F115B8A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB7F97CB-7F0D-427E-8E6F-F34F115B8A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB7F97CB-7F0D-427E-8E6F-F34F115B8A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB7F97CB-7F0D-427E-8E6F-F34F115B8A17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
