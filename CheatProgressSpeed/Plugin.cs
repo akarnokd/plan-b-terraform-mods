@@ -8,6 +8,7 @@ using System.Reflection;
 namespace CheatProgressSpeed
 {
     [BepInPlugin("akarnokd.planbterraformmods.cheatprogressspeed", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.featproductionstats", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         static ConfigEntry<bool> modEnabled;

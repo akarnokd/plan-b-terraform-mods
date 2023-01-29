@@ -18,7 +18,6 @@ using UnityEngine.UI;
 namespace FeatProductionStats
 {
     [BepInPlugin("akarnokd.planbterraformmods.featproductionstats", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency("akarnokd.planbterraformmods.cheatprogressspeed", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -31,7 +30,8 @@ namespace FeatProductionStats
         static ConfigEntry<int> buttonSize;
         static ConfigEntry<int> historyLength;
 
-        static readonly int2 dicoCoordinates = new int2 { x = -1_000_100_100, y = 0 };
+        static readonly int2 dicoCoordinates1 = new int2 { x = -1_000_100_100, y = 0 };
+        static readonly int2 dicoCoordinates2 = new int2 { x = -1_000_100_100, y = 1 };
 
         static ManualLogSource logger;
 
@@ -40,6 +40,7 @@ namespace FeatProductionStats
         static Color defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
 
         static Dictionary<string, Sprite> itemSprites = new();
+        static Dictionary<string, Color> itemColors = new();
 
         static GameObject statsPanel;
         static GameObject statsPanelBackground;
@@ -232,6 +233,7 @@ namespace FeatProductionStats
                             sr.codeName = kv.Key;
                             sr.name = SLoc.Get("ITEM_NAME_" + kv.Key);
                             itemSprites.TryGetValue(kv.Key, out sr.icon);
+                            itemColors.TryGetValue(kv.Key, out sr.color);
                             statsRowsDict[kv.Key] = sr;
                         }
 
@@ -248,6 +250,7 @@ namespace FeatProductionStats
                             sr.codeName = kv.Key;
                             sr.name = SLoc.Get("ITEM_NAME_" + kv.Key);
                             itemSprites.TryGetValue(kv.Key, out sr.icon);
+                            itemColors.TryGetValue(kv.Key, out sr.color);
                             statsRowsDict[kv.Key] = sr;
                         }
 
@@ -285,7 +288,8 @@ namespace FeatProductionStats
             int maxNameWidth = 0;
             int maxProductionWidth = 0;
             int maxConsumptionWidth = 0;
-            int padding = 10;
+            int vPadding = 10;
+            int hPadding = 30;
             int border = 5;
             int iconSize = itemSize.Value;
 
@@ -295,14 +299,16 @@ namespace FeatProductionStats
 
                 row.gIcon = new GameObject("FeatProductionStatsPanel_Row_" + i + "_Icon");
                 row.gIcon.transform.SetParent(statsPanelBackground.transform);
-                row.gIcon.AddComponent<Image>().sprite = row.icon;
+                var img = row.gIcon.AddComponent<Image>();
+                img.sprite = row.icon;
+                img.color = row.color;
                 row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
                 row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>");
                 row.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Production",
-                        string.Format("<b>{0:#.##0.0}</b>", row.sumProduction / (float)horizon));
+                        string.Format("<b>{0:#,##0.000} / day</b>", row.sumProduction / (float)horizon));
                 row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption",
-                        string.Format("<b>{0:#,##0.0}</b>", row.sumConsumption / (float)horizon));
+                        string.Format("<b>{0:#,##0.000} / day</b>", row.sumConsumption / (float)horizon));
 
                 maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(row.gName));
                 maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(row.gProduction));
@@ -315,9 +321,30 @@ namespace FeatProductionStats
                 maxNameWidth = GetPreferredWidth(empty);
                 SetLocalPosition(empty, 0, 0);
             }
+            else
+            {
 
-            int bgHeight = maxLines * (iconSize + padding) + padding + 2 * border;
-            int bgWidth = 2 * border + 5 * padding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth;
+                var headerRow = new StatsRow();
+                headerRow.gIcon = new GameObject("FeatProductionStatsPanel_HeaderRow_Icon");
+                headerRow.gIcon.transform.SetParent(statsPanelBackground.transform);
+                headerRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+                headerRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+
+                headerRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "<i>Item</i>");
+                headerRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "<i>Production speed</i>");
+                headerRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "<i>Consumption speed</i>");
+
+                maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(headerRow.gName));
+                maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(headerRow.gProduction));
+                maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(headerRow.gConsumption));
+
+                allRows.Insert(statsPanelOffset, headerRow);
+
+                maxLines++; // header
+            }
+
+            int bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
+            int bgWidth = 2 * border + 2 * vPadding + 3 * hPadding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth;
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
             rectBg2.sizeDelta = new Vector2(Mathf.Max(bgWidth, rectBg2.sizeDelta.x), bgHeight);
@@ -329,30 +356,30 @@ namespace FeatProductionStats
             statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
             statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
 
-            float dy = rectBg.sizeDelta.y / 2 - padding;
+            float dy = rectBg.sizeDelta.y / 2 - vPadding;
             for (int i = statsPanelOffset; i < allRows.Count && i < statsPanelOffset + maxLines; i++)
             {
                 var row = allRows[i];
 
                 float y = dy - iconSize / 2;
 
-                float dx = - rectBg.sizeDelta.x / 2 + padding;
+                float dx = - rectBg.sizeDelta.x / 2 + vPadding;
 
                 SetLocalPosition(row.gIcon, dx + iconSize / 2, y);
 
-                dx += iconSize + padding;
+                dx += iconSize + hPadding;
 
                 SetLocalPosition(row.gName, dx + GetPreferredWidth(row.gName) / 2, y);
 
-                dx += maxNameWidth + padding;
+                dx += maxNameWidth + hPadding;
 
                 SetLocalPosition(row.gProduction, dx + maxProductionWidth - GetPreferredWidth(row.gProduction) / 2, y);
 
-                dx += maxProductionWidth + padding;
+                dx += maxProductionWidth + hPadding;
 
                 SetLocalPosition(row.gConsumption, dx + maxConsumptionWidth - GetPreferredWidth(row.gConsumption) / 2, y);
 
-                dy -= iconSize + padding;
+                dy -= iconSize + vPadding;
             }
         }
 
@@ -363,19 +390,81 @@ namespace FeatProductionStats
             RestoreState();
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SGame), nameof(SGame.Save))]
+        static void SGame_Save()
+        {
+            SaveState();
+        }
+
         static void SaveState()
         {
             StringBuilder sb = new(512);
-            // TODO
-            GGame.dicoLandmarks[dicoCoordinates] = sb.ToString();
+            AppendData(productionSamples, sb);
+            GGame.dicoLandmarks[dicoCoordinates1] = sb.ToString();
+            
+            sb.Clear();
+            AppendData(consumptionSamples, sb);
+            GGame.dicoLandmarks[dicoCoordinates2] = sb.ToString();
         }
 
+        static void AppendData(Dictionary<int, Dictionary<string, int>> data, StringBuilder sb)
+        {
+            int i = 0;
+            foreach (var kv in data)
+            {
+                if (i++ > 0)
+                {
+                    sb.Append(';');
+                }
+                sb.Append(kv.Key).Append('=');
+                int j = 0;
+                foreach (var ev in kv.Value)
+                {
+                    if (j++ > 0)
+                    {
+                        sb.Append(',');
+                    }
+                    sb.Append(ev.Key).Append(':').Append(ev.Value);
+                }
+            }
+        }
+
+        static void ParseData(string str, Dictionary<int, Dictionary<string, int>> data)
+        {
+            if (str.Length != 0)
+            {
+                foreach (var days in str.Split(';'))
+                {
+                    var dayAndValues = days.Split('=');
+
+                    int t = int.Parse(dayAndValues[0]);
+                    var dict = new Dictionary<string, int>();
+                    data[t] = dict;
+
+                    foreach (var values in dayAndValues[1].Split(','))
+                    {
+                        var kv = values.Split(':');
+                        dict[kv[0]] = int.Parse(kv[1]);
+                    }
+                }
+            }
+        }
 
         static void RestoreState()
         {
-            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates, out var str))
+            // logger.LogInfo("RestoreState()");
+            productionSamples.Clear();
+            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates1, out var str))
             {
-            // TODO
+                // logger.LogInfo("  productionSamples\r\n  " + str);
+                ParseData(str, productionSamples);
+            }
+            consumptionSamples.Clear();
+            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates2, out str))
+            {
+                // logger.LogInfo("  consumptionSamples\r\n  " + str);
+                ParseData(str, consumptionSamples);
             }
         }
 
@@ -384,92 +473,76 @@ namespace FeatProductionStats
         static void CItem_Init(CItem __instance)
         {
             itemSprites[__instance.codeName] = __instance.icon.Sprite;
+            itemColors[__instance.codeName] = __instance.colorItem;
         }
+
+        static bool insideFactoryUpdate;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
-        static void CItem_ContentFactory_Update01s_Pre(
-            CItem_ContentFactory __instance, 
-            int2 coords, 
+        static void CItem_ContentFactory_Update01s_Pre(CItem_ContentFactory __instance,
+            int2 coords,
             out List<CurrentStack> __state)
         {
-            var stacks = __instance.GetStacks(coords);
+            // logger.LogInfo("Factory Update Pre");
+            insideFactoryUpdate = true;
             var recipe = __instance.GetRecipe(coords);
-            var save = new List<CurrentStack>();
+            if (recipe != null && !__instance.producesOutputContainers) {
+                __state = new();
 
-            if (stacks != null && recipe != null)
-            {
-                int outputIndexStart = stacks.stacks.Length - recipe.outputs.Count;
-
-                logger.LogInfo("Factory at " + coords + " (" + recipe.inputs.Count + ", " + recipe.outputs.Count + ")");
-
-                for (int i = 0; i < stacks.stacks.Length; i++)
+                foreach (var rec in recipe.outputs)
                 {
-                    CStack stack = stacks.stacks[i];
-                    var cn = stack.item != null ? stack.item.codeName : null;
-                    var nb = stack.nb;
-                    if (!__instance.producesOutputContainers && i >= outputIndexStart)
-                    {
-                        nb = stack.item != null ? stack.item.nbOwned : 0;
-                    }
-                    var cs = new CurrentStack { codeName = cn, amount = nb };
-                    save.Add(cs);
-                    logger.LogInfo("  Before: CurrentStack " + cn + " = " + nb + " " + (__instance.producesOutputContainers ? "Local" : "Global"));
+                    __state.Add(new CurrentStack { item = rec.item, amount = rec.item.nbOwned });
+                    // logger.LogInfo("  Factory Global Pre " + rec.item.codeName + " " + rec.item.nbOwned);
                 }
             }
-
-            __state = save;
+            else
+            {
+                __state = null;
+            }
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
         static void CItem_ContentFactory_Update01s_Post(
-            CItem_ContentFactory __instance,
-            int2 coords,
             List<CurrentStack> __state)
         {
-            var stacks = __instance.GetStacks(coords);
-            var recipe = __instance.GetRecipe(coords);
-            if (stacks != null && recipe != null)
+            insideFactoryUpdate = false;
+            if (__state != null)
             {
-                int outputIndexStart = stacks.stacks.Length - recipe.outputs.Count;
-
-                for (int i = 0; i < stacks.stacks.Length; i++)
+                foreach (var cs in __state)
                 {
-                    CStack stack = stacks.stacks[i];
-                    var curr = __state[i];
-
-                    if (curr.codeName == null)
+                    var diff = cs.item.nbOwned - cs.amount;
+                    if (diff != 0)
                     {
-                        if (stack.item != null)
-                        {
-                            curr.codeName = stack.item.codeName;
-                        }
-                    }
-                    var nb = stack.nb;
-                    if (!__instance.producesOutputContainers && i >= outputIndexStart)
-                    {
-                        nb = stack.item != null ? stack.item.nbOwned : 0;
-                    }
-
-                    logger.LogInfo("  After: CurrentStack " + curr.codeName + " = " + nb + " <- " + curr.amount + " " + (__instance.producesOutputContainers ? "Local" : "Global"));
-
-                    if (curr.codeName != null)
-                    {
-                        var diff = curr.amount - nb;
-                        if (diff != 0)
-                        {
-                            if (i < outputIndexStart)
-                            {
-                                AddForToday(curr.codeName, -diff, consumptionSamples);
-                            }
-                            else
-                            {
-                                AddForToday(curr.codeName, diff, productionSamples);
-                            }
-                        }
+                        // logger.LogInfo("  Factory Global Post " + cs.item.codeName + " " + cs.item.nbOwned);
+                        AddForToday(cs.item.codeName, 1, productionSamples);
                     }
                 }
+            }
+            //logger.LogInfo("Factory Update Post");
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CStack), nameof(CStack.AddIFP))]
+        static void CStack_AddIFP(ref CStack __instance, int count)
+        {
+            // logger.LogInfo("  Produced: " + __instance.item.codeName + " " + insideFactoryUpdate + " " + count);
+            // logger.LogInfo(Environment.StackTrace);
+            if (insideFactoryUpdate)
+            {
+                AddForToday(__instance.item.codeName, 1, productionSamples);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CStack), nameof(CStack.Add))]
+        static void CStack_Add(ref CStack __instance, int count)
+        {
+            // logger.LogInfo("  Consumed: " + __instance.item.codeName + " " + insideFactoryUpdate + " " + count);
+            if (insideFactoryUpdate && count < 0)
+            {
+                AddForToday(__instance.item.codeName, 1, consumptionSamples);
             }
         }
 
@@ -482,8 +555,7 @@ namespace FeatProductionStats
         {
             var stack = __instance.GetStack(coords, 0);
 
-            var cn = stack.item != null ? stack.item.codeName : null;
-            __state = new CurrentStack { codeName = cn, amount = stack.nb };
+            __state = new CurrentStack { item = stack.item, amount = stack.nb };
         }
 
         [HarmonyPostfix]
@@ -494,16 +566,12 @@ namespace FeatProductionStats
             CurrentStack __state)
         {
             var stack = __instance.GetStack(coords);
-            var diff = __state.amount - stack.nb;
+            var diff = stack.nb - __state.amount;
             if (diff != 0)
             {
-                if (__state.codeName == null)
+                if (__state.item != null)
                 {
-                    __state.codeName = stack.item != null ? stack.item.codeName : null;
-                }
-                if (__state.codeName != null)
-                {
-                    AddForToday(__state.codeName, -diff, productionSamples);
+                    AddForToday(__state.item.codeName, diff, productionSamples);
                 }
             }
         }
@@ -536,7 +604,7 @@ namespace FeatProductionStats
 
         internal class CurrentStack
         {
-            internal string codeName;
+            internal CItem item;
             internal int amount;
         }
 
@@ -545,6 +613,7 @@ namespace FeatProductionStats
             internal string codeName;
             internal string name;
             internal Sprite icon;
+            internal Color color;
             internal int sumProduction;
             internal int sumConsumption;
 
