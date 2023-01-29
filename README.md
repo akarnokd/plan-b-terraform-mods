@@ -712,12 +712,9 @@ The building state is persisted in your save.
 
 Supported buildings:
 
-- Assembly Plant
-- Extractor
-- Factory
-- Greenhouse
-- Ice Extractor
-- Pumping Station
+- Extractors (plain *Extractor*, *Ice Extractor*)
+- Factories (plain *Factory*, *Assembly Plant*, *Greenhouse*)
+- Other (*Pumping Station*)
 
 #### Configuration
 
