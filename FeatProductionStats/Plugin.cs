@@ -65,12 +65,12 @@ namespace FeatProductionStats
             logger = Logger;
 
             modEnabled = Config.Bind("General", "Enabled", true, "Is the mod enabled?");
-            toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F1, "Key to press while the building is selected to toggle its enabled/disabled state");
+            toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F3, "Key to press while the building is selected to toggle its enabled/disabled state");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the panel");
             itemSize = Config.Bind("General", "ItemSize", 32, "The size of the item's icon in the list");
-            buttonLeft = Config.Bind("General", "ButtonLeft", 50, "The button's position relative to the left of the screen");
+            buttonLeft = Config.Bind("General", "ButtonLeft", 100, "The button's position relative to the left of the screen");
             buttonSize = Config.Bind("General", "ButtonSize", 50, "The button's width and height");
-            maxStatLines = Config.Bind("General", "MaxLines", 20, "How many lines of items to show");
+            maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
             historyLength = Config.Bind("General", "HistoryLength", 300, "How many days to keep as past production data?");
 
             Assembly me = Assembly.GetExecutingAssembly();
@@ -153,9 +153,13 @@ namespace FeatProductionStats
 
             var mp = GetMouseCanvasPos();
 
+            if (IsKeyDown(toggleKey.Value))
+            {
+                statsPanel.SetActive(!statsPanel.activeSelf);
+            }
             if (Within(rectBg2, mp))
             {
-                statsButtonIcon.GetComponent<Image>().color = Color.yellow;
+                statsButtonBackground.GetComponent<Image>().color = Color.yellow;
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     statsPanel.SetActive(!statsPanel.activeSelf);
@@ -163,7 +167,7 @@ namespace FeatProductionStats
             }
             else
             {
-                statsButtonIcon.GetComponent<Image>().color = Color.white;
+                statsButtonBackground.GetComponent<Image>().color = defaultPanelLightColor;
             }
         }
 
@@ -202,7 +206,18 @@ namespace FeatProductionStats
             Dictionary<string, StatsRow> statsRowsDict = new();
 
             int today = (int)GMain.simuPlanetTime;
+            int horizonMax = 30;
             int horizon = 1;
+
+            for (int t = today - horizonMax + 1; t <= today; t++)
+            {
+                if (productionSamples.ContainsKey(t) || consumptionSamples.ContainsKey(t))
+                {
+                    horizon = today - t + 1;
+                    break;
+                }
+            }
+
             int lookback = today - horizon + 1; // TODO support larger horizons
 
             for (int t = lookback; t <= today; t++)
@@ -281,16 +296,24 @@ namespace FeatProductionStats
                 row.gIcon = new GameObject("FeatProductionStatsPanel_Row_" + i + "_Icon");
                 row.gIcon.transform.SetParent(statsPanelBackground.transform);
                 row.gIcon.AddComponent<Image>().sprite = row.icon;
+                row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", row.name);
+                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>");
                 row.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Production",
-                        string.Format("{0:#.##0.0}", row.sumProduction / (float)horizon));
+                        string.Format("<b>{0:#.##0.0}</b>", row.sumProduction / (float)horizon));
                 row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption",
-                        string.Format("{0:#,##0.0}", row.sumConsumption / (float)horizon));
+                        string.Format("<b>{0:#,##0.0}</b>", row.sumConsumption / (float)horizon));
 
                 maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(row.gName));
                 maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(row.gProduction));
                 maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(row.gConsumption));
+            }
+
+            if (allRows.Count == 0)
+            {
+                var empty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>");
+                maxNameWidth = GetPreferredWidth(empty);
+                SetLocalPosition(empty, 0, 0);
             }
 
             int bgHeight = maxLines * (iconSize + padding) + padding + 2 * border;
@@ -298,37 +321,38 @@ namespace FeatProductionStats
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
             rectBg2.sizeDelta = new Vector2(Mathf.Max(bgWidth, rectBg2.sizeDelta.x), bgHeight);
+            rectBg2.localPosition = new Vector3(0, 0);
 
             var rectBg = statsPanelBackground.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
+            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
 
             statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
             statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
 
-            float dy = rectBg.sizeDelta.y / 2 + padding;
+            float dy = rectBg.sizeDelta.y / 2 - padding;
             for (int i = statsPanelOffset; i < allRows.Count && i < statsPanelOffset + maxLines; i++)
             {
                 var row = allRows[i];
 
                 float y = dy - iconSize / 2;
 
-                float dx = rectBg.sizeDelta.x / 2 + padding;
+                float dx = - rectBg.sizeDelta.x / 2 + padding;
 
                 SetLocalPosition(row.gIcon, dx + iconSize / 2, y);
 
-                dx += iconSize;
+                dx += iconSize + padding;
 
                 SetLocalPosition(row.gName, dx + GetPreferredWidth(row.gName) / 2, y);
 
-                dx += maxNameWidth;
+                dx += maxNameWidth + padding;
 
                 SetLocalPosition(row.gProduction, dx + maxProductionWidth - GetPreferredWidth(row.gProduction) / 2, y);
 
-                dx += maxProductionWidth;
+                dx += maxProductionWidth + padding;
 
                 SetLocalPosition(row.gConsumption, dx + maxConsumptionWidth - GetPreferredWidth(row.gConsumption) / 2, y);
 
-                dy -= iconSize - padding;
+                dy -= iconSize + padding;
             }
         }
 
@@ -370,18 +394,34 @@ namespace FeatProductionStats
             out List<CurrentStack> __state)
         {
             var stacks = __instance.GetStacks(coords);
-
+            var recipe = __instance.GetRecipe(coords);
             var save = new List<CurrentStack>();
 
-            foreach (var stack in stacks.stacks)
+            if (stacks != null && recipe != null)
             {
-                save.Add(new CurrentStack { codeName = stack.item.codeName, amount = stack.nb });
+                int outputIndexStart = stacks.stacks.Length - recipe.outputs.Count;
+
+                logger.LogInfo("Factory at " + coords + " (" + recipe.inputs.Count + ", " + recipe.outputs.Count + ")");
+
+                for (int i = 0; i < stacks.stacks.Length; i++)
+                {
+                    CStack stack = stacks.stacks[i];
+                    var cn = stack.item != null ? stack.item.codeName : null;
+                    var nb = stack.nb;
+                    if (!__instance.producesOutputContainers && i >= outputIndexStart)
+                    {
+                        nb = stack.item != null ? stack.item.nbOwned : 0;
+                    }
+                    var cs = new CurrentStack { codeName = cn, amount = nb };
+                    save.Add(cs);
+                    logger.LogInfo("  Before: CurrentStack " + cn + " = " + nb + " " + (__instance.producesOutputContainers ? "Local" : "Global"));
+                }
             }
 
             __state = save;
         }
 
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
         static void CItem_ContentFactory_Update01s_Post(
             CItem_ContentFactory __instance,
@@ -390,23 +430,44 @@ namespace FeatProductionStats
         {
             var stacks = __instance.GetStacks(coords);
             var recipe = __instance.GetRecipe(coords);
-            int numInputs = recipe.inputs.Count;
-
-            for (int i = 0; i < stacks.stacks.Length; i++)
+            if (stacks != null && recipe != null)
             {
-                CStack stack = stacks.stacks[i];
+                int outputIndexStart = stacks.stacks.Length - recipe.outputs.Count;
 
-                var curr = __state[i];
-                var diff = curr.amount - stack.nb;
-                if (diff != 0)
+                for (int i = 0; i < stacks.stacks.Length; i++)
                 {
-                    if (i < numInputs)
+                    CStack stack = stacks.stacks[i];
+                    var curr = __state[i];
+
+                    if (curr.codeName == null)
                     {
-                        AddForToday(curr.codeName, -diff, consumptionSamples);
+                        if (stack.item != null)
+                        {
+                            curr.codeName = stack.item.codeName;
+                        }
                     }
-                    else
+                    var nb = stack.nb;
+                    if (!__instance.producesOutputContainers && i >= outputIndexStart)
                     {
-                        AddForToday(curr.codeName, diff, productionSamples);
+                        nb = stack.item != null ? stack.item.nbOwned : 0;
+                    }
+
+                    logger.LogInfo("  After: CurrentStack " + curr.codeName + " = " + nb + " <- " + curr.amount + " " + (__instance.producesOutputContainers ? "Local" : "Global"));
+
+                    if (curr.codeName != null)
+                    {
+                        var diff = curr.amount - nb;
+                        if (diff != 0)
+                        {
+                            if (i < outputIndexStart)
+                            {
+                                AddForToday(curr.codeName, -diff, consumptionSamples);
+                            }
+                            else
+                            {
+                                AddForToday(curr.codeName, diff, productionSamples);
+                            }
+                        }
                     }
                 }
             }
@@ -421,10 +482,11 @@ namespace FeatProductionStats
         {
             var stack = __instance.GetStack(coords, 0);
 
-            __state = new CurrentStack { codeName = stack.item.codeName, amount = stack.nb };
+            var cn = stack.item != null ? stack.item.codeName : null;
+            __state = new CurrentStack { codeName = cn, amount = stack.nb };
         }
 
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update01s))]
         static void CItem_ContentExtractor_Update01s_Post(
             CItem_ContentFactory __instance,
@@ -435,7 +497,14 @@ namespace FeatProductionStats
             var diff = __state.amount - stack.nb;
             if (diff != 0)
             {
-                AddForToday(__state.codeName, diff, productionSamples);
+                if (__state.codeName == null)
+                {
+                    __state.codeName = stack.item != null ? stack.item.codeName : null;
+                }
+                if (__state.codeName != null)
+                {
+                    AddForToday(__state.codeName, -diff, productionSamples);
+                }
             }
         }
 
@@ -450,6 +519,7 @@ namespace FeatProductionStats
             }
             daily.TryGetValue(codeName, out var n);
             daily[codeName] = n + amount;
+            //logger.LogInfo("Item " + codeName + " = " + (n + amount) + " @ " + today);
         }
 
         static void CleanupOldestDays(Dictionary<int, Dictionary<string, int>> data, int today)
@@ -563,7 +633,7 @@ namespace FeatProductionStats
             var txt = textGo.AddComponent<Text>();
             txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             txt.fontSize = fontSize.Value;
-            txt.color = Color.white;
+            txt.color = Color.black;
             txt.resizeTextForBestFit = false;
             txt.verticalOverflow = VerticalWrapMode.Overflow;
             txt.horizontalOverflow = HorizontalWrapMode.Overflow;
