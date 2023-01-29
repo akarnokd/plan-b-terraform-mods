@@ -9,22 +9,41 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 :information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
 
-#### Notable file paths
+### Notable file paths
 
-**Game install directory (usually):**
+#### Game install directory
+
+**(depending on your game's install directory)**
 
 `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\`
 
-**Save file location:**
+#### Save file location
 
 `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\{yoursteamid}\Saves`
 
 :information_source: where `{yoursteamid}` is a bunch of numbers representing your Steam Account ID.
 
-**Game log location:**
+#### Game log location
 
 `%USERPROFILE%\AppData\LocalLow\Gaddy Games\Plan B Terraform\Player.log`
 
+#### BepInEx log location
+
+**(depending on your game's install directory)**
+
+`c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\BepInEx\LogOutput.log`
+
+#### Plugin directory
+
+**(depending on your game's install directory)**
+
+`c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\BepInEx\plugins`
+
+#### Plugin config directory
+
+**(depending on your game's install directory)**
+
+`c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\BepInEx\config`
 
 ## Installation
 
