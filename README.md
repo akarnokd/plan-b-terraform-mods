@@ -726,7 +726,7 @@ use the **factory icon button** (default bottom-left of the screen).
 
 The building state is persisted in your save.
 
-:information_source: The save format is not changed by the mod and remains compatible with the vanilla save, meaing that removing the mod won't break it.
+:information_source: The save format is not changed by the mod and remains compatible with the vanilla save, meaning that removing the mod won't break it.
 
 :information_source: Note that the location and size of the **factory icon button** is not adapting to screen resolution by itself so please use the configuration settings to adjust its position and size.
 
@@ -775,6 +775,10 @@ PanelLeft = 150
 Add a button to the top left of the screen that when clicked, shows a panel of current production and consumption statistics.
 
 The panel can be toggled via <kbd>F3</kbd> (configurable too).
+
+The statistics is persisted in your save.
+
+:information_source: The save format is not changed by the mod and remains compatible with the vanilla save, meaning that removing the mod won't break it.
 
 :information_source: Note that the graphics does not adapt to the current screen resolution. Please adjust the font, button and panel sizes via configuration.
 
