@@ -33,6 +33,8 @@ namespace FeatDisableBuilding
         static Sprite buildingEnabled;
         static Sprite buildingDisabled;
 
+        static Color defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
+
         private void Awake()
         {
             // Plugin startup logic
@@ -70,6 +72,8 @@ namespace FeatDisableBuilding
 
                 EnsurePanel();
 
+                bool isOverPanel = false;
+
                 if (selCoords.Positive && selBuilding != null)
                 {
                     if (selBuilding is CItem_ContentFactory 
@@ -78,7 +82,7 @@ namespace FeatDisableBuilding
                         || selBuilding is CItem_ContentPumpingStation
                         || selBuilding is CItem_ContentIceExtractor)
                     {
-                        bool isOverPanel = disablePanel.activeSelf && Within(disableBackground2.GetComponent<RectTransform>(), GetMouseCanvasPos());
+                       isOverPanel = disablePanel.activeSelf && Within(disableBackground2.GetComponent<RectTransform>(), GetMouseCanvasPos());
                         if (IsKeyDown(toggleKey.Value)
                             || (isOverPanel && Input.GetKeyDown(KeyCode.Mouse0)))
                         {
@@ -99,7 +103,7 @@ namespace FeatDisableBuilding
                     }
                 }
 
-                UpdatePanel(selCoords);
+                UpdatePanel(selCoords, isOverPanel);
             }
             else
             {
@@ -137,7 +141,6 @@ namespace FeatDisableBuilding
                 disableBackground.transform.SetParent(disableBackground2.transform);
 
                 img = disableBackground.AddComponent<Image>();
-                var defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
                 img.color = defaultPanelLightColor;
 
                 disableIcon = new GameObject("FeatDisableBuilding_Icon");
@@ -148,7 +151,7 @@ namespace FeatDisableBuilding
             }
         }
 
-        static void UpdatePanel(int2 selCoords)
+        static void UpdatePanel(int2 selCoords, bool isOverPanel)
         {
             if (selCoords.Negative)
             {
@@ -175,6 +178,16 @@ namespace FeatDisableBuilding
             {
                 disableIcon.GetComponent<Image>().sprite = buildingEnabled;
             }
+
+            if (isOverPanel)
+            {
+                disableBackground.GetComponent<Image>().color = Color.yellow;
+            }
+            else
+            {
+                disableBackground.GetComponent<Image>().color = defaultPanelLightColor;
+            }
+
             disablePanel.SetActive(true);
         }
 
