@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>FeatNavigateToPOI</AssemblyName>
-    <Description>(Feat) Navigate To a Point of Interest</Description>
-    <Version>1.0.0.1</Version>
+    <AssemblyName>FeatDisableBuilding</AssemblyName>
+    <Description>(Feat) Disable Building</Description>
+    <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -41,10 +41,18 @@
 
   <Target Name="CopyDLLs" AfterTargets="Build">
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
-
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
-	  <ZipDirectory
+
+    <Copy SourceFiles="$(SourceDir)Building_Enabled.png" DestinationFolder="$(Destination1)" />
+    <Copy SourceFiles="$(SourceDir)Building_Enabled.png" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
+    <Copy SourceFiles="$(SourceDir)Building_Enabled.png" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
+
+    <Copy SourceFiles="$(SourceDir)Building_Disabled.png" DestinationFolder="$(Destination1)" />
+    <Copy SourceFiles="$(SourceDir)Building_Disabled.png" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
+    <Copy SourceFiles="$(SourceDir)Building_Disabled.png" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
+
+    <ZipDirectory
             SourceDirectory="$(TargetDir)\$(AssemblyName)"
             DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip"
             Overwrite="true" />

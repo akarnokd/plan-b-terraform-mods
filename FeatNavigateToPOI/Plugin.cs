@@ -122,15 +122,19 @@ namespace FeatNavigateToPOI
 
             foreach (var lm in GGame.dicoLandmarks)
             {
-                // verify the landmark actually exists, the dicoLandmarks is not deleted when the landmark is demolished
-                var cd = SSingleton<SWorld>.Inst.GetContent(lm.Key) as CItem_ContentLandmark;
-                if (cd != null)
+                // wastly negative keys are used for mod persistence
+                if (lm.Key.Positive)
                 {
-                    pois.Add(new PoiInfo
+                    // verify the landmark actually exists, the dicoLandmarks is not deleted when the landmark is demolished
+                    var cd = SSingleton<SWorld>.Inst.GetContent(lm.Key) as CItem_ContentLandmark;
+                    if (cd != null)
                     {
-                        coords = lm.Key,
-                        name = lm.Value
-                    });
+                        pois.Add(new PoiInfo
+                        {
+                            coords = lm.Key,
+                            name = lm.Value
+                        });
+                    }
                 }
             }
 
@@ -326,6 +330,19 @@ namespace FeatNavigateToPOI
 
             return true;
         }
+
+        // Prevent click-through the panel
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
+        static void SMouse_IsCursorOnGround(ref bool __result)
+        {
+            if (poiPanel != null && poiPanel.activeSelf
+                && Within(poiPanelBackground2.GetComponent<RectTransform>(), GetMouseCanvasPos()))
+            {
+                __result = false;
+            }
+        }
+
 
         static bool Within(RectTransform parent, RectTransform rt, Vector2 vec)
         {

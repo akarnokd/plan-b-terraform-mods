@@ -238,6 +238,18 @@ namespace FeatGotoExhaustedExtractors
             return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
         }
 
+        // Prevent click-through the panel
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
+        static void SMouse_IsCursorOnGround(ref bool __result)
+        {
+            if (idlePanel != null && idlePanel.activeSelf
+                && Within(idlePanelBackground2.GetComponent<RectTransform>(), GetMouseCanvasPos()))
+            {
+                __result = false;
+            }
+        }
+
         static void ShowCoords(int2 coords)
         {
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords, false);
