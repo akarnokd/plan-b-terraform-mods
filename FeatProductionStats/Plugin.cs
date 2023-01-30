@@ -60,6 +60,7 @@ namespace FeatProductionStats
 
         static List<StatsRow> statsRowsCache = new();
         static StatsRow statsPanelHeaderRow;
+        static GameObject statsPanelEmpty;
 
         private void Awake()
         {
@@ -112,6 +113,7 @@ namespace FeatProductionStats
                     statsPanelBackground = null;
                     statsPanelBackground2 = null;
                     statsPanelHeaderRow = null;
+                    statsPanelEmpty = null;
                 }
             }
         }
@@ -224,6 +226,8 @@ namespace FeatProductionStats
                 statsPanelHeaderRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "");
                 statsPanelHeaderRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "");
                 statsPanelHeaderRow.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Ratio", "");
+
+                statsPanelEmpty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>");
             }
 
             if (!statsPanel.activeSelf)
@@ -422,14 +426,15 @@ namespace FeatProductionStats
 
             if (allRows.Count == 0)
             {
-                var empty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>");
-                maxNameWidth = GetPreferredWidth(empty);
-                SetLocalPosition(empty, 0, 0);
+                maxNameWidth = GetPreferredWidth(statsPanelEmpty);
+                SetLocalPosition(statsPanelEmpty, 0, 0);
+                statsPanelEmpty.SetActive(true);
                 statsPanelHeaderRow.SetActive(false);
             }
             else
             {
                 allRows.Insert(statsPanelOffset, statsPanelHeaderRow);
+                statsPanelEmpty.SetActive(false);
                 statsPanelHeaderRow.SetActive(true);
 
                 statsPanelHeaderRow.gName.GetComponent<Text>().text = "<i>Item</i>" + GetSortIndicator(0);
