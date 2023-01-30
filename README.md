@@ -440,9 +440,9 @@ CityCountAdd = 0
 
 ### More Ore Fields
 
-Adjust the ore field generation logic by changing the field frequency and size range of the ore fields via configuration.
+Adjust the ore field generation logic by changing the field frequency and size range of the ore fields in the **New Planet** dialog (or via configuration file).
 
-The numbers can be adjusted globally and/or per ore type:
+The numbers can be adjusted globally and/or per ore type (this latter only via config file for now):
 
 - `GenerationPeriodAdd` - the game generates fields proportional to the number of all hexes, thus to increase the frequency of fields, set this number to negative.
 - `MinHexesAdd` - increase the minimum number of hexes per ore field.

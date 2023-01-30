@@ -4,7 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatMoreOreFields</AssemblyName>
     <Description>(Feat) More Ore Fields</Description>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -27,6 +27,16 @@
       <HintPath>$(GameManaged)\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+	  <Reference Include="UnityEngine.UI">
+		  <SpecificVersion>False</SpecificVersion>
+		  <HintPath>$(GameManaged)unityengine.ui.dll</HintPath>
+		  <Private>False</Private>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputLegacyModule">
+		  <SpecificVersion>False</SpecificVersion>
+		  <HintPath>$(GameManaged)UnityEngine.InputLegacyModule.dll</HintPath>
+		  <Private>False</Private>
+	  </Reference>
   </ItemGroup>
 
   <Target Name="CopyDLLs" AfterTargets="Build">

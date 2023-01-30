@@ -5,6 +5,8 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace FeatMoreOreFields
 {
@@ -113,6 +115,86 @@ namespace FeatMoreOreFields
             internal ConfigEntry<int> minHexesAdd;
             internal ConfigEntry<int> maxHexesAdd;
             internal ConfigEntry<int> mineralMaxAdd;
+        }
+
+        static MapGenerateOption mgPeriod;
+        static MapGenerateOption mgMinHexes;
+        static MapGenerateOption mgMaxHexes;
+        static MapGenerateOption mgMinerals;
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SSceneNewPlanet), "OnActivate")]
+        static void SSceneNewPlanet_OnActivate(SSceneNewPlanet __instance)
+        {
+            if (mgPeriod == null)
+            {
+                var tr = __instance.inputPlanetName.gameObject.transform.parent.parent.parent.parent.parent;
+
+                mgPeriod = new MapGenerateOption(allGenerationPeriodAdd, -1, 0, 100, "Mineral frequency");
+                mgPeriod.InstantiateUI(tr);
+
+                mgMinHexes = new MapGenerateOption(allMinHexesAdd, 1, 0, 100, "Mineral patch size minimum");
+                mgMinHexes.InstantiateUI(tr);
+
+                mgMaxHexes = new MapGenerateOption(allMaxHexesAdd, 1, 0, 100, "Mineral patch size maximum");
+                mgMaxHexes.InstantiateUI(tr);
+
+                mgMinerals = new MapGenerateOption(allMineralMaxAdd, 1, 0, 10000, "Mineral amount maximum");
+                mgMinerals.InstantiateUI(tr);
+            }
+        }
+
+        internal class MapGenerateOption : COptionFloat
+        {
+            readonly ConfigEntry<int> config;
+            readonly float scale;
+            readonly string title;
+            readonly float min;
+            readonly float max;
+
+            internal MapGenerateOption(ConfigEntry<int> config, float scale, float min, float max, string title)
+            {
+                this.config = config;
+                this.scale = scale;
+                this.title = title;
+                this.min = min;
+                this.max = max;
+            }
+
+            protected override float GetSavedValue()
+            {
+                return config.Value / scale;
+            }
+
+            protected override void DoSave()
+            {
+
+            }
+
+            public override void Apply()
+            {
+                config.Value = Mathf.RoundToInt(value * scale);
+            }
+
+            public override void RefreshUI()
+            {
+                _slider.value = value;
+                _textValue.text = Mathf.RoundToInt(value).ToString();
+            }
+
+            public override void InstantiateUI(Transform uiOptionsContainer, bool isInLauncher = false)
+            {
+                var v = config.Value / scale;
+                base.InstantiateUI(uiOptionsContainer, isInLauncher);
+                _slider.minValue = min;
+                _slider.maxValue = max;
+
+                var component = _slider.gameObject.transform.parent.parent.Find("Label").GetComponent<Text>();
+                component.text = title;
+                value = v;
+                _slider.value = value;
+                _textValue.text = Mathf.RoundToInt(value).ToString();
+            }
         }
     }
 }
