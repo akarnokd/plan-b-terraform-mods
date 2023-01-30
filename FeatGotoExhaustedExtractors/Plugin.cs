@@ -90,6 +90,7 @@ namespace FeatGotoExhaustedExtractors
                 idlePanel = new GameObject("FeatGotoIdleExtractors");
                 var canvas = idlePanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 50;
 
                 idlePanelBackground2 = new GameObject("FeatGotoIdleExtractors_BackgroundBorder");
                 idlePanelBackground2.transform.SetParent(idlePanel.transform);

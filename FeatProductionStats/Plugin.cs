@@ -3,9 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Contexts;
@@ -49,6 +47,8 @@ namespace FeatProductionStats
         static GameObject statsPanelScrollDown;
 
         static int statsPanelOffset;
+        static int sortByColumn;
+        static bool sortDesc;
 
         static GameObject statsButton;
         static GameObject statsButtonBackground;
@@ -57,6 +57,9 @@ namespace FeatProductionStats
 
         static Dictionary<int, Dictionary<string, int>> productionSamples = new();
         static Dictionary<int, Dictionary<string, int>> consumptionSamples = new();
+
+        static List<StatsRow> statsRowsCache = new();
+        static StatsRow statsPanelHeaderRow;
 
         private void Awake()
         {
@@ -108,8 +111,17 @@ namespace FeatProductionStats
                     statsPanel = null;
                     statsPanelBackground = null;
                     statsPanelBackground2 = null;
+                    statsPanelHeaderRow = null;
                 }
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SSceneHud), "OnDeactivate")]
+        static void SSceneHud_OnDeactivate()
+        {
+            statsPanel?.SetActive(false);
+            statsRowsCache.Clear();
         }
 
         static void UpdateButton()
@@ -119,6 +131,7 @@ namespace FeatProductionStats
                 statsButton = new GameObject("FeatProductionStatsButton");
                 var canvas = statsButton.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 50;
 
                 statsButtonBackground2 = new GameObject("FeatProductionStatsButton_BackgroundBorder");
                 statsButtonBackground2.transform.SetParent(statsButton.transform);
@@ -174,11 +187,14 @@ namespace FeatProductionStats
 
         static void UpdatePanel()
         {
+            int iconSize = itemSize.Value;
+
             if (statsPanel == null)
             {
                 statsPanel = new GameObject("FeatProductionStatsPanel");
                 var canvas = statsPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 50;
 
                 statsPanelBackground2 = new GameObject("FeatProductionStatsPanel_BackgroundBorder");
                 statsPanelBackground2.transform.SetParent(statsPanel.transform);
@@ -197,11 +213,22 @@ namespace FeatProductionStats
                 statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionStatsPanel_ScrollDown", "\u25BC");
 
                 statsPanel.SetActive(false);
+
+                statsPanelHeaderRow = new StatsRow();
+                statsPanelHeaderRow.gIcon = new GameObject("FeatProductionStatsPanel_HeaderRow_Icon");
+                statsPanelHeaderRow.gIcon.transform.SetParent(statsPanelBackground.transform);
+                statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+                statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+
+                statsPanelHeaderRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "");
+                statsPanelHeaderRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "");
+                statsPanelHeaderRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "");
+                statsPanelHeaderRow.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Ratio", "");
             }
 
-            for (int i = statsPanelBackground.transform.childCount - 1; i >= 0; i--)
+            if (!statsPanel.activeSelf)
             {
-                Destroy(statsPanelBackground.transform.GetChild(i).gameObject);
+                return;
             }
 
             Dictionary<string, StatsRow> statsRowsDict = new();
@@ -260,7 +287,53 @@ namespace FeatProductionStats
             }
 
             List<StatsRow> allRows = new(statsRowsDict.Values);
-            allRows.Sort((a, b) => a.name.CompareTo(b.name));
+            Comparison<StatsRow> comp = null;
+
+            if (sortByColumn == 0)
+            {
+                comp = (a, b) => a.name.CompareTo(b.name);
+            }
+            if (sortByColumn == 1)
+            {
+                comp = (a, b) => a.sumProduction.CompareTo(b.sumProduction);
+            }
+            if (sortByColumn == 2)
+            {
+                comp = (a, b) => a.sumConsumption.CompareTo(b.sumConsumption);
+            }
+            if (sortByColumn == 3)
+            {
+                comp = (a, b) => 
+                { 
+                    if (a.sumConsumption == 0 && b.sumConsumption != 0)
+                    {
+                        return -1;
+                    }
+                    if (a.sumConsumption != 0 && b.sumConsumption == 0)
+                    {
+                        return 1;
+                    }
+                    if (a.sumConsumption == b.sumConsumption)
+                    {
+                        return 0;
+                    }
+                    var f1 = a.sumProduction / (float)a.sumConsumption;
+                    var f2 = b.sumProduction / (float)b.sumConsumption;
+                    return f1.CompareTo(f2);
+                };
+            }
+
+
+            if (comp != null)
+            {
+                if (sortDesc)
+                {
+                    var oldComp = comp;
+                    comp = (a, b) => oldComp(b, a);
+                }
+
+                allRows.Sort(comp);
+            }
 
             var mp = GetMouseCanvasPos();
             if (Within(statsPanelBackground2.GetComponent<RectTransform>(), mp))
@@ -288,14 +361,17 @@ namespace FeatProductionStats
             int maxNameWidth = 0;
             int maxProductionWidth = 0;
             int maxConsumptionWidth = 0;
+            int maxRatioWidth = 0;
             int vPadding = 10;
             int hPadding = 30;
             int border = 5;
-            int iconSize = itemSize.Value;
 
-            for (int i = statsPanelOffset; i < allRows.Count && i < statsPanelOffset + maxLines; i++)
+            while (statsRowsCache.Count < allRows.Count)
             {
-                var row = allRows[i];
+                int i = statsRowsCache.Count;
+
+                var row = new StatsRow();
+                statsRowsCache.Add(row);
 
                 row.gIcon = new GameObject("FeatProductionStatsPanel_Row_" + i + "_Icon");
                 row.gIcon.transform.SetParent(statsPanelBackground.transform);
@@ -304,15 +380,44 @@ namespace FeatProductionStats
                 img.color = row.color;
                 row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>");
+                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "");
                 row.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Production",
                         string.Format("<b>{0:#,##0.000} / day</b>", row.sumProduction / (float)horizon));
-                row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption",
-                        string.Format("<b>{0:#,##0.000} / day</b>", row.sumConsumption / (float)horizon));
+                row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption", "");
+
+                row.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Ratio","");
+            }
+
+            foreach (var sr in statsRowsCache)
+            {
+                sr.SetActive(false);
+            }
+
+            for (int i = 0; i < allRows.Count; i++)
+            {
+                var row = allRows[i];
+                row.Use(statsRowsCache[i]);
+
+                var img = row.gIcon.GetComponent<Image>();
+                img.sprite = row.icon;
+                img.color = row.color;
+                row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+
+                row.gName.GetComponent<Text>().text = "<b>" + row.name + "</b>";
+                row.gProduction.GetComponent<Text>().text = 
+                    string.Format("<b>{0:#,##0.000} / day</b>", row.sumProduction / (float)horizon);
+                row.gConsumption.GetComponent<Text>().text = 
+                    string.Format("<b>{0:#,##0.000} / day</b>", row.sumConsumption / (float)horizon);
+
+                row.gRatio.GetComponent<Text>().text = 
+                    row.sumConsumption > 0 ? (string.Format("<b>{0:#,##0.000}</b>", row.sumProduction / (float)row.sumConsumption)) : "N/A";
 
                 maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(row.gName));
                 maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(row.gProduction));
                 maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(row.gConsumption));
+                maxRatioWidth = Math.Max(maxRatioWidth, GetPreferredWidth(row.gRatio));
+
+                row.SetActive(false);
             }
 
             if (allRows.Count == 0)
@@ -320,31 +425,34 @@ namespace FeatProductionStats
                 var empty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>");
                 maxNameWidth = GetPreferredWidth(empty);
                 SetLocalPosition(empty, 0, 0);
+                statsPanelHeaderRow.SetActive(false);
             }
             else
             {
+                allRows.Insert(statsPanelOffset, statsPanelHeaderRow);
+                statsPanelHeaderRow.SetActive(true);
 
-                var headerRow = new StatsRow();
-                headerRow.gIcon = new GameObject("FeatProductionStatsPanel_HeaderRow_Icon");
-                headerRow.gIcon.transform.SetParent(statsPanelBackground.transform);
-                headerRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
-                headerRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+                statsPanelHeaderRow.gName.GetComponent<Text>().text = "<i>Item</i>" + GetSortIndicator(0);
+                statsPanelHeaderRow.gProduction.GetComponent<Text>().text = "<i>Production speed</i>" + GetSortIndicator(1);
+                statsPanelHeaderRow.gConsumption.GetComponent<Text>().text = "<i>Consumption speed</i>" + GetSortIndicator(2);
+                statsPanelHeaderRow.gRatio.GetComponent<Text>().text = "<i>Ratio</i>" + GetSortIndicator(3);
 
-                headerRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "<i>Item</i>");
-                headerRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "<i>Production speed</i>");
-                headerRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "<i>Consumption speed</i>");
+                ApplyPreferredSize(statsPanelHeaderRow.gName);
+                ApplyPreferredSize(statsPanelHeaderRow.gProduction);
+                ApplyPreferredSize(statsPanelHeaderRow.gConsumption);
+                ApplyPreferredSize(statsPanelHeaderRow.gRatio);
 
-                maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(headerRow.gName));
-                maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(headerRow.gProduction));
-                maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(headerRow.gConsumption));
-
-                allRows.Insert(statsPanelOffset, headerRow);
+                maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(statsPanelHeaderRow.gName));
+                maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(statsPanelHeaderRow.gProduction));
+                maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(statsPanelHeaderRow.gConsumption));
+                maxRatioWidth = Math.Max(maxRatioWidth, GetPreferredWidth(statsPanelHeaderRow.gRatio));
 
                 maxLines++; // header
             }
 
+
             int bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
-            int bgWidth = 2 * border + 2 * vPadding + 3 * hPadding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth;
+            int bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth + maxRatioWidth;
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
             rectBg2.sizeDelta = new Vector2(Mathf.Max(bgWidth, rectBg2.sizeDelta.x), bgHeight);
@@ -379,15 +487,77 @@ namespace FeatProductionStats
 
                 SetLocalPosition(row.gConsumption, dx + maxConsumptionWidth - GetPreferredWidth(row.gConsumption) / 2, y);
 
+                dx += maxConsumptionWidth + hPadding;
+
+                SetLocalPosition(row.gRatio, dx + maxRatioWidth - GetPreferredWidth(row.gRatio) / 2, y);
+
                 dy -= iconSize + vPadding;
+
+                row.SetActive(true);
             }
+
+            if (statsPanelHeaderRow.gName.activeSelf) {
+
+                CheckMouseSort(statsPanelHeaderRow.gName, 0);
+                CheckMouseSort(statsPanelHeaderRow.gProduction, 1);
+                CheckMouseSort(statsPanelHeaderRow.gConsumption, 2);
+                CheckMouseSort(statsPanelHeaderRow.gRatio, 3);
+            }
+        }
+
+        static void CheckMouseSort(GameObject go, int col)
+        {
+            if (Within(statsPanelBackground2.GetComponent<RectTransform>(), go.GetComponent<RectTransform>(), GetMouseCanvasPos()))
+            {
+                go.GetComponent<Text>().color = Color.red;
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    SetSort(col);
+                }
+            }
+            else
+            {
+                go.GetComponent<Text>().color = Color.black;
+            }
+        }
+
+        static void SetSort(int col)
+        {
+            if (sortByColumn != col)
+            {
+                sortDesc = false;
+            }
+            else
+            {
+                sortDesc = !sortDesc;
+            }
+            sortByColumn = col;
+        }
+
+        static string GetSortIndicator(int col)
+        {
+            return col == sortByColumn ? (sortDesc ? " \u2193" : " \u2191") : "";
+        }
+
+        static void ApplyPreferredSize(GameObject go)
+        {
+            var txt = go.GetComponent<Text>();
+            var rect = go.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SGame), nameof(SGame.Load))]
         static void SGame_Load()
         {
-            RestoreState();
+            try
+            {
+                RestoreState();
+            } 
+            catch (Exception e)
+            {
+                logger.LogError(e);
+            }
         }
 
         [HarmonyPrefix]
@@ -524,6 +694,22 @@ namespace FeatProductionStats
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.ProcessCityRecipeIFP))]
+        static void CItem_ContentCityInOut_ProcessCityRecipeIFP_Pre()
+        {
+            // logger.LogInfo("City Update Pre");
+            insideFactoryUpdate = true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.ProcessCityRecipeIFP))]
+        static void CItem_ContentCityInOut_ProcessCityRecipeIFP_Post()
+        {
+            insideFactoryUpdate = false;
+            //logger.LogInfo("City Update Post");
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(CStack), nameof(CStack.AddIFP))]
         static void CStack_AddIFP(ref CStack __instance, int count)
         {
@@ -531,7 +717,14 @@ namespace FeatProductionStats
             // logger.LogInfo(Environment.StackTrace);
             if (insideFactoryUpdate)
             {
-                AddForToday(__instance.item.codeName, 1, productionSamples);
+                if (count > 0)
+                {
+                    AddForToday(__instance.item.codeName, 1, productionSamples);
+                }
+                else
+                {
+                    AddForToday(__instance.item.codeName, 1, consumptionSamples);
+                }
             }
         }
 
@@ -621,6 +814,25 @@ namespace FeatProductionStats
             internal GameObject gName;
             internal GameObject gProduction;
             internal GameObject gConsumption;
+            internal GameObject gRatio;
+
+            internal void SetActive(bool active)
+            {
+                gIcon.SetActive(active);
+                gName.SetActive(active);
+                gProduction.SetActive(active);
+                gConsumption.SetActive(active);
+                gRatio.SetActive(active);
+            }
+
+            internal void Use(StatsRow other)
+            {
+                gIcon = other.gIcon;
+                gName = other.gName;
+                gProduction = other.gProduction;
+                gConsumption = other.gConsumption;
+                gRatio = other.gRatio;
+            }
         }
 
 
@@ -641,6 +853,15 @@ namespace FeatProductionStats
         {
             var x = rt.localPosition.x - rt.sizeDelta.x / 2;
             var y = rt.localPosition.y - rt.sizeDelta.y / 2;
+            var x2 = x + rt.sizeDelta.x;
+            var y2 = y + rt.sizeDelta.y;
+            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
+        }
+
+        static bool Within(RectTransform parent, RectTransform rt, Vector2 vec)
+        {
+            var x = parent.localPosition.x + rt.localPosition.x - rt.sizeDelta.x / 2;
+            var y = parent.localPosition.y + rt.localPosition.y - rt.sizeDelta.y / 2;
             var x2 = x + rt.sizeDelta.x;
             var y2 = y + rt.sizeDelta.y;
             return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;

@@ -130,6 +130,7 @@ namespace FeatDisableBuilding
                 disablePanel = new GameObject("FeatDisableBuilding");
                 var canvas = disablePanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 50;
 
                 disableBackground2 = new GameObject("FeatDisableBuilding_BackgroundBorder");
                 disableBackground2.transform.SetParent(disablePanel.transform);

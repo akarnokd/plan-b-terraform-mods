@@ -80,6 +80,7 @@ namespace FeatNavigateToPOI
                 poiPanel = new GameObject("FeatNavigateToPOI");
                 var canvas = poiPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 50;
 
                 poiPanelBackground2 = new GameObject("FeatNavigateToPOI_BackgroundBorder");
                 poiPanelBackground2.transform.SetParent(poiPanel.transform);
