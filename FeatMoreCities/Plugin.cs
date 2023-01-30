@@ -2,9 +2,12 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using HarmonyLib.Tools;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace FeatMoreCities
 {
@@ -13,6 +16,8 @@ namespace FeatMoreCities
     {
 
         static ConfigEntry<int> cityCount;
+
+        static CityCounterOption cityCounterOption;
 
         private void Awake()
         {
@@ -60,6 +65,57 @@ namespace FeatMoreCities
             {
                 city.name = "New " + cityNames[j];
                 j++;
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SSceneNewPlanet), "OnActivate")]
+        static void SSceneNewPlanet_OnActivate(SSceneNewPlanet __instance)
+        {
+            if (cityCounterOption == null)
+            {
+                var tr = __instance.inputPlanetName.gameObject.transform.parent.parent.parent.parent.parent;
+
+                cityCounterOption = new CityCounterOption();
+                cityCounterOption.InstantiateUI(tr, false);
+            }
+        }
+
+        internal class CityCounterOption : COptionFloat
+        {
+            protected override float GetSavedValue()
+            {
+                return cityCount.Value;
+            }
+
+            protected override void DoSave()
+            {
+                
+            }
+
+            public override void Apply()
+            {
+                cityCount.Value = Mathf.RoundToInt(value);
+            }
+
+            public override void RefreshUI()
+            {
+                _slider.value = value;
+                _textValue.text = Mathf.RoundToInt(value).ToString();
+            }
+
+            public override void InstantiateUI(Transform uiOptionsContainer, bool isInLauncher = false)
+            {
+                var v = cityCount.Value;
+                base.InstantiateUI(uiOptionsContainer, isInLauncher);
+                _slider.minValue = 0;
+                _slider.maxValue = 20;
+
+                var component = _slider.gameObject.transform.parent.parent.Find("Label").GetComponent<Text>();
+                component.text = "Number of additional cities";
+                value = v;
+                _slider.value = value;
+                _textValue.text = Mathf.RoundToInt(value).ToString();
             }
         }
     }

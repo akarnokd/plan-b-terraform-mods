@@ -425,7 +425,7 @@ Not relevant for end users; contains an option to dump languages to see the diff
 
 Generate more cities for a new game.
 
-The game currently defaults to 3 cities per planet. This mod increases the number of cities generated additively via configuration option. I.e., `CityCountAdd = 2` will generate 5 cities total.
+The game currently defaults to 3 cities per planet. This mod adds a slider to the **New Planet** screen where you can set the number of additional cities to be generated. For example, if set to *2*, the game will have 5 cities total.
 
 #### Configuration
 
