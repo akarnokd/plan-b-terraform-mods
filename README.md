@@ -5,7 +5,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 [![Github All Releases](https://img.shields.io/github/downloads/akarnokd/plan-b-terraform-mods/total.svg)](https://github.com/akarnokd/plan-b-terraform-mods/releases)
 
-## Supported version: Demo (0.6.0-610), Beta (0.6.1-619)
+## Supported version: Demo (0.6.0-619), Beta (0.6.1-621)
 
 :information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
 
