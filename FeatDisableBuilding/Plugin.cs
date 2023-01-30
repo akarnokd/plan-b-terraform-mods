@@ -28,12 +28,21 @@ namespace FeatDisableBuilding
 
         static readonly int2 dicoCoordinates = new int2 { x = -1_000_100_000, y = 0 };
 
+        static readonly Dictionary<int2, GameObject> overlayIcons = new();
+
         static ManualLogSource logger;
 
         static Sprite buildingEnabled;
         static Sprite buildingDisabled;
+        static Sprite buildingDisabledOverlay;
 
         static Color defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
+
+        static GameObject disablePanel;
+        static GameObject disablePanelOverlay;
+        static GameObject disableBackground;
+        static GameObject disableBackground2;
+        static GameObject disableIcon;
 
         private void Awake()
         {
@@ -58,7 +67,16 @@ namespace FeatDisableBuilding
             var disabledPng = LoadPNG(Path.Combine(dir, "Building_Disabled.png"));
             buildingDisabled = Sprite.Create(disabledPng, new Rect(0, 0, disabledPng.width, disabledPng.height), new Vector2(0.5f, 0.5f));
 
+            var disabledOverlayPng = LoadPNG(Path.Combine(dir, "Building_Disabled_Overlay.png"));
+            buildingDisabledOverlay = Sprite.Create(disabledOverlayPng, new Rect(0, 0, disabledOverlayPng.width, disabledOverlayPng.height), new Vector2(0.5f, 0.5f));
+
             Harmony.CreateAndPatchAll(typeof(Plugin));
+        }
+
+        void Update()
+        {
+            // lags otherwise?
+            UpdateOverlay();
         }
 
         [HarmonyPrefix]
@@ -111,17 +129,13 @@ namespace FeatDisableBuilding
                 {
                     Destroy(disablePanel);
                     disablePanel = null;
+                    disablePanelOverlay = null;
                     disableBackground = null;
                     disableBackground2 = null;
                     disableIcon = null;
                 }
             }
         }
-
-        static GameObject disablePanel;
-        static GameObject disableBackground;
-        static GameObject disableBackground2;
-        static GameObject disableIcon;
 
         static void EnsurePanel()
         {
@@ -131,6 +145,9 @@ namespace FeatDisableBuilding
                 var canvas = disablePanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 50;
+
+                disablePanelOverlay = new GameObject("FeatDisableBuilding_Overlay");
+                disablePanelOverlay.transform.SetParent(disablePanel.transform);
 
                 disableBackground2 = new GameObject("FeatDisableBuilding_BackgroundBorder");
                 disableBackground2.transform.SetParent(disablePanel.transform);
@@ -156,40 +173,94 @@ namespace FeatDisableBuilding
         {
             if (selCoords.Negative)
             {
-                disablePanel?.SetActive(false);
-                return;
-            }
-            var padding = 5;
-
-            var rectBg2 = disableBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(panelSize.Value + 4 * padding, panelSize.Value + 4 * padding);
-            rectBg2.localPosition = new Vector3(-Screen.width / 2 + panelLeft.Value + rectBg2.sizeDelta.x / 2, -Screen.height / 2 + panelBottom.Value + rectBg2.sizeDelta.y / 2);
-
-            var rectBg = disableBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);   
-
-            var rectIcn = disableIcon.GetComponent<RectTransform>();
-            rectIcn.sizeDelta = new Vector2(panelSize.Value, panelSize.Value);
-
-            if (disabledLocations.Contains(selCoords))
-            {
-                disableIcon.GetComponent<Image>().sprite = buildingDisabled;
+                disableBackground2?.SetActive(false);
             }
             else
             {
-                disableIcon.GetComponent<Image>().sprite = buildingEnabled;
-            }
+                var padding = 5;
 
-            if (isOverPanel)
-            {
-                disableBackground.GetComponent<Image>().color = Color.yellow;
-            }
-            else
-            {
-                disableBackground.GetComponent<Image>().color = defaultPanelLightColor;
-            }
+                var rectBg2 = disableBackground2.GetComponent<RectTransform>();
+                rectBg2.sizeDelta = new Vector2(panelSize.Value + 4 * padding, panelSize.Value + 4 * padding);
+                rectBg2.localPosition = new Vector3(-Screen.width / 2 + panelLeft.Value + rectBg2.sizeDelta.x / 2, -Screen.height / 2 + panelBottom.Value + rectBg2.sizeDelta.y / 2);
 
-            disablePanel.SetActive(true);
+                var rectBg = disableBackground.GetComponent<RectTransform>();
+                rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
+
+                var rectIcn = disableIcon.GetComponent<RectTransform>();
+                rectIcn.sizeDelta = new Vector2(panelSize.Value, panelSize.Value);
+
+                if (disabledLocations.Contains(selCoords))
+                {
+                    disableIcon.GetComponent<Image>().sprite = buildingDisabled;
+                }
+                else
+                {
+                    disableIcon.GetComponent<Image>().sprite = buildingEnabled;
+                }
+
+                if (isOverPanel)
+                {
+                    disableBackground.GetComponent<Image>().color = Color.yellow;
+                }
+                else
+                {
+                    disableBackground.GetComponent<Image>().color = defaultPanelLightColor;
+                }
+
+                disableBackground2.SetActive(true);
+            }
+        }
+
+        static void UpdateOverlay()
+        {
+            if (disablePanelOverlay != null)
+            {
+                foreach (var coords in disabledLocations)
+                {
+                    if (!overlayIcons.TryGetValue(coords, out var icon) || icon == null)
+                    {
+                        icon = new GameObject("Disabled_At_" + coords.x + "_" + coords.y);
+                        icon.transform.SetParent(disablePanelOverlay.transform, false);
+
+                        var img = icon.AddComponent<Image>();
+                        img.sprite = buildingDisabledOverlay;
+                        img.color = Color.white;
+
+                        overlayIcons[coords] = icon;
+                    }
+                    var rect = icon.GetComponent<RectTransform>();
+
+                    var pos3D = GHexes.Pos(coords);
+
+                    var posCanvas = Camera.main.WorldToScreenPoint(pos3D);
+
+                    var pos3DNeighbor = pos3D;
+                    if (coords.x > 0)
+                    {
+                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x - 1, y = coords.y });
+                    }
+                    else
+                    {
+                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x + 1, y = coords.y });
+                    }
+
+                    var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
+
+                    float scaler = Vector2.Distance(posCanvas, posCanvasNeighbor);
+
+                    rect.localPosition = new Vector2(posCanvas.x, posCanvas.y);
+                    rect.sizeDelta = new Vector2(scaler, scaler);
+                }
+
+                foreach (var coords in new List<int2>(overlayIcons.Keys))
+                {
+                    if (!disabledLocations.Contains(coords))
+                    {
+                        Destroy(overlayIcons[coords]);
+                        overlayIcons.Remove(coords);
+                    }
+                }
+            }
         }
 
         [HarmonyPostfix]

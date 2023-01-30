@@ -721,8 +721,7 @@ Key = Period
 
 Enable and disable production buildings via a on-screen button or keyboard shortcut.
 
-Toggle enable/disable with <kbd>K</kbd> (configurable) when a building is selected or
-use the **factory icon button** (default bottom-left of the screen).
+Toggle enable/disable with <kbd>K</kbd> (configurable) when a building is selected or use the **factory icon button** (default bottom-left of the screen). Disabled buildings will show a red crossed out circle over the buildings on the main screen.
 
 The building state is persisted in your save.
 

@@ -4,7 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatDisableBuilding</AssemblyName>
     <Description>(Feat) Disable Building</Description>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.0.2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -52,7 +52,11 @@
     <Copy SourceFiles="$(SourceDir)Building_Disabled.png" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
     <Copy SourceFiles="$(SourceDir)Building_Disabled.png" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
 
-    <ZipDirectory
+	  <Copy SourceFiles="$(SourceDir)Building_Disabled_Overlay.png" DestinationFolder="$(Destination1)" />
+	  <Copy SourceFiles="$(SourceDir)Building_Disabled_Overlay.png" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
+	  <Copy SourceFiles="$(SourceDir)Building_Disabled_Overlay.png" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
+
+	  <ZipDirectory
             SourceDirectory="$(TargetDir)\$(AssemblyName)"
             DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip"
             Overwrite="true" />
