@@ -442,10 +442,10 @@ namespace FeatProductionStats
                 statsPanelEmpty.SetActive(false);
                 statsPanelHeaderRow.SetActive(true);
 
-                statsPanelHeaderRow.gName.GetComponent<Text>().text = "<i>Item</i>" + GetSortIndicator(0);
-                statsPanelHeaderRow.gProduction.GetComponent<Text>().text = "<i>Production speed</i>" + GetSortIndicator(1);
-                statsPanelHeaderRow.gConsumption.GetComponent<Text>().text = "<i>Consumption speed</i>" + GetSortIndicator(2);
-                statsPanelHeaderRow.gRatio.GetComponent<Text>().text = "<i>Ratio</i>" + GetSortIndicator(3);
+                statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.Item") + GetSortIndicator(0);
+                statsPanelHeaderRow.gProduction.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.ProductionSpeed") + GetSortIndicator(1);
+                statsPanelHeaderRow.gConsumption.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.ConsumptionSpeed") + GetSortIndicator(2);
+                statsPanelHeaderRow.gRatio.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.Ratio") + GetSortIndicator(3);
 
                 ApplyPreferredSize(statsPanelHeaderRow.gName);
                 ApplyPreferredSize(statsPanelHeaderRow.gProduction);
@@ -883,13 +883,21 @@ namespace FeatProductionStats
             LibCommon.Translation.UpdateTranslations("English", new()
             {
                 { "FeatProductionStats.Tooltip", "Toggle Statistics" },
-                { "FeatProductionStats.TooltipDetails", "Toggle the Production and Consumption Statistics panel.\nHotkey: {0}.\n\n<i>FeatProductionStats mod</i>" }
+                { "FeatProductionStats.TooltipDetails", "Toggle the Production and Consumption Statistics panel.\nHotkey: {0}.\n\n<i>FeatProductionStats mod</i>" },
+                { "FeatProductionStats.Item", "<i>Item</i>" },
+                { "FeatProductionStats.ProductionSpeed", "<i>Production Speed</i>" },
+                { "FeatProductionStats.ConsumptionSpeed", "<i>Consumption Speed</i>" },
+                { "FeatProductionStats.Ratio", "<i>Ratio</i>" },
             });
 
             LibCommon.Translation.UpdateTranslations("Hungarian", new()
             {
                 { "FeatProductionStats.Tooltip", "Statisztikák mutatása" },
-                { "FeatProductionStats.TooltipDetails", "A gyártási és fogyasztási statisztikák képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionStats mod</i>" }
+                { "FeatProductionStats.TooltipDetails", "A gyártási és fogyasztási statisztikák képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionStats mod</i>" },
+                { "FeatProductionStats.Item", "<i>Név</i>" },
+                { "FeatProductionStats.ProductionSpeed", "<i>Gyártási sebesség</i>" },
+                { "FeatProductionStats.ConsumptionSpeed", "<i>Fogyasztási sebesség</i>" },
+                { "FeatProductionStats.Ratio", "<i>Arány</i>" },
             });
         }
     }

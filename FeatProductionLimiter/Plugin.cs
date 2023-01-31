@@ -451,8 +451,8 @@ namespace FeatProductionLimiter
                 statsPanelEmpty.SetActive(false);
                 statsPanelHeaderRow.SetActive(true);
 
-                statsPanelHeaderRow.gName.GetComponent<Text>().text = "<i>Item</i>" + GetSortIndicator(0);
-                statsPanelHeaderRow.gAmount.GetComponent<Text>().text = "<i>Amount</i>" + GetSortIndicator(1);
+                statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
+                statsPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(1);
 
                 ApplyPreferredSize(statsPanelHeaderRow.gName);
                 ApplyPreferredSize(statsPanelHeaderRow.gAmount);
@@ -737,13 +737,17 @@ namespace FeatProductionLimiter
             LibCommon.Translation.UpdateTranslations("English", new()
             {
                 { "FeatProductionLimiter.Tooltip", "Toggle Limiter Settings" },
-                { "FeatProductionLimiter.TooltipDetails", "Toggle the Production Limiter settings panel.\nHotkey: {0}.\n\n<i>FeatProductionLimiter mod</i>" }
+                { "FeatProductionLimiter.TooltipDetails", "Toggle the Production Limiter settings panel.\nHotkey: {0}.\n\n<i>FeatProductionLimiter mod</i>" },
+                { "FeatProductionLimiter.Item", "<i>Item</i>" },
+                { "FeatProductionLimiter.Amount", "<i>Limit (pcs)</i>" },
             });
 
             LibCommon.Translation.UpdateTranslations("Hungarian", new()
             {
                 { "FeatProductionLimiter.Tooltip", "Gyártási korlátok beállítása" },
-                { "FeatProductionLimiter.TooltipDetails", "A gyártási korlátok képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionLimiter mod</i>" }
+                { "FeatProductionLimiter.TooltipDetails", "A gyártási korlátok képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionLimiter mod</i>" },
+                { "FeatProductionLimiter.Item", "<i>Név</i>" },
+                { "FeatProductionLimiter.Amount", "<i>Korlát (db)</i>" },
             });
         }
 

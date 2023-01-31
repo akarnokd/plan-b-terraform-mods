@@ -9,6 +9,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static LibCommon.GUITools;
 
 namespace FeatNavigateToPOI
 {
@@ -199,11 +200,11 @@ namespace FeatNavigateToPOI
                 if (poi.city != null)
                 {
                     var statusTxt = SLoc.Get(CItem_ContentCity.statusCity[poi.city.GetStatus()]);
-                    title = poi.name + " (City of " + ((int)poi.city.population) + "; " + statusTxt + ")";
+                    title = SLoc.Get("FeatNavigateToPOI.City", poi.name, (int)poi.city.population, statusTxt);
                 }
                 else
                 {
-                    title = poi.name + " (Landmark)";
+                    title = SLoc.Get("FeatNavigateToPOI.Landmark", poi.name);
                 }
                 txt.text = "<b>" + title + "</b>";
 
@@ -298,18 +299,6 @@ namespace FeatNavigateToPOI
             return box;
         }
 
-        static bool IsKeyDown(KeyCode keyCode)
-        {
-            GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
-                && Input.GetKeyDown(keyCode);
-        }
-
-        static Vector2 GetMouseCanvasPos()
-        {
-            var mousePos = Input.mousePosition;
-            return new Vector2(-Screen.width / 2 + mousePos.x, -Screen.height / 2 + mousePos.y);
-        }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.Update))]
@@ -344,25 +333,6 @@ namespace FeatNavigateToPOI
             }
         }
 
-
-        static bool Within(RectTransform parent, RectTransform rt, Vector2 vec)
-        {
-            var x = parent.localPosition.x + rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = parent.localPosition.y + rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static bool Within(RectTransform rt, Vector2 vec)
-        {
-            var x = rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
         static void ShowCoords(int2 coords)
         {
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords, false);
@@ -374,6 +344,22 @@ namespace FeatNavigateToPOI
             internal int2 coords;
             internal string name;
             internal CCity city;
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
+        static void SLoc_Load()
+        {
+            LibCommon.Translation.UpdateTranslations("English", new()
+            {
+                { "FeatNavigateToPOI.Landmark", "{0} (Landmark)" },
+                { "FeatNavigateToPOI.City", "{0} (City of {1}; {2})" }
+            });
+
+            LibCommon.Translation.UpdateTranslations("Hungarian", new()
+            {
+                { "FeatNavigateToPOI.Landmark", "{0} (Torony)" },
+                { "FeatNavigateToPOI.City", "{0} (Város {1} fővel; {2})" }
+            });
         }
     }
 }
