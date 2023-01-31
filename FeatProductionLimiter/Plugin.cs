@@ -10,10 +10,12 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static LibCommon.GUITools;
 
 namespace FeatProductionLimiter
 {
     [BepInPlugin("akarnokd.planbterraformmods.featproductionlimiter", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -63,10 +65,6 @@ namespace FeatProductionLimiter
         static ManualLogSource logger;
 
         static Sprite icon;
-
-        static Color defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
-        static Color defaultBoxColor = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
-        static Color defaultBoxColorLight = new Color(161f / 255, 165f / 255, 245f / 255, 1f);
 
         static Dictionary<string, CItem> items = new();
 
@@ -198,7 +196,7 @@ namespace FeatProductionLimiter
                 limiterButtonBackground.transform.SetParent(limiterButtonBackground2.transform);
 
                 img = limiterButtonBackground.AddComponent<Image>();
-                img.color = defaultPanelLightColor;
+                img.color = DEFAULT_PANEL_COLOR;
 
                 limiterButtonIcon = new GameObject("FeatProductionLimiterButton_Icon");
                 limiterButtonIcon.transform.SetParent(limiterButtonBackground.transform);
@@ -209,8 +207,8 @@ namespace FeatProductionLimiter
 
                 limiterButtonBackground2.AddComponent<GraphicRaycaster>();
                 var tt = limiterButtonBackground2.AddComponent<CTooltipTarget>();
-                tt.text = "Toggle Limiter Settings";
-                tt.textDesc = "Toggle the Production Limiter settings panel.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatProductionLimiter mod</i>";
+                tt.text = SLoc.Get("FeatProductionLimiter.Tooltip");
+                tt.textDesc = SLoc.Get("FeatProductionLimiter.TooltipDetails", toggleKey.Value);
             }
 
             var padding = 5;
@@ -241,7 +239,7 @@ namespace FeatProductionLimiter
             }
             else
             {
-                limiterButtonBackground.GetComponent<Image>().color = defaultPanelLightColor;
+                limiterButtonBackground.GetComponent<Image>().color = DEFAULT_PANEL_COLOR;
             }
         }
 
@@ -266,11 +264,11 @@ namespace FeatProductionLimiter
                 limiterPanelBackground.transform.SetParent(statsPanelBackground2.transform);
 
                 img = limiterPanelBackground.AddComponent<Image>();
-                img.color = defaultPanelLightColor;
+                img.color = DEFAULT_PANEL_COLOR;
 
-                statsPanelScrollUp = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollUp", "\u25B2");
+                statsPanelScrollUp = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollDown", "\u25BC");
+                statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                 limiterPanel.SetActive(false);
 
@@ -280,18 +278,18 @@ namespace FeatProductionLimiter
                 statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
                 statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                statsPanelHeaderRow.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Name", "");
-                statsPanelHeaderRow.gZero = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Zero", "");
-                statsPanelHeaderRow.gMinus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus100", "");
-                statsPanelHeaderRow.gMinus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus10", "");
-                statsPanelHeaderRow.gMinus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus1", "");
-                statsPanelHeaderRow.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Amount", "");
-                statsPanelHeaderRow.gPlus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus1", "");
-                statsPanelHeaderRow.gPlus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus10", "");
-                statsPanelHeaderRow.gPlus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus100", "");
-                statsPanelHeaderRow.gUnlimited = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Unlimited", "");
+                statsPanelHeaderRow.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gZero = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gMinus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus100", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gMinus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus10", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gMinus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus1", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Amount", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gPlus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus1", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gPlus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus10", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gPlus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus100", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gUnlimited = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Unlimited", "", fontSize.Value, Color.black);
 
-                statsPanelEmpty = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_NoRows", "<b>No products available</b>");
+                statsPanelEmpty = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_NoRows", "<b>No products available</b>", fontSize.Value, Color.black);
 
                 limiterRowsCache.Clear();
                 int i = 0;
@@ -312,21 +310,21 @@ namespace FeatProductionLimiter
                     img.color = row.item.colorItem;
                     row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                    row.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>");
+                    row.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>", fontSize.Value, Color.black);
 
-                    row.gZero = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Zero", "<b> Zero </b>");
+                    row.gZero = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Zero", "<b> Zero </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                    row.gMinus100 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus100", "<b> -100 </b>");
-                    row.gMinus10 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus10", "<b> -10 </b>");
-                    row.gMinus1 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus1", "<b> -1 </b>");
+                    row.gMinus100 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus100", "<b> -100 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                    row.gMinus10 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus10", "<b> -10 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                    row.gMinus1 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus1", "<b> -1 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                    row.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Amount", "");
+                    row.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Amount", "", fontSize.Value, Color.black);
 
-                    row.gPlus1 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus1", "<b> +1 </b>");
-                    row.gPlus10 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus10", "<b> +10 </b>");
-                    row.gPlus100 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus100", "<b> +100 </b>");
+                    row.gPlus1 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus1", "<b> +1 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                    row.gPlus10 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus10", "<b> +10 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                    row.gPlus100 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Plus100", "<b> +100 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                    row.gUnlimited = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Unlimited", "<b> ∞ </b>");
+                    row.gUnlimited = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Unlimited", "<b> ∞ </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                     i++;
                 }
@@ -605,7 +603,7 @@ namespace FeatProductionLimiter
             var img = button.GetComponent<Image>();
             if (Within(rectBg2, button.GetComponent<RectTransform>(), mp))
             {
-                img.color = defaultBoxColorLight;
+                img.color = DEFAULT_BOX_COLOR_HOVER;
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     onPress();
@@ -613,7 +611,7 @@ namespace FeatProductionLimiter
             }
             else
             {
-                img.color = defaultBoxColor;
+                img.color = DEFAULT_BOX_COLOR;
             }
         }
 
@@ -714,107 +712,6 @@ namespace FeatProductionLimiter
             }
         }
 
-
-        static bool IsKeyDown(KeyCode keyCode)
-        {
-            GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
-                && Input.GetKeyDown(keyCode);
-        }
-
-        static Vector2 GetMouseCanvasPos()
-        {
-            var mousePos = Input.mousePosition;
-            return new Vector2(-Screen.width / 2 + mousePos.x, -Screen.height / 2 + mousePos.y);
-        }
-
-        static bool Within(RectTransform rt, Vector2 vec)
-        {
-            var x = rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static bool Within(RectTransform parent, RectTransform rt, Vector2 vec)
-        {
-            var x = parent.localPosition.x + rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = parent.localPosition.y + rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static Texture2D LoadPNG(string filename)
-        {
-            Texture2D tex = new Texture2D(100, 200);
-            tex.LoadImage(File.ReadAllBytes(filename));
-
-            return tex;
-        }
-
-        static GameObject CreateBox(GameObject parent, string name, string text)
-        {
-            var box = new GameObject(name);
-            box.transform.SetParent(parent.transform);
-            var img = box.AddComponent<Image>();
-            img.color = defaultBoxColor;
-
-            var textGo = new GameObject(name + "_Text");
-            textGo.transform.SetParent(box.transform);
-
-            var txt = textGo.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            txt.fontSize = fontSize.Value;
-            txt.color = Color.white;
-            txt.resizeTextForBestFit = false;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.alignment = TextAnchor.MiddleCenter;
-            txt.text = text;
-
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
-
-            var rectbox = box.GetComponent<RectTransform>();
-            rectbox.sizeDelta = new Vector2(rect.sizeDelta.x + 4, rect.sizeDelta.y + 4);
-
-            return box;
-        }
-
-        static int GetPreferredWidth(GameObject go)
-        {
-            return Mathf.CeilToInt(go.GetComponentInChildren<Text>().preferredWidth);
-        }
-
-        static void SetLocalPosition(GameObject go, float x, float y)
-        {
-            var rect = go.GetComponent<RectTransform>();
-            rect.localPosition = new Vector2(x, y);
-        }
-
-        static GameObject CreateText(GameObject parent, string name, string text)
-        {
-            var textGo = new GameObject(name + "_Text");
-            textGo.transform.SetParent(parent.transform);
-
-            var txt = textGo.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            txt.fontSize = fontSize.Value;
-            txt.color = Color.black;
-            txt.resizeTextForBestFit = false;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.alignment = TextAnchor.MiddleCenter;
-            txt.text = text;
-
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
-
-            return textGo;
-        }
-
         // Prevent click-through the panel
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
@@ -832,5 +729,24 @@ namespace FeatProductionLimiter
                 __result = false;
             }
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
+        static void SLoc_Load()
+        {
+            LibCommon.Translation.UpdateTranslations("English", new()
+            {
+                { "FeatProductionLimiter.Tooltip", "Toggle Limiter Settings" },
+                { "FeatProductionLimiter.TooltipDetails", "Toggle the Production Limiter settings panel.\nHotkey: {0}.\n\n<i>FeatProductionLimiter mod</i>" }
+            });
+
+            LibCommon.Translation.UpdateTranslations("Hungarian", new()
+            {
+                { "FeatProductionLimiter.Tooltip", "Gyártási korlátok beállítása" },
+                { "FeatProductionLimiter.TooltipDetails", "A gyártási korlátok képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionLimiter mod</i>" }
+            });
+        }
+
+
     }
 }

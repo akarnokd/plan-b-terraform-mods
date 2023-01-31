@@ -2,17 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>FeatGotoExhaustedExtractors</AssemblyName>
-    <Description>(Feat) Go to Exhausted Extractors</Description>
-    <Version>1.0.0.3</Version>
+    <AssemblyName>LibCommon</AssemblyName>
+    <Description>(Lib) Common Routines</Description>
+    <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\solution_private.targets" />
-  <ItemGroup>
-    <Compile Include="..\LibCommon\GUITools.cs" Link="GUITools.cs" />
-    <Compile Include="..\LibCommon\Translation.cs" Link="Translation.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
@@ -43,12 +39,16 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Don't deploy, not a standalone mod
   <Target Name="CopyDLLs" AfterTargets="Build">
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
 
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
-	  <ZipDirectory SourceDirectory="$(TargetDir)\$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip" Overwrite="true" />
+	  <ZipDirectory
+            SourceDirectory="$(TargetDir)\$(AssemblyName)"
+            DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip"
+            Overwrite="true" />
   </Target>
-
+  -->
 </Project>

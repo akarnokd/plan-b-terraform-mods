@@ -12,10 +12,12 @@ using System.Web;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static LibCommon.GUITools;
 
 namespace FeatProductionStats
 {
     [BepInPlugin("akarnokd.planbterraformmods.featproductionstats", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -34,8 +36,6 @@ namespace FeatProductionStats
         static ManualLogSource logger;
 
         static Sprite icon;
-
-        static Color defaultPanelLightColor = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
 
         static Dictionary<string, Sprite> itemSprites = new();
         static Dictionary<string, Color> itemColors = new();
@@ -139,13 +139,13 @@ namespace FeatProductionStats
                 statsButtonBackground2.transform.SetParent(statsButton.transform);
 
                 var img = statsButtonBackground2.AddComponent<Image>();
-                img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
+                img.color = DEFAULT_PANEL_BORDER_COLOR;
 
                 statsButtonBackground = new GameObject("FeatProductionStatsButton_Background");
                 statsButtonBackground.transform.SetParent(statsButtonBackground2.transform);
 
                 img = statsButtonBackground.AddComponent<Image>();
-                img.color = defaultPanelLightColor;
+                img.color = DEFAULT_PANEL_COLOR;
 
                 statsButtonIcon = new GameObject("FeatProductionStatsButton_Icon");
                 statsButtonIcon.transform.SetParent(statsButtonBackground.transform);
@@ -156,8 +156,8 @@ namespace FeatProductionStats
 
                 statsButtonBackground2.AddComponent<GraphicRaycaster>();
                 var tt = statsButtonBackground2.AddComponent<CTooltipTarget>();
-                tt.text = "Toggle Statistics";
-                tt.textDesc = "Toggle the Production and Consumption Statistics panel.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatProductionStats mod</i>";
+                tt.text = SLoc.Get("FeatProductionStats.Tooltip");
+                tt.textDesc = SLoc.Get("FeatProductionStats.TooltipDetails", toggleKey.Value);
             }
 
             var padding = 5;
@@ -188,7 +188,7 @@ namespace FeatProductionStats
             }
             else
             {
-                statsButtonBackground.GetComponent<Image>().color = defaultPanelLightColor;
+                statsButtonBackground.GetComponent<Image>().color = DEFAULT_PANEL_COLOR;
             }
         }
 
@@ -207,17 +207,17 @@ namespace FeatProductionStats
                 statsPanelBackground2.transform.SetParent(statsPanel.transform);
 
                 var img = statsPanelBackground2.AddComponent<Image>();
-                img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
+                img.color = DEFAULT_PANEL_BORDER_COLOR;
 
                 statsPanelBackground = new GameObject("FeatProductionStatsPanel_Background");
                 statsPanelBackground.transform.SetParent(statsPanelBackground2.transform);
 
                 img = statsPanelBackground.AddComponent<Image>();
-                img.color = defaultPanelLightColor;
+                img.color = DEFAULT_PANEL_COLOR;
 
-                statsPanelScrollUp = CreateBox(statsPanelBackground2, "FeatProductionStatsPanel_ScrollUp", "\u25B2");
+                statsPanelScrollUp = CreateBox(statsPanelBackground2, "FeatProductionStatsPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionStatsPanel_ScrollDown", "\u25BC");
+                statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionStatsPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                 statsPanel.SetActive(false);
 
@@ -227,12 +227,12 @@ namespace FeatProductionStats
                 statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
                 statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                statsPanelHeaderRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "");
-                statsPanelHeaderRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "");
-                statsPanelHeaderRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "");
-                statsPanelHeaderRow.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Ratio", "");
+                statsPanelHeaderRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Consumption", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Ratio", "", fontSize.Value, Color.black);
 
-                statsPanelEmpty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>");
+                statsPanelEmpty = CreateText(statsPanelBackground, "FeatProductionStatsPanel_NoRows", "<b>No statistics available</b>", fontSize.Value, Color.black);
             }
 
             if (!statsPanel.activeSelf)
@@ -389,12 +389,12 @@ namespace FeatProductionStats
                 img.color = row.color;
                 row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "");
+                row.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Name", "", fontSize.Value, Color.black);
                 row.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Production",
-                        string.Format("<b>{0:#,##0.000} / day</b>", row.sumProduction / (float)horizon));
-                row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption", "");
+                        "", fontSize.Value, Color.black);
+                row.gConsumption = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Consumption", "", fontSize.Value, Color.black);
 
-                row.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Ratio","");
+                row.gRatio = CreateText(statsPanelBackground, "FeatProductionStatsPanel_Row_" + i + "_Ratio","", fontSize.Value, Color.black);
             }
 
             foreach (var sr in statsRowsCache)
@@ -845,107 +845,6 @@ namespace FeatProductionStats
             }
         }
 
-
-        static bool IsKeyDown(KeyCode keyCode)
-        {
-            GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
-                && Input.GetKeyDown(keyCode);
-        }
-
-        static Vector2 GetMouseCanvasPos()
-        {
-            var mousePos = Input.mousePosition;
-            return new Vector2(-Screen.width / 2 + mousePos.x, -Screen.height / 2 + mousePos.y);
-        }
-
-        static bool Within(RectTransform rt, Vector2 vec)
-        {
-            var x = rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static bool Within(RectTransform parent, RectTransform rt, Vector2 vec)
-        {
-            var x = parent.localPosition.x + rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = parent.localPosition.y + rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static Texture2D LoadPNG(string filename)
-        {
-            Texture2D tex = new Texture2D(100, 200);
-            tex.LoadImage(File.ReadAllBytes(filename));
-
-            return tex;
-        }
-
-        static GameObject CreateBox(GameObject parent, string name, string text)
-        {
-            var box = new GameObject(name);
-            box.transform.SetParent(parent.transform);
-            var img = box.AddComponent<Image>();
-            img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
-
-            var textGo = new GameObject(name + "_Text");
-            textGo.transform.SetParent(box.transform);
-
-            var txt = textGo.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            txt.fontSize = fontSize.Value;
-            txt.color = Color.white;
-            txt.resizeTextForBestFit = false;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.alignment = TextAnchor.MiddleCenter;
-            txt.text = text;
-
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
-
-            var rectbox = box.GetComponent<RectTransform>();
-            rectbox.sizeDelta = new Vector2(rect.sizeDelta.x + 4, rect.sizeDelta.y + 4);
-
-            return box;
-        }
-
-        static int GetPreferredWidth(GameObject go)
-        {
-            return Mathf.CeilToInt(go.GetComponent<Text>().preferredWidth);
-        }
-
-        static void SetLocalPosition(GameObject go, float x, float y)
-        {
-            var rect = go.GetComponent<RectTransform>();
-            rect.localPosition = new Vector2(x, y);
-        }
-
-        static GameObject CreateText(GameObject parent, string name, string text)
-        {
-            var textGo = new GameObject(name + "_Text");
-            textGo.transform.SetParent(parent.transform);
-
-            var txt = textGo.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            txt.fontSize = fontSize.Value;
-            txt.color = Color.black;
-            txt.resizeTextForBestFit = false;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.alignment = TextAnchor.MiddleCenter;
-            txt.text = text;
-
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
-
-            return textGo;
-        }
-
         // Prevent click-through the panel
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
@@ -977,5 +876,21 @@ namespace FeatProductionStats
             }
         }
         */
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
+        static void SLoc_Load()
+        {
+            LibCommon.Translation.UpdateTranslations("English", new()
+            {
+                { "FeatProductionStats.Tooltip", "Toggle Statistics" },
+                { "FeatProductionStats.TooltipDetails", "Toggle the Production and Consumption Statistics panel.\nHotkey: {0}.\n\n<i>FeatProductionStats mod</i>" }
+            });
+
+            LibCommon.Translation.UpdateTranslations("Hungarian", new()
+            {
+                { "FeatProductionStats.Tooltip", "Statisztikák mutatása" },
+                { "FeatProductionStats.TooltipDetails", "A gyártási és fogyasztási statisztikák képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionStats mod</i>" }
+            });
+        }
     }
 }

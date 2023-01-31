@@ -10,12 +10,12 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static Command;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
+using static LibCommon.GUITools;
 
 namespace FeatGotoExhaustedExtractors
 {
     [BepInPlugin("akarnokd.planbterraformmods.featgotoexhaustedextractors", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -87,30 +87,30 @@ namespace FeatGotoExhaustedExtractors
 
             if (idlePanel == null)
             {
-                idlePanel = new GameObject("FeatGotoIdleExtractors");
+                idlePanel = new GameObject("FeatGotoExhaustedExtractors");
                 var canvas = idlePanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 50;
 
-                idlePanelBackground2 = new GameObject("FeatGotoIdleExtractors_BackgroundBorder");
+                idlePanelBackground2 = new GameObject("FeatGotoExhaustedExtractors_BackgroundBorder");
                 idlePanelBackground2.transform.SetParent(idlePanel.transform);
 
                 var img = idlePanelBackground2.AddComponent<Image>();
                 img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
 
-                idlePanelBackground = new GameObject("FeatGotoIdleExtractors_Background");
+                idlePanelBackground = new GameObject("FeatGotoExhaustedExtractors_Background");
                 idlePanelBackground.transform.SetParent(idlePanel.transform);
 
                 img = idlePanelBackground.AddComponent<Image>();
                 img.color = defaultPanelLightColor;
 
-                idlePanelIcon = new GameObject("FeatGotoIdleExtractors_Icon");
+                idlePanelIcon = new GameObject("FeatGotoExhaustedExtractors_Icon");
                 idlePanelIcon.transform.SetParent(idlePanelBackground.transform);
 
                 img = idlePanelIcon.AddComponent<Image>();
                 img.color = Color.white;
 
-                idleCount = new GameObject("FeatGotoIdleExtractors_Count");
+                idleCount = new GameObject("FeatGotoExhaustedExtractors_Count");
                 idleCount.transform.SetParent(idlePanelBackground.transform);
 
                 var txt = idleCount.AddComponent<Text>();
@@ -128,8 +128,8 @@ namespace FeatGotoExhaustedExtractors
 
                 idlePanelBackground2.AddComponent<GraphicRaycaster>();
                 var tt = idlePanelBackground2.AddComponent<CTooltipTarget>();
-                tt.text = "View an exhausted Extractor";
-                tt.textDesc = "Click to view a random exhausted Extractor.\nHotkey: [" + keyCode.Value + "].\n\n<i>FeatGotoExhaustedExtractors mod</i>";
+                tt.text = SLoc.Get("FeatGotoExhaustedExtractors.Tooltip");
+                tt.textDesc = SLoc.Get("FeatGotoExhaustedExtractors.TooltipDetails", keyCode.Value);
 
             }
 
@@ -223,28 +223,6 @@ namespace FeatGotoExhaustedExtractors
             extractors.Clear();
         }
 
-        static bool IsKeyDown(KeyCode keyCode)
-        {
-            GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
-                && Input.GetKeyDown(keyCode);
-        }
-
-        static Vector2 GetMouseCanvasPos()
-        {
-            var mousePos = Input.mousePosition;
-            return new Vector2(-Screen.width / 2 + mousePos.x, -Screen.height / 2 + mousePos.y);
-        }
-
-        static bool Within(RectTransform rt, Vector2 vec)
-        {
-            var x = rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
         // Prevent click-through the panel
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
@@ -261,6 +239,23 @@ namespace FeatGotoExhaustedExtractors
         {
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords, false);
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.Play();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
+        static void SLoc_Load()
+        {
+            LibCommon.Translation.UpdateTranslations("English", new()
+            {
+                { "FeatGotoExhaustedExtractors.Tooltip", "View an exhausted Extractor" },
+                { "FeatGotoExhaustedExtractors.TooltipDetails", "Click to view a random exhausted Extractor on the map.\nHotkey: {0}.\n\n<i>FeatGotoExhaustedExtractors mod</i>" }
+            });
+
+            LibCommon.Translation.UpdateTranslations("Hungarian", new()
+            {
+                { "FeatGotoExhaustedExtractors.Tooltip", "Kimerült Kitemelő megtekintése" },
+                { "FeatGotoExhaustedExtractors.TooltipDetails", "Kattints egy kimerült Kitermelő megmutatásához a térképen.\nGyorsbillentyű: {0}.\n\n<i>FeatGotoExhaustedExtractors mod</i>" }
+            });
         }
 
     }

@@ -11,10 +11,12 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static LibCommon.GUITools;
 
 namespace FeatDisableBuilding
 {
     [BepInPlugin("akarnokd.planbterraformmods.featdisablebuilding", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -169,9 +171,8 @@ namespace FeatDisableBuilding
 
                 disableBackground2.AddComponent<GraphicRaycaster>();
                 var tt = disableBackground2.AddComponent<CTooltipTarget>();
-                tt.text = "Enable/Disable building";
-                tt.textDesc = "Enable or disable the currently selected building.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatDisableBuilding mod</i>";
-
+                tt.text = SLoc.Get("FeatDisableBuilding.Tooltip");
+                tt.textDesc = SLoc.Get("FeatDisableBuilding.TooltipDetails", toggleKey.Value);
             }
         }
 
@@ -352,36 +353,6 @@ namespace FeatDisableBuilding
             }
         }
 
-        static bool IsKeyDown(KeyCode keyCode)
-        {
-            GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-            return (currentSelectedGameObject == null || !currentSelectedGameObject.TryGetComponent<InputField>(out _))
-                && Input.GetKeyDown(keyCode);
-        }
-
-        static Vector2 GetMouseCanvasPos()
-        {
-            var mousePos = Input.mousePosition;
-            return new Vector2(-Screen.width / 2 + mousePos.x, -Screen.height / 2 + mousePos.y);
-        }
-
-        static bool Within(RectTransform rt, Vector2 vec)
-        {
-            var x = rt.localPosition.x - rt.sizeDelta.x / 2;
-            var y = rt.localPosition.y - rt.sizeDelta.y / 2;
-            var x2 = x + rt.sizeDelta.x;
-            var y2 = y + rt.sizeDelta.y;
-            return x <= vec.x && vec.x <= x2 && y <= vec.y && vec.y <= y2;
-        }
-
-        static Texture2D LoadPNG(string filename)
-        {
-            Texture2D tex = new Texture2D(100, 200);
-            tex.LoadImage(File.ReadAllBytes(filename));
-
-            return tex;
-        }
-
         // Prevent click-through the panel
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.IsCursorOnGround))]
@@ -393,5 +364,23 @@ namespace FeatDisableBuilding
                 __result = false;
             }
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
+        static void SLoc_Load()
+        {
+            LibCommon.Translation.UpdateTranslations("English", new()
+            {
+                { "FeatDisableBuilding.Tooltip", "Enable/Disable building" },
+                { "FeatDisableBuilding.TooltipDetails", "Enable or disable the currently selected building.\nHotkey: {0}.\n\n<i>FeatDisableBuilding mod</i>" }
+            });
+
+            LibCommon.Translation.UpdateTranslations("Hungarian", new()
+            {
+                { "FeatDisableBuilding.Tooltip", "Épület Be/Ki kapcsolása" },
+                { "FeatDisableBuilding.TooltipDetails", "A kiválasztott épület be vagy kikapcsolása.\nGyorsbillentyű: {0}.\n\n<i>FeatDisableBuilding mod</i>" }
+            });
+        }
+
     }
 }
