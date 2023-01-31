@@ -204,7 +204,8 @@ The default is 500. Currently, the following items are supported:
 
 #### Configuration
 
-<details><summary>`akarnokd.planbterraformmods.featproductionlimiter`</summary>
+<details><summary>akarnokd.planbterraformmods.featproductionlimiter.cfg</summary>
+
 ```
 [General]
 
