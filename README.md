@@ -167,6 +167,8 @@ VehicleSpeedMaxAdd = 0
 
 Limit the production items that go into the global storage.
 
+There is an ingame button to the top-left of the screen ("Limit Prod") that opens up a dialog where each limit can be adjusted ingame. You can hold <kbd>SHIFT</kbd> to change by **10x** the button's amount and  <kbd>CTRL+SHIFT</kbd> to change by **100x**. (I.e., clicking on the <kbd>+100</kbd> while holding <kbd>CTRL+SHIFT</kbd> will add **10000** to the limit.)
+
 The default is 500. Currently, the following items are supported:
 
 - roadway
