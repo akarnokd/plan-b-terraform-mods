@@ -162,7 +162,7 @@ VehicleSpeedMediumAdd = 0
 # Default value: 0
 VehicleSpeedMaxAdd = 0
 ```
-</summary>
+</details>
 
 ### Production Limiter
 
