@@ -43,15 +43,16 @@ namespace FeatProductionLimiter
                 "cityDam",
                 "forest_pine",
                 "forest_leavesHigh",
-                "forest_leavesMultiple",
-                "forest_cactus",
-                "forest_savannah",
-                "forest_coconut",
+                // "forest_leavesMultiple",
+                // "forest_cactus",
+                // "forest_savannah",
+                // "forest_coconut",
                 "cityIn",
                 "cityOut"
             };
         static Dictionary<string, ConfigEntry<int>> limits = new();
 
+        static ConfigEntry<bool> showAll;
         static ConfigEntry<KeyCode> toggleKey;
         static ConfigEntry<int> fontSize;
         static ConfigEntry<int> itemSize;
@@ -67,10 +68,9 @@ namespace FeatProductionLimiter
         static Color defaultBoxColor = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
         static Color defaultBoxColorLight = new Color(161f / 255, 165f / 255, 245f / 255, 1f);
 
-        static Dictionary<string, Sprite> itemSprites = new();
-        static Dictionary<string, Color> itemColors = new();
+        static Dictionary<string, CItem> items = new();
 
-        static GameObject statsPanel;
+        static GameObject limiterPanel;
         static GameObject limiterPanelBackground;
         static GameObject statsPanelBackground2;
         static GameObject statsPanelScrollUp;
@@ -93,15 +93,17 @@ namespace FeatProductionLimiter
         {
             // Plugin startup logic
             Logger.LogInfo($"Plugin is loaded!");
+            logger = Logger;
 
             modEnabled = Config.Bind("General", "Enabled", true, "Is the mod enabled?");
+            showAll = Config.Bind("General", "ShowAll", false, "Always show all products?");
 
             foreach (var ids in globalProducts)
             {
                 limits.Add(ids, Config.Bind("General", ids, 500, "Limit the production of " + ids));
             }
 
-            toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F3, "Key to press while the building is selected to toggle its enabled/disabled state");
+            toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F4, "Key to toggle the limiter panel");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the panel");
             itemSize = Config.Bind("General", "ItemSize", 32, "The size of the item's icon in the list");
             buttonLeft = Config.Bind("General", "ButtonLeft", 175, "The button's position relative to the left of the screen");
@@ -157,10 +159,10 @@ namespace FeatProductionLimiter
                     statsButtonBackground2 = null;
                     statsButtonIcon = null;
                 }
-                if (statsPanel != null)
+                if (limiterPanel != null)
                 {
-                    Destroy(statsPanel);
-                    statsPanel = null;
+                    Destroy(limiterPanel);
+                    limiterPanel = null;
                     limiterPanelBackground = null;
                     statsPanelBackground2 = null;
                     statsPanelHeaderRow = null;
@@ -173,7 +175,7 @@ namespace FeatProductionLimiter
         [HarmonyPatch(typeof(SSceneHud), "OnDeactivate")]
         static void SSceneHud_OnDeactivate()
         {
-            statsPanel?.SetActive(false);
+            Destroy(limiterPanel);
             limiterRowsCache.Clear();
         }
 
@@ -222,14 +224,14 @@ namespace FeatProductionLimiter
 
             if (IsKeyDown(toggleKey.Value))
             {
-                statsPanel.SetActive(!statsPanel.activeSelf);
+                limiterPanel.SetActive(!limiterPanel.activeSelf);
             }
             if (Within(rectBg2, mp))
             {
                 statsButtonBackground.GetComponent<Image>().color = Color.yellow;
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
-                    statsPanel.SetActive(!statsPanel.activeSelf);
+                    limiterPanel.SetActive(!limiterPanel.activeSelf);
                 }
             }
             else
@@ -242,15 +244,15 @@ namespace FeatProductionLimiter
         {
             int iconSize = itemSize.Value;
 
-            if (statsPanel == null)
+            if (limiterPanel == null)
             {
-                statsPanel = new GameObject("FeatProductionLimiterPanel");
-                var canvas = statsPanel.AddComponent<Canvas>();
+                limiterPanel = new GameObject("FeatProductionLimiterPanel");
+                var canvas = limiterPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 50;
 
                 statsPanelBackground2 = new GameObject("FeatProductionLimiterPanel_BackgroundBorder");
-                statsPanelBackground2.transform.SetParent(statsPanel.transform);
+                statsPanelBackground2.transform.SetParent(limiterPanel.transform);
 
                 var img = statsPanelBackground2.AddComponent<Image>();
                 img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
@@ -265,7 +267,7 @@ namespace FeatProductionLimiter
 
                 statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollDown", "\u25BC");
 
-                statsPanel.SetActive(false);
+                limiterPanel.SetActive(false);
 
                 statsPanelHeaderRow = new LimiterRow();
                 statsPanelHeaderRow.gIcon = new GameObject("FeatProductionLimiterPanel_HeaderRow_Icon");
@@ -286,12 +288,13 @@ namespace FeatProductionLimiter
 
                 statsPanelEmpty = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_NoRows", "<b>No products available</b>");
 
+                limiterRowsCache.Clear();
                 int i = 0;
                 foreach (var codeName in globalProducts)
                 {
                     var row = new LimiterRow();
-                    itemSprites.TryGetValue(codeName, out row.icon);
-                    itemColors.TryGetValue(codeName, out row.color);
+
+                    items.TryGetValue(codeName, out row.item);
                     row.codeName = codeName;
                     row.name = SLoc.Get("ITEM_NAME_" + codeName);
                     limits.TryGetValue(codeName, out row.limitConfig);
@@ -300,8 +303,8 @@ namespace FeatProductionLimiter
                     row.gIcon = new GameObject("FeatProductionLimiterPanel_Row_" + i + "_Icon");
                     row.gIcon.transform.SetParent(limiterPanelBackground.transform);
                     img = row.gIcon.AddComponent<Image>();
-                    img.sprite = row.icon;
-                    img.color = row.color;
+                    img.sprite = row.item.icon.Sprite;
+                    img.color = row.item.colorItem;
                     row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
                     row.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>");
@@ -324,7 +327,7 @@ namespace FeatProductionLimiter
                 }
             }
 
-            if (!statsPanel.activeSelf)
+            if (!limiterPanel.activeSelf)
             {
                 return;
             }
@@ -353,6 +356,8 @@ namespace FeatProductionLimiter
                 MaxOf(ref maxWidths[7], GetPreferredWidth(sr.gPlus10));
                 MaxOf(ref maxWidths[8], GetPreferredWidth(sr.gPlus100));
                 MaxOf(ref maxWidths[9], GetPreferredWidth(sr.gUnlimited));
+
+                sr.SetActive(false);
             }
 
             Comparison<LimiterRow> comp = null;
@@ -385,6 +390,22 @@ namespace FeatProductionLimiter
                 limiterRowsCache.Sort(comp);
             }
 
+            List<LimiterRow> rows = new();
+            rows.AddRange(limiterRowsCache);
+
+            // hide items not unlocked yet
+            if (!showAll.Value)
+            {
+                for (int i = rows.Count - 1; i >= 0; i--)
+                {
+                    var ri = rows[i];
+                    if (!IsUnlocked(ri.item))
+                    {
+                        rows.RemoveAt(i);
+                    }
+                }
+            }
+
             var mp = GetMouseCanvasPos();
             if (Within(statsPanelBackground2.GetComponent<RectTransform>(), mp))
             {
@@ -400,13 +421,13 @@ namespace FeatProductionLimiter
                 }
             }
             var maxLines = maxStatLines.Value;
-            if (statsPanelOffset + maxLines > limiterRowsCache.Count)
+            if (statsPanelOffset + maxLines > rows.Count)
             {
-                statsPanelOffset = Math.Max(0, limiterRowsCache.Count - maxLines);
+                statsPanelOffset = Math.Max(0, rows.Count - maxLines);
             }
 
             statsPanelScrollUp.SetActive(statsPanelOffset > 0);
-            statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < limiterRowsCache.Count);
+            statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < rows.Count);
 
             int maxNameWidth = 0;
             int vPadding = 10;
@@ -414,15 +435,7 @@ namespace FeatProductionLimiter
             int hPaddingSmall = 10;
             int border = 5;
 
-            foreach (var sr in limiterRowsCache)
-            {
-                sr.SetActive(false);
-            }
-
-            List<LimiterRow> rows = new();
-            rows.AddRange(limiterRowsCache);
-
-            if (limiterRowsCache.Count == 0)
+            if (rows.Count == 0)
             {
                 maxNameWidth = GetPreferredWidth(statsPanelEmpty);
                 SetLocalPosition(statsPanelEmpty, 0, 0);
@@ -445,7 +458,6 @@ namespace FeatProductionLimiter
                 MaxOf(ref maxWidths[5], GetPreferredWidth(statsPanelHeaderRow.gAmount));
 
                 maxLines++; // header
-
             }
 
 
@@ -540,6 +552,27 @@ namespace FeatProductionLimiter
             }
         }
 
+        static bool IsUnlocked(CItem item)
+        {
+            if (item.IsItemUnlocked())
+            {
+                return true;
+            }
+
+            // check if item is designated to be unlocked at all?
+            foreach (var ggl in GGame.levels)
+            {
+                foreach (var ul in ggl.unlockItems)
+                {
+                    if (ul == item)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         static Action ChangeLimit(LimiterRow row, int delta, bool shiftable = false)
         {
             if (shiftable)
@@ -629,16 +662,22 @@ namespace FeatProductionLimiter
         [HarmonyPatch(typeof(CItem), nameof(CItem.Init))]
         static void CItem_Init(CItem __instance)
         {
-            itemSprites[__instance.codeName] = __instance.icon.Sprite;
-            itemColors[__instance.codeName] = __instance.colorItem;
+            items[__instance.codeName] = __instance;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SGame), nameof(SGame.Load))]
+        static void SGame_Load()
+        {
+            Destroy(limiterPanel);
+            limiterRowsCache.Clear();
         }
 
         internal class LimiterRow
         {
             internal string codeName;
             internal string name;
-            internal Sprite icon;
-            internal Color color;
+            internal CItem item;
             internal int currentLimit;
             internal ConfigEntry<int> limitConfig;
 
@@ -777,7 +816,7 @@ namespace FeatProductionLimiter
         static void SMouse_IsCursorOnGround(ref bool __result)
         {
             var mp = GetMouseCanvasPos();
-            if (statsPanel != null && statsPanel.activeSelf
+            if (limiterPanel != null && limiterPanel.activeSelf
                 && Within(statsPanelBackground2.GetComponent<RectTransform>(), mp))
             {
                 __result = false;
