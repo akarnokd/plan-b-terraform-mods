@@ -80,10 +80,10 @@ namespace FeatProductionLimiter
         static int sortByColumn;
         static bool sortDesc;
 
-        static GameObject statsButton;
-        static GameObject statsButtonBackground;
-        static GameObject statsButtonBackground2;
-        static GameObject statsButtonIcon;
+        static GameObject limiterButton;
+        static GameObject limiterButtonBackground;
+        static GameObject limiterButtonBackground2;
+        static GameObject limiterButtonIcon;
 
         static List<LimiterRow> limiterRowsCache = new();
         static LimiterRow statsPanelHeaderRow;
@@ -151,13 +151,13 @@ namespace FeatProductionLimiter
             }
             else
             {
-                if (statsButton != null)
+                if (limiterButton != null)
                 {
-                    Destroy(statsButton);
-                    statsButton = null;
-                    statsButtonBackground = null;
-                    statsButtonBackground2 = null;
-                    statsButtonIcon = null;
+                    Destroy(limiterButton);
+                    limiterButton = null;
+                    limiterButtonBackground = null;
+                    limiterButtonBackground2 = null;
+                    limiterButtonIcon = null;
                 }
                 if (limiterPanel != null)
                 {
@@ -181,43 +181,48 @@ namespace FeatProductionLimiter
 
         static void UpdateButton()
         {
-            if (statsButton == null)
+            if (limiterButton == null)
             {
-                statsButton = new GameObject("FeatProductionLimiterButton");
-                var canvas = statsButton.AddComponent<Canvas>();
+                limiterButton = new GameObject("FeatProductionLimiterButton");
+                var canvas = limiterButton.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 52;
 
-                statsButtonBackground2 = new GameObject("FeatProductionLimiterButton_BackgroundBorder");
-                statsButtonBackground2.transform.SetParent(statsButton.transform);
+                limiterButtonBackground2 = new GameObject("FeatProductionLimiterButton_BackgroundBorder");
+                limiterButtonBackground2.transform.SetParent(limiterButton.transform);
 
-                var img = statsButtonBackground2.AddComponent<Image>();
+                var img = limiterButtonBackground2.AddComponent<Image>();
                 img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
 
-                statsButtonBackground = new GameObject("FeatProductionLimiterButton_Background");
-                statsButtonBackground.transform.SetParent(statsButtonBackground2.transform);
+                limiterButtonBackground = new GameObject("FeatProductionLimiterButton_Background");
+                limiterButtonBackground.transform.SetParent(limiterButtonBackground2.transform);
 
-                img = statsButtonBackground.AddComponent<Image>();
+                img = limiterButtonBackground.AddComponent<Image>();
                 img.color = defaultPanelLightColor;
 
-                statsButtonIcon = new GameObject("FeatProductionLimiterButton_Icon");
-                statsButtonIcon.transform.SetParent(statsButtonBackground.transform);
+                limiterButtonIcon = new GameObject("FeatProductionLimiterButton_Icon");
+                limiterButtonIcon.transform.SetParent(limiterButtonBackground.transform);
 
-                img = statsButtonIcon.AddComponent<Image>();
+                img = limiterButtonIcon.AddComponent<Image>();
                 img.color = Color.white;
                 img.sprite = icon;
+
+                limiterButtonBackground2.AddComponent<GraphicRaycaster>();
+                var tt = limiterButtonBackground2.AddComponent<CTooltipTarget>();
+                tt.text = "Toggle Limiter Settings";
+                tt.textDesc = "Toggle the Production Limiter settings panel.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatProductionLimiter mod</i>";
             }
 
             var padding = 5;
 
-            var rectBg2 = statsButtonBackground2.GetComponent<RectTransform>();
+            var rectBg2 = limiterButtonBackground2.GetComponent<RectTransform>();
             rectBg2.sizeDelta = new Vector2(buttonSize.Value + 4 * padding, buttonSize.Value + 4 * padding);
             rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
 
-            var rectBg = statsButtonBackground.GetComponent<RectTransform>();
+            var rectBg = limiterButtonBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
 
-            var rectIcn = statsButtonIcon.GetComponent<RectTransform>();
+            var rectIcn = limiterButtonIcon.GetComponent<RectTransform>();
             rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value);
 
             var mp = GetMouseCanvasPos();
@@ -228,7 +233,7 @@ namespace FeatProductionLimiter
             }
             if (Within(rectBg2, mp))
             {
-                statsButtonBackground.GetComponent<Image>().color = Color.yellow;
+                limiterButtonBackground.GetComponent<Image>().color = Color.yellow;
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     limiterPanel.SetActive(!limiterPanel.activeSelf);
@@ -236,7 +241,7 @@ namespace FeatProductionLimiter
             }
             else
             {
-                statsButtonBackground.GetComponent<Image>().color = defaultPanelLightColor;
+                limiterButtonBackground.GetComponent<Image>().color = defaultPanelLightColor;
             }
         }
 
@@ -821,8 +826,8 @@ namespace FeatProductionLimiter
             {
                 __result = false;
             }
-            if (statsButton != null && statsButton.activeSelf
-                && Within(statsButtonBackground2.GetComponent<RectTransform>(), mp))
+            if (limiterButton != null && limiterButton.activeSelf
+                && Within(limiterButtonBackground2.GetComponent<RectTransform>(), mp))
             {
                 __result = false;
             }

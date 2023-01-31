@@ -125,6 +125,12 @@ namespace FeatGotoExhaustedExtractors
 
                 var rect = idleCount.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
+
+                idlePanelBackground2.AddComponent<GraphicRaycaster>();
+                var tt = idlePanelBackground2.AddComponent<CTooltipTarget>();
+                tt.text = "View an exhausted Extractor";
+                tt.textDesc = "Click to view a random exhausted Extractor.\nHotkey: [" + keyCode.Value + "].\n\n<i>FeatGotoExhaustedExtractors mod</i>";
+
             }
 
             var padding = 5;

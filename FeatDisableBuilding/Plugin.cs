@@ -166,6 +166,12 @@ namespace FeatDisableBuilding
 
                 img = disableIcon.AddComponent<Image>();
                 img.color = Color.white;
+
+                disableBackground2.AddComponent<GraphicRaycaster>();
+                var tt = disableBackground2.AddComponent<CTooltipTarget>();
+                tt.text = "Enable/Disable building";
+                tt.textDesc = "Enable or disable the currently selected building.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatDisableBuilding mod</i>";
+
             }
         }
 

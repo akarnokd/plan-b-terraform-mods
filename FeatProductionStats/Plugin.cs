@@ -153,6 +153,11 @@ namespace FeatProductionStats
                 img = statsButtonIcon.AddComponent<Image>();
                 img.color = Color.white;
                 img.sprite = icon;
+
+                statsButtonBackground2.AddComponent<GraphicRaycaster>();
+                var tt = statsButtonBackground2.AddComponent<CTooltipTarget>();
+                tt.text = "Toggle Statistics";
+                tt.textDesc = "Toggle the Production and Consumption Statistics panel.\nHotkey: [" + toggleKey.Value + "].\n\n<i>FeatProductionStats mod</i>";
             }
 
             var padding = 5;
@@ -958,5 +963,19 @@ namespace FeatProductionStats
                 __result = false;
             }
         }
+
+        /*
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SSceneTooltip), "OnUpdate")]
+        static void SSceneTooltip_OnUpdate()
+        {
+            var hits = SSingleton<SScenesManager>.Inst.GetMouseRaycastResults();
+            logger.LogInfo("SSceneTooltip: " + hits.Count);
+            foreach (var hit in hits)
+            {
+                logger.LogInfo("  " + hit.gameObject.name);
+            }
+        }
+        */
     }
 }
