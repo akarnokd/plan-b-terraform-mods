@@ -90,23 +90,12 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 ### Cheats
 
 - [Build Ice Extractors Anywhere](#build-ice-extractors-anywhere) - allows building Ice Extractors anywhere on the map, not just on ice.
-- [Demo Unlocker](#demo-unlocker) - removes the demo restriction of the game.
 - [Edit Ore Cells](#edit-ore-cells) - Place and remove ores from the surface.
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
 
 
 ## Mod details
-
-### Demo Unlocker
-
-The Steam Demo features an `isDemo` flag. Forcing it to false enables gameplay beyond the first few tech levels and tasks.
-
-Apparently, the demo is the full game with all data and assets?!
-
-#### Configuration
-
-None.
 
 ### Progress Speed
 
