@@ -392,6 +392,7 @@ Enabled = true
 # Default value: 500
 MinResources = 500
 ```
+</details>
 
 ### Add City Names
 
