@@ -95,9 +95,9 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
 
 
-## Mod details
+# Mod details
 
-### Progress Speed
+## Progress Speed
 
 Speed up extractors, factories, drones and vehicles.
 
@@ -164,7 +164,7 @@ VehicleSpeedMaxAdd = 0
 ```
 </details>
 
-### Production Limiter
+## Production Limiter
 
 Limit the production items that go into the global storage.
 
@@ -373,7 +373,7 @@ MaxLines = 16
 ```
 </details>
 
-### Endless Resources
+## Endless Resources
 
 All resource nodes being extracted will have a minimum amount and never run out. Default is minimum 500 units.
 
@@ -394,7 +394,7 @@ MinResources = 500
 ```
 </details>
 
-### Add City Names
+## Add City Names
 
 Customize the selection of city names the game will use to generate the map. The names are randomly picked by the game.
 
@@ -424,7 +424,7 @@ Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Wa
 ```
 </details>
 
-### Hungarian Translation
+## Hungarian Translation
 
 Adds the **Hungarian (Magyar)** language option and translated labels to the game.
 
@@ -434,7 +434,7 @@ Magyar fordítás. Az **Options (Beállítások)** menüben lehet kiválasztani a játék
 
 Not relevant for end users; contains an option to dump languages to see the diffs between versions.
 
-### More Cities
+## More Cities
 
 Generate more cities for a new game.
 
@@ -452,7 +452,7 @@ CityCountAdd = 0
 ```
 </details>
 
-### More Ore Fields
+## More Ore Fields
 
 Adjust the ore field generation logic by changing the field frequency and size range of the ore fields in the **New Planet** dialog (or via configuration file).
 
@@ -592,7 +592,7 @@ MineralMaxAdd = 0
 ```
 </details>
 
-### Edit Ore Cells
+## Edit Ore Cells
 
 Add or remove various ores by clicking on the surface.
 
@@ -623,7 +623,7 @@ AmountChange = 100
 ```
 </details>
 
-### Build Ice Extractors Anywhere
+## Build Ice Extractors Anywhere
 
 Allows building Ice Extractors anywhere on the map, not just on ice.
 
@@ -641,7 +641,7 @@ Enabled = true
 ```
 </details>
 
-### Navigate to Points of Interest
+## Navigate to Points of Interest
 
 Adds a panel on the right side of the screen with cities and landmarks.
 
@@ -688,7 +688,7 @@ TogglePanelKey = L
 ```
 </details>
 
-### Go to exhausted Extractors
+## Go to exhausted Extractors
 
 Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 
@@ -736,7 +736,7 @@ Key = Period
 ```
 </details>
 
-### Disable building
+## Disable building
 
 Enable and disable production buildings via a on-screen button or keyboard shortcut.
 
@@ -789,7 +789,7 @@ PanelLeft = 150
 ```
 </details>
 
-### Production Statistics
+## Production Statistics
 
 Add a button to the top left of the screen that when clicked, shows a panel of current production and consumption statistics.
 
