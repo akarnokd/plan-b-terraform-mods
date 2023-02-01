@@ -867,5 +867,27 @@ You can configure the minimum (50%), maximum (300%) and scaling step (5%).
 <details><summary><code>akarnokd.planbterraformmods.uiliveguiscaler</code></summary>
 
 ```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## The minimum percent for scaling.
+# Setting type: Int32
+# Default value: 50
+MinScale = 50
+
+## The maximum percent for scaling.
+# Setting type: Int32
+# Default value: 300
+MaxScale = 300
+
+## Step percent of scaling when changing it
+# Setting type: Int32
+# Default value: 5
+Step = 5
+
 ```
 </details
