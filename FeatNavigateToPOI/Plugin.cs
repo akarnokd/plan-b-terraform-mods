@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using LibCommon;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,6 +23,7 @@ namespace FeatNavigateToPOI
         static ConfigEntry<int> maxPois;
         static ConfigEntry<int> panelTop;
         static ConfigEntry<KeyCode> keyCode;
+        static ConfigEntry<bool> autoScale;
 
         static ManualLogSource logger;
 
@@ -38,10 +40,12 @@ namespace FeatNavigateToPOI
             maxPois = Config.Bind("General", "MaxLines", 10, "The maximum number of points of interest to show at once (scrollable)");
             panelTop = Config.Bind("General", "PanelTop", 300, "The top position of the panel relative to the top of the screen");
             keyCode = Config.Bind("General", "TogglePanelKey", KeyCode.L, "The key to show/hide the panel");
+            autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
 
             logger = Logger;
 
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+            var h = Harmony.CreateAndPatchAll(typeof(Plugin));
+            GUIScalingSupport.TryEnable(h);
         }
 
         [HarmonyPrefix]
@@ -81,7 +85,7 @@ namespace FeatNavigateToPOI
                 poiPanel = new GameObject("FeatNavigateToPOI");
                 var canvas = poiPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 50;
+                canvas.sortingOrder = 51;
 
                 poiPanelBackground2 = new GameObject("FeatNavigateToPOI_BackgroundBorder");
                 poiPanelBackground2.transform.SetParent(poiPanel.transform);
@@ -95,9 +99,9 @@ namespace FeatNavigateToPOI
                 img = poiPanelBackground.AddComponent<Image>();
                 img.color = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
 
-                poiPanelScrollUp = CreateBox("FeatNavigateToPOI_ScrollUp", "\u25B2");
+                poiPanelScrollUp = CreateBox(poiPanel, "FeatNavigateToPOI_ScrollUp", "\u25B2", fontSize.Value, Color.white, DEFAULT_BOX_COLOR);
 
-                poiPanelScrollDown = CreateBox("FeatNavigateToPOI_ScrollDown", "\u25BC");
+                poiPanelScrollDown = CreateBox(poiPanel, "FeatNavigateToPOI_ScrollDown", "\u25BC", fontSize.Value, Color.white, DEFAULT_BOX_COLOR);
             }
 
             if (IsKeyDown(keyCode.Value))
@@ -147,7 +151,9 @@ namespace FeatNavigateToPOI
                 Destroy(poiPanelBackground.transform.GetChild(i).gameObject);
             }
 
-            float padding = 5;
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
+            float padding = 5 * theScale;
             float border = 5;
             float maxWidth = 0;
             float sumHeight = padding;
@@ -189,7 +195,7 @@ namespace FeatNavigateToPOI
 
                 var txt = textGo.AddComponent<Text>();
                 txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                txt.fontSize = fontSize.Value;
+                txt.fontSize = Mathf.RoundToInt(fontSize.Value * theScale);
                 txt.color = textColor;
                 txt.resizeTextForBestFit = false;
                 txt.verticalOverflow = VerticalWrapMode.Overflow;
@@ -226,17 +232,19 @@ namespace FeatNavigateToPOI
 
             var maxWidthWithPad = maxWidth + padding + padding;
 
-            panelRect.localPosition = new Vector2(Screen.width / 2 - maxWidthWithPad / 2 - border, Screen.height / 2 - panelTop.Value - sumHeight / 2);
+            panelRect.localPosition = new Vector2(Screen.width / 2 - maxWidthWithPad / 2 - border * theScale, Screen.height / 2 - panelTop.Value * theScale - sumHeight / 2);
             panelRect.sizeDelta = new Vector2(maxWidthWithPad, sumHeight);
 
             var panelRect2 = poiPanelBackground2.GetComponent<RectTransform>();
             panelRect2.localPosition = panelRect.localPosition;
-            panelRect2.sizeDelta = new Vector2(panelRect.sizeDelta.x + 2 * border, panelRect.sizeDelta.y + 2 * border);
+            panelRect2.sizeDelta = new Vector2(panelRect.sizeDelta.x + 2 * border * theScale, panelRect.sizeDelta.y + 2 * border * theScale);
 
+            ResizeBox(poiPanelScrollUp, fontSize.Value * theScale);
             var scrollTopRect = poiPanelScrollUp.GetComponent<RectTransform>();
             scrollTopRect.localPosition = new Vector2(panelRect.localPosition.x, 
                 panelRect.localPosition.y + sumHeight / 2 + scrollTopRect.sizeDelta.y / 2 - padding / 2);
 
+            ResizeBox(poiPanelScrollDown, fontSize.Value * theScale);
             var scrollBottomRect = poiPanelScrollDown.GetComponent<RectTransform>();
             scrollBottomRect.localPosition = new Vector2(panelRect.localPosition.x, 
                 panelRect.localPosition.y - sumHeight / 2 - scrollTopRect.sizeDelta.y / 2 + padding / 2);
@@ -269,36 +277,6 @@ namespace FeatNavigateToPOI
             }
 
         }
-
-        static GameObject CreateBox(string name, string text)
-        {
-            var box = new GameObject(name);
-            box.transform.SetParent(poiPanel.transform);
-            var img = box.AddComponent<Image>();
-            img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
-
-            var textGo = new GameObject(name + "_Text");
-            textGo.transform.SetParent(box.transform);
-
-            var txt = textGo.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            txt.fontSize = fontSize.Value;
-            txt.color = Color.white;
-            txt.resizeTextForBestFit = false;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.alignment = TextAnchor.MiddleCenter;
-            txt.text = text;
-
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
-
-            var rectbox = box.GetComponent<RectTransform>();
-            rectbox.sizeDelta = new Vector2(rect.sizeDelta.x + 4, rect.sizeDelta.y + 4);
-
-            return box;
-        }
-
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SMouse), nameof(SMouse.Update))]

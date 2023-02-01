@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using LibCommon;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,7 @@ namespace FeatProductionStats
         static ConfigEntry<int> buttonLeft;
         static ConfigEntry<int> buttonSize;
         static ConfigEntry<int> historyLength;
+        static ConfigEntry<bool> autoScale;
 
         static readonly int2 dicoCoordinates1 = new int2 { x = -1_000_100_100, y = 0 };
         static readonly int2 dicoCoordinates2 = new int2 { x = -1_000_100_100, y = 1 };
@@ -77,14 +79,16 @@ namespace FeatProductionStats
             buttonSize = Config.Bind("General", "ButtonSize", 50, "The button's width and height");
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
             historyLength = Config.Bind("General", "HistoryLength", 300, "How many days to keep as past production data?");
+            autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
 
             Assembly me = Assembly.GetExecutingAssembly();
             string dir = Path.GetDirectoryName(me.Location);
 
             var iconPng = LoadPNG(Path.Combine(dir, "Icon.png"));
             icon = Sprite.Create(iconPng, new Rect(0, 0, iconPng.width, iconPng.height), new Vector2(0.5f, 0.5f));
-            
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+
+            var h = Harmony.CreateAndPatchAll(typeof(Plugin));
+            GUIScalingSupport.TryEnable(h);
         }
 
         [HarmonyPrefix]
@@ -160,17 +164,19 @@ namespace FeatProductionStats
                 tt.textDesc = SLoc.Get("FeatProductionStats.TooltipDetails", toggleKey.Value);
             }
 
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
             var padding = 5;
 
             var rectBg2 = statsButtonBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(buttonSize.Value + 4 * padding, buttonSize.Value + 4 * padding);
-            rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
+            rectBg2.sizeDelta = new Vector2(buttonSize.Value + 4 * padding, buttonSize.Value + 4 * padding) * theScale;
+            rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value * theScale + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
 
             var rectBg = statsButtonBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
 
             var rectIcn = statsButtonIcon.GetComponent<RectTransform>();
-            rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value);
+            rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value) * theScale;
 
             var mp = GetMouseCanvasPos();
 
@@ -194,14 +200,12 @@ namespace FeatProductionStats
 
         static void UpdatePanel()
         {
-            int iconSize = itemSize.Value;
-
             if (statsPanel == null)
             {
                 statsPanel = new GameObject("FeatProductionStatsPanel");
                 var canvas = statsPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 50;
+                canvas.sortingOrder = 53;
 
                 statsPanelBackground2 = new GameObject("FeatProductionStatsPanel_BackgroundBorder");
                 statsPanelBackground2.transform.SetParent(statsPanel.transform);
@@ -225,7 +229,7 @@ namespace FeatProductionStats
                 statsPanelHeaderRow.gIcon = new GameObject("FeatProductionStatsPanel_HeaderRow_Icon");
                 statsPanelHeaderRow.gIcon.transform.SetParent(statsPanelBackground.transform);
                 statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
-                statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+                statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
 
                 statsPanelHeaderRow.gName = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
                 statsPanelHeaderRow.gProduction = CreateText(statsPanelBackground, "FeatProductionStatsPanel_HeaderRow_Production", "", fontSize.Value, Color.black);
@@ -324,11 +328,16 @@ namespace FeatProductionStats
                     }
                     if (a.sumConsumption == b.sumConsumption)
                     {
-                        return 0;
+                        return a.name.CompareTo(b.name);
                     }
                     var f1 = a.sumProduction / (float)a.sumConsumption;
                     var f2 = b.sumProduction / (float)b.sumConsumption;
-                    return f1.CompareTo(f2);
+                    var c = f1.CompareTo(f2);
+                    if (c == 0)
+                    {
+                        c = a.name.CompareTo(b.name);
+                    }
+                    return c;
                 };
             }
 
@@ -358,7 +367,29 @@ namespace FeatProductionStats
                     statsPanelOffset = statsPanelOffset + 1;
                 }
             }
+
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
+            int maxNameWidth = 0;
+            int maxProductionWidth = 0;
+            int maxConsumptionWidth = 0;
+            int maxRatioWidth = 0;
+            var vPadding = 10 * theScale;
+            var hPadding = 30 * theScale;
+            int border = 5;
+            var iconSize = itemSize.Value * theScale;
+
             var maxLines = maxStatLines.Value;
+
+            // adjust max lines depending on the available screen space
+            var maxScreenSpace = Screen.height - 200 * theScale;
+            var rowHeightAvg = iconSize + vPadding;
+            var canShowLines = Math.Max(1, Mathf.FloorToInt(maxScreenSpace / rowHeightAvg));
+            if (maxLines > canShowLines)
+            {
+                maxLines = canShowLines;
+            }
+
             if (statsPanelOffset + maxLines > allRows.Count)
             {
                 statsPanelOffset = Math.Max(0, allRows.Count - maxLines);
@@ -366,14 +397,6 @@ namespace FeatProductionStats
 
             statsPanelScrollUp.SetActive(statsPanelOffset > 0);
             statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < allRows.Count);
-
-            int maxNameWidth = 0;
-            int maxProductionWidth = 0;
-            int maxConsumptionWidth = 0;
-            int maxRatioWidth = 0;
-            int vPadding = 10;
-            int hPadding = 30;
-            int border = 5;
 
             while (statsRowsCache.Count < allRows.Count)
             {
@@ -421,6 +444,11 @@ namespace FeatProductionStats
                 row.gRatio.GetComponent<Text>().text = 
                     row.sumConsumption > 0 ? (string.Format("<b>{0:#,##0.000}</b>", row.sumProduction / (float)row.sumConsumption)) : "N/A";
 
+                ResizeBox(row.gName, fontSize.Value * theScale);
+                ResizeBox(row.gProduction, fontSize.Value * theScale);
+                ResizeBox(row.gConsumption, fontSize.Value * theScale);
+                ResizeBox(row.gRatio, fontSize.Value * theScale);
+
                 maxNameWidth = Math.Max(maxNameWidth, GetPreferredWidth(row.gName));
                 maxProductionWidth = Math.Max(maxProductionWidth, GetPreferredWidth(row.gProduction));
                 maxConsumptionWidth = Math.Max(maxConsumptionWidth, GetPreferredWidth(row.gConsumption));
@@ -431,6 +459,7 @@ namespace FeatProductionStats
 
             if (allRows.Count == 0)
             {
+                ResizeBox(statsPanelEmpty, fontSize.Value * theScale);
                 maxNameWidth = GetPreferredWidth(statsPanelEmpty);
                 SetLocalPosition(statsPanelEmpty, 0, 0);
                 statsPanelEmpty.SetActive(true);
@@ -447,6 +476,11 @@ namespace FeatProductionStats
                 statsPanelHeaderRow.gConsumption.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.ConsumptionSpeed") + GetSortIndicator(2);
                 statsPanelHeaderRow.gRatio.GetComponent<Text>().text = SLoc.Get("FeatProductionStats.Ratio") + GetSortIndicator(3);
 
+                ResizeBox(statsPanelHeaderRow.gName, fontSize.Value * theScale);
+                ResizeBox(statsPanelHeaderRow.gProduction, fontSize.Value * theScale);
+                ResizeBox(statsPanelHeaderRow.gConsumption, fontSize.Value * theScale);
+                ResizeBox(statsPanelHeaderRow.gRatio, fontSize.Value * theScale);
+
                 ApplyPreferredSize(statsPanelHeaderRow.gName);
                 ApplyPreferredSize(statsPanelHeaderRow.gProduction);
                 ApplyPreferredSize(statsPanelHeaderRow.gConsumption);
@@ -461,15 +495,30 @@ namespace FeatProductionStats
             }
 
 
-            int bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
-            int bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth + maxRatioWidth;
+            var bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
+            var bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + iconSize + maxNameWidth + maxProductionWidth + maxConsumptionWidth + maxRatioWidth;
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(Mathf.Max(bgWidth, rectBg2.sizeDelta.x), bgHeight);
-            rectBg2.localPosition = new Vector3(0, 0);
+
+            // do not resize when the bgWidth does small changes
+            var currWidth = rectBg2.sizeDelta.x;
+            if (Math.Abs(currWidth - bgWidth) >= 10)
+            {
+                bgWidth = Mathf.CeilToInt(bgWidth / 10) * 10;
+            }
+            else
+            {
+                bgWidth = currWidth;
+            }
+
+            rectBg2.sizeDelta = new Vector2(bgWidth, bgHeight);
+            rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
 
             var rectBg = statsPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
+
+            ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
+            ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);
 
             statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
             statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);

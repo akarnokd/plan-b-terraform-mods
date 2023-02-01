@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine;
 using System.IO;
+using HarmonyLib;
 
 namespace LibCommon
 {
@@ -127,6 +128,23 @@ namespace LibCommon
         }
 
         /// <summary>
+        /// Changes the font size of the box and readjusts the bounding rectangles' sizes.
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="fontSize"></param>
+        public static void ResizeBox(GameObject box, float fontSize)
+        {
+            var txt = box.GetComponentInChildren<Text>();
+            txt.fontSize = Mathf.RoundToInt(fontSize);
+
+            var rect = txt.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
+
+            var rectbox = box.GetComponent<RectTransform>();
+            rectbox.sizeDelta = new Vector2(rect.sizeDelta.x + 4, rect.sizeDelta.y + 4);
+        }
+
+        /// <summary>
         /// Creates a plain text label.
         /// </summary>
         /// <param name="parent"></param>
@@ -174,6 +192,46 @@ namespace LibCommon
         {
             var rect = go.GetComponent<RectTransform>();
             rect.localPosition = new Vector2(x, y);
+        }
+    }
+
+    /// <summary>
+    /// Track the scaling changes of the UI (if the feature is available).
+    /// </summary>
+    public static class GUIScalingSupport
+    {
+        /// <summary>
+        /// The currently known scale of the game UI
+        /// </summary>
+        public static float currentScale = 1f;
+
+        /// <summary>
+        /// Tries to enable the method patch of SScenesManager::SetUiScaling if that method is available.
+        /// </summary>
+        /// <param name="h">The patcher of the current mod.</param>
+        /// <returns>True if successful, false if the method is missing.</returns>
+        public static bool TryEnable(Harmony h)
+        {
+            currentScale = 1f;
+            var sScenesManagerSetUiScaling = AccessTools.Method(typeof(SScenesManager), "SetUiScaling", new Type[] { typeof(float) });
+            if (sScenesManagerSetUiScaling != null)
+            {
+                var ovr = AccessTools.Method(typeof(GUIScalingSupport), "SScenesManager_SetUiScaling", new Type[] { typeof(float) });
+                if (ovr != null)
+                {
+                    h.Patch(sScenesManagerSetUiScaling, postfix: new HarmonyMethod(ovr));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Enable once the demo gets updated to build 623+
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(SScenesManager), nameof(SScenesManager.SetUiScaling))]
+        internal static void SScenesManager_SetUiScaling(float scale)
+        {
+            currentScale = scale;
         }
     }
 }

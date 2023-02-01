@@ -4,12 +4,13 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatDisableBuilding</AssemblyName>
     <Description>(Feat) Disable Building</Description>
-    <Version>1.0.0.5</Version>
+    <Version>1.0.0.6</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\solution_private.targets" />
   <ItemGroup>
+    <Compile Include="..\LibCommon\GUITools.cs" Link="GUITools.cs" />
     <Compile Include="..\LibCommon\Translation.cs" Link="Translation.cs" />
   </ItemGroup>
 

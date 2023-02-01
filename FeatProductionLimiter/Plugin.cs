@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using LibCommon;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,6 +62,7 @@ namespace FeatProductionLimiter
         static ConfigEntry<int> maxStatLines;
         static ConfigEntry<int> buttonLeft;
         static ConfigEntry<int> buttonSize;
+        static ConfigEntry<bool> autoScale;
 
         static ManualLogSource logger;
 
@@ -107,6 +109,7 @@ namespace FeatProductionLimiter
             buttonLeft = Config.Bind("General", "ButtonLeft", 175, "The button's position relative to the left of the screen");
             buttonSize = Config.Bind("General", "ButtonSize", 50, "The button's width and height");
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
+            autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
 
             Assembly me = Assembly.GetExecutingAssembly();
             string dir = Path.GetDirectoryName(me.Location);
@@ -114,7 +117,8 @@ namespace FeatProductionLimiter
             var iconPng = LoadPNG(Path.Combine(dir, "Icon.png"));
             icon = Sprite.Create(iconPng, new Rect(0, 0, iconPng.width, iconPng.height), new Vector2(0.5f, 0.5f));
 
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+            var h = Harmony.CreateAndPatchAll(typeof(Plugin));
+            GUIScalingSupport.TryEnable(h);
         }
 
 
@@ -211,17 +215,19 @@ namespace FeatProductionLimiter
                 tt.textDesc = SLoc.Get("FeatProductionLimiter.TooltipDetails", toggleKey.Value);
             }
 
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
             var padding = 5;
 
             var rectBg2 = limiterButtonBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(buttonSize.Value + 4 * padding, buttonSize.Value + 4 * padding);
-            rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
+            rectBg2.sizeDelta = new Vector2(buttonSize.Value + 4 * padding, buttonSize.Value + 4 * padding) * theScale;
+            rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value * theScale + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
 
             var rectBg = limiterButtonBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
 
             var rectIcn = limiterButtonIcon.GetComponent<RectTransform>();
-            rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value);
+            rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value) * theScale;
 
             var mp = GetMouseCanvasPos();
 
@@ -245,7 +251,8 @@ namespace FeatProductionLimiter
 
         static void UpdatePanel()
         {
-            int iconSize = itemSize.Value;
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+            var iconSize = itemSize.Value * theScale;
 
             if (limiterPanel == null)
             {
@@ -349,6 +356,17 @@ namespace FeatProductionLimiter
                     sr.gAmount.GetComponent<Text>().text = "N/A";
                 }
 
+                ResizeBox(sr.gName, fontSize.Value * theScale);
+                ResizeBox(sr.gZero, fontSize.Value * theScale);
+                ResizeBox(sr.gMinus100, fontSize.Value * theScale);
+                ResizeBox(sr.gMinus10, fontSize.Value * theScale);
+                ResizeBox(sr.gMinus1, fontSize.Value * theScale);
+                ResizeBox(sr.gAmount, fontSize.Value * theScale);
+                ResizeBox(sr.gPlus1, fontSize.Value * theScale);
+                ResizeBox(sr.gPlus10, fontSize.Value * theScale);
+                ResizeBox(sr.gPlus100, fontSize.Value * theScale);
+                ResizeBox(sr.gUnlimited, fontSize.Value * theScale);
+
                 MaxOf(ref maxWidths[0], GetPreferredWidth(sr.gName));
                 MaxOf(ref maxWidths[1], GetPreferredWidth(sr.gZero));
                 MaxOf(ref maxWidths[2], GetPreferredWidth(sr.gMinus100));
@@ -423,7 +441,23 @@ namespace FeatProductionLimiter
                     statsPanelOffset = statsPanelOffset + 1;
                 }
             }
+            int maxNameWidth = 0;
+            var vPadding = 10 * theScale;
+            var hPadding = 30 * theScale;
+            var hPaddingSmall = 10 * theScale;
+            int border = 5;
+
             var maxLines = maxStatLines.Value;
+
+            // adjust max lines depending on the available screen space
+            var maxScreenSpace = Screen.height - 200 * theScale;
+            var rowHeightAvg = iconSize + vPadding;
+            var canShowLines = Math.Max(1, Mathf.FloorToInt(maxScreenSpace / rowHeightAvg));
+            if (maxLines > canShowLines)
+            {
+                maxLines = canShowLines;
+            }
+
             if (statsPanelOffset + maxLines > rows.Count)
             {
                 statsPanelOffset = Math.Max(0, rows.Count - maxLines);
@@ -432,14 +466,9 @@ namespace FeatProductionLimiter
             statsPanelScrollUp.SetActive(statsPanelOffset > 0);
             statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < rows.Count);
 
-            int maxNameWidth = 0;
-            int vPadding = 10;
-            int hPadding = 30;
-            int hPaddingSmall = 10;
-            int border = 5;
-
             if (rows.Count == 0)
             {
+                ResizeBox(statsPanelEmpty, fontSize.Value * theScale);
                 maxNameWidth = GetPreferredWidth(statsPanelEmpty);
                 SetLocalPosition(statsPanelEmpty, 0, 0);
                 statsPanelEmpty.SetActive(true);
@@ -454,6 +483,9 @@ namespace FeatProductionLimiter
                 statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
                 statsPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(1);
 
+                ResizeBox(statsPanelHeaderRow.gName, fontSize.Value * theScale);
+                ResizeBox(statsPanelHeaderRow.gAmount, fontSize.Value * theScale);
+
                 ApplyPreferredSize(statsPanelHeaderRow.gName);
                 ApplyPreferredSize(statsPanelHeaderRow.gAmount);
 
@@ -464,15 +496,29 @@ namespace FeatProductionLimiter
             }
 
 
-            int bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
-            int bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + 6 * hPaddingSmall + iconSize + maxWidths.Sum();
+            var bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
+            var bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + 6 * hPaddingSmall + iconSize + maxWidths.Sum();
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(Mathf.Max(bgWidth, rectBg2.sizeDelta.x), bgHeight);
-            rectBg2.localPosition = new Vector3(0, 0);
+            // do not resize when the bgWidth does small changes
+            var currWidth = rectBg2.sizeDelta.x;
+            if (Math.Abs(currWidth - bgWidth) >= 10)
+            {
+                bgWidth = Mathf.CeilToInt(bgWidth / 10) * 10;
+            }
+            else
+            {
+                bgWidth = currWidth;
+            }
+
+            rectBg2.sizeDelta = new Vector2(bgWidth, bgHeight);
+            rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
 
             var rectBg = limiterPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
+
+            ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
+            ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);
 
             statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
             statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);

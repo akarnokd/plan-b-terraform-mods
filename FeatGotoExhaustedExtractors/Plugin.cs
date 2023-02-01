@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using LibCommon;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,6 +26,7 @@ namespace FeatGotoExhaustedExtractors
         static ConfigEntry<int> panelLeft;
         static ConfigEntry<int> fontSize;
         static ConfigEntry<KeyCode> keyCode;
+        static ConfigEntry<bool> autoScale;
 
         static ManualLogSource logger;
 
@@ -40,10 +42,12 @@ namespace FeatGotoExhaustedExtractors
             panelLeft = Config.Bind("General", "PanelLeft", 50, "The panel position from the left of the screen");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size");
             keyCode = Config.Bind("General", "Key", KeyCode.Period, "The shortcut key for locating the idle extractor");
+            autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
 
             logger = Logger;
 
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+            var h = Harmony.CreateAndPatchAll(typeof(Plugin));
+            GUIScalingSupport.TryEnable(h);
         }
 
         [HarmonyPrefix]
@@ -135,23 +139,28 @@ namespace FeatGotoExhaustedExtractors
 
             var padding = 5;
 
+            float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
             var countText = idleCount.GetComponent<Text>();
+            countText.fontSize = Mathf.RoundToInt(fontSize.Value * theScale);
+            idleCount.GetComponent<RectTransform>().sizeDelta = new Vector2(countText.preferredWidth, countText.preferredHeight);
 
             var rectBg = idlePanelBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(panelSize.Value + 2 * padding, panelSize.Value + 3 * padding + countText.preferredHeight);
+            rectBg.sizeDelta = new Vector2(panelSize.Value + 2 * padding, panelSize.Value + 3 * padding + countText.preferredHeight) * theScale;
 
             var rectBg2 = idlePanelBackground2.GetComponent<RectTransform>();
-            rectBg2.sizeDelta = new Vector2(panelSize.Value + 4 * padding, panelSize.Value + 5 * padding + countText.preferredHeight);
+            rectBg2.sizeDelta = new Vector2(panelSize.Value + 4 * padding, panelSize.Value + 5 * padding + countText.preferredHeight) * theScale;
 
-            rectBg.localPosition = new Vector3(-Screen.width / 2 + panelLeft.Value + rectBg2.sizeDelta.x / 2, -Screen.height / 2 + panelBottom.Value + rectBg.sizeDelta.y / 2);
+            rectBg.localPosition = new Vector3(-Screen.width / 2 + panelLeft.Value * theScale + rectBg2.sizeDelta.x / 2, 
+                -Screen.height / 2 + panelBottom.Value * theScale + rectBg.sizeDelta.y / 2);
             rectBg2.localPosition = rectBg.localPosition;
 
             var rectIcon = idlePanelIcon.GetComponent<RectTransform>();
-            rectIcon.sizeDelta = new Vector2(panelSize.Value, panelSize.Value);
+            rectIcon.sizeDelta = new Vector2(panelSize.Value * theScale, panelSize.Value * theScale);
             rectIcon.localPosition = new Vector2(0, padding + countText.preferredHeight / 2);
 
             var countRect = idleCount.GetComponent<RectTransform>();
-            countRect.localPosition = new Vector2(0, -panelSize.Value  / 2 - padding);
+            countRect.localPosition = new Vector2(0, -panelSize.Value * theScale / 2 - padding);
 
             var t = (long)Time.realtimeSinceStartup;
             if ((t & 1) == 0)
@@ -185,7 +194,12 @@ namespace FeatGotoExhaustedExtractors
             {
                 idlePanel.SetActive(true);
                 countText.text = "<b>" + exhausted.Count + "</b>";
-                if ((Within(rectBg2, GetMouseCanvasPos()) && Input.GetKeyDown(KeyCode.Mouse0))
+                var isWithin = Within(rectBg2, GetMouseCanvasPos());
+                if (isWithin)
+                {
+                    idlePanelBackground.GetComponent<Image>().color = Color.yellow;
+                }
+                if ((isWithin && Input.GetKeyDown(KeyCode.Mouse0))
                     || IsKeyDown(keyCode.Value))
                 {
                     exhausted.Shuffle();

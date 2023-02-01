@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using LibCommon;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,7 @@ namespace FeatDisableBuilding
         static ConfigEntry<int> panelSize;
         static ConfigEntry<int> panelBottom;
         static ConfigEntry<int> panelLeft;
+        static ConfigEntry<bool> autoScale;
 
         static HashSet<int2> disabledLocations = new HashSet<int2>();
 
@@ -61,7 +63,7 @@ namespace FeatDisableBuilding
             panelSize = Config.Bind("General", "PanelSize", 75, "The panel size");
             panelBottom = Config.Bind("General", "PanelBottom", 35, "The panel position from the bottom of the screen");
             panelLeft = Config.Bind("General", "PanelLeft", 150, "The panel position from the left of the screen");
-
+            autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
 
             Assembly me = Assembly.GetExecutingAssembly();
             string dir = Path.GetDirectoryName(me.Location);
@@ -75,7 +77,8 @@ namespace FeatDisableBuilding
             var disabledOverlayPng = LoadPNG(Path.Combine(dir, "Building_Disabled_Overlay.png"));
             buildingDisabledOverlay = Sprite.Create(disabledOverlayPng, new Rect(0, 0, disabledOverlayPng.width, disabledOverlayPng.height), new Vector2(0.5f, 0.5f));
 
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+            var h = Harmony.CreateAndPatchAll(typeof(Plugin));
+            GUIScalingSupport.TryEnable(h);
         }
 
         void Update()
@@ -197,15 +200,17 @@ namespace FeatDisableBuilding
             {
                 var padding = 5;
 
+                float theScale = autoScale.Value ? GUIScalingSupport.currentScale : 1f;
+
                 var rectBg2 = disableBackground2.GetComponent<RectTransform>();
-                rectBg2.sizeDelta = new Vector2(panelSize.Value + 4 * padding, panelSize.Value + 4 * padding);
-                rectBg2.localPosition = new Vector3(-Screen.width / 2 + panelLeft.Value + rectBg2.sizeDelta.x / 2, -Screen.height / 2 + panelBottom.Value + rectBg2.sizeDelta.y / 2);
+                rectBg2.sizeDelta = new Vector2(theScale * (panelSize.Value + 4 * padding), theScale * (panelSize.Value + 4 * padding));
+                rectBg2.localPosition = new Vector3(-Screen.width / 2 + theScale * panelLeft.Value + rectBg2.sizeDelta.x / 2, -Screen.height / 2 + theScale * panelBottom.Value + rectBg2.sizeDelta.y / 2);
 
                 var rectBg = disableBackground.GetComponent<RectTransform>();
-                rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
+                rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - theScale * 2 * padding, rectBg2.sizeDelta.y - theScale * 2 * padding);
 
                 var rectIcn = disableIcon.GetComponent<RectTransform>();
-                rectIcn.sizeDelta = new Vector2(panelSize.Value, panelSize.Value);
+                rectIcn.sizeDelta = new Vector2(theScale * panelSize.Value, theScale * panelSize.Value);
 
                 if (disabledLocations.Contains(selCoords))
                 {
@@ -392,6 +397,5 @@ namespace FeatDisableBuilding
                 { "FeatDisableBuilding.TooltipDetails", "A kiválasztott épület be vagy kikapcsolása.\nGyorsbillentyű: {0}.\n\n<i>FeatDisableBuilding mod</i>" }
             });
         }
-
     }
 }
