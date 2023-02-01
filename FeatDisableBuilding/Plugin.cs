@@ -46,6 +46,9 @@ namespace FeatDisableBuilding
         static GameObject disableBackground2;
         static GameObject disableIcon;
 
+        static int cachedScreenWidth;
+        static int cachedScreenHeight;
+
         private void Awake()
         {
             // Plugin startup logic
@@ -141,6 +144,11 @@ namespace FeatDisableBuilding
 
         static void EnsurePanel()
         {
+            if (cachedScreenWidth != 0 && cachedScreenHeight != 0 && (cachedScreenWidth != Screen.width || cachedScreenHeight != Screen.height))
+            {
+                Destroy(disablePanel);
+                disablePanel = null;
+            }
             if (disablePanel == null)
             {
                 disablePanel = new GameObject("FeatDisableBuilding");
@@ -173,6 +181,9 @@ namespace FeatDisableBuilding
                 var tt = disableBackground2.AddComponent<CTooltipTarget>();
                 tt.text = SLoc.Get("FeatDisableBuilding.Tooltip");
                 tt.textDesc = SLoc.Get("FeatDisableBuilding.TooltipDetails", toggleKey.Value);
+
+                cachedScreenWidth = Screen.width;
+                cachedScreenHeight = Screen.height;
             }
         }
 
