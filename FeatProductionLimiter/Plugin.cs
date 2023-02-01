@@ -224,7 +224,7 @@ namespace FeatProductionLimiter
             rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value * theScale + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
 
             var rectBg = limiterButtonBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
+            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding * theScale, rectBg2.sizeDelta.y - 2 * padding * theScale);
 
             var rectIcn = limiterButtonIcon.GetComponent<RectTransform>();
             rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value) * theScale;
@@ -259,7 +259,7 @@ namespace FeatProductionLimiter
                 limiterPanel = new GameObject("FeatProductionLimiterPanel");
                 var canvas = limiterPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 50;
+                canvas.sortingOrder = 54;
 
                 statsPanelBackground2 = new GameObject("FeatProductionLimiterPanel_BackgroundBorder");
                 statsPanelBackground2.transform.SetParent(limiterPanel.transform);
@@ -515,7 +515,7 @@ namespace FeatProductionLimiter
             rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
 
             var rectBg = limiterPanelBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
+            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
 
             ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
             ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);

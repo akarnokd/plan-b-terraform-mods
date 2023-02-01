@@ -173,7 +173,7 @@ namespace FeatProductionStats
             rectBg2.localPosition = new Vector3(-Screen.width / 2 + buttonLeft.Value * theScale + rectBg2.sizeDelta.x / 2, Screen.height / 2 - rectBg2.sizeDelta.y / 2);
 
             var rectBg = statsButtonBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding, rectBg2.sizeDelta.y - 2 * padding);
+            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * padding * theScale, rectBg2.sizeDelta.y - 2 * padding * theScale);
 
             var rectIcn = statsButtonIcon.GetComponent<RectTransform>();
             rectIcn.sizeDelta = new Vector2(buttonSize.Value, buttonSize.Value) * theScale;
@@ -205,7 +205,7 @@ namespace FeatProductionStats
                 statsPanel = new GameObject("FeatProductionStatsPanel");
                 var canvas = statsPanel.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 53;
+                canvas.sortingOrder = 55;
 
                 statsPanelBackground2 = new GameObject("FeatProductionStatsPanel_BackgroundBorder");
                 statsPanelBackground2.transform.SetParent(statsPanel.transform);
@@ -515,7 +515,7 @@ namespace FeatProductionStats
             rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
 
             var rectBg = statsPanelBackground.GetComponent<RectTransform>();
-            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border, rectBg2.sizeDelta.y - 2 * border);
+            rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
 
             ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
             ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);
