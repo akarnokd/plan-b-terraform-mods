@@ -888,6 +888,5 @@ MaxScale = 300
 # Setting type: Int32
 # Default value: 5
 Step = 5
-
 ```
 </details
