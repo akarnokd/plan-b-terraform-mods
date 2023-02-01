@@ -83,6 +83,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [More Cities](#more-cities) - Generate more cities for a new game.
 - [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
 - [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [Live GUI Scaler](#live-gui-scaler) - Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
 - [Production Statistics](#production-statistics) - show the production and consumption speed of items
@@ -850,3 +851,21 @@ MaxLines = 16
 HistoryLength = 300
 ```
 </details>
+
+## Live GUI Scaler
+
+:information_source: Requires **game build 623+**, does nothing on older versions due to lack of official scaling support.
+
+Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>.
+
+You can configure the minimum (50%), maximum (300%) and scaling step (5%). 
+
+:information_source: Note that the game's scaling is between 70% to 270% and may jump back into this range when opening the options screen.
+
+#### Configuration
+
+<details><summary><code>akarnokd.planbterraformmods.uiliveguiscaler</code></summary>
+
+```
+```
+</details
