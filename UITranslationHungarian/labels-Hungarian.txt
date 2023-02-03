@@ -162,7 +162,7 @@ CREDITS=KÉSZÍTŐK
 BACK=VISSZA
 SAVE=MENTÉS
 LOAD=BETÖLTÉS
-CONTINUE=FOLYTATÁS {input=quickLoad}
+CONTINUE=FOLYTATÁS {INPUT_quickLoad}
 HELP=SEGÍTSÉG
 OPTIONS=BEÁLLÍTÁSOK
 QUIT=KILÉPÉS
@@ -192,9 +192,9 @@ View_Default=Alapértelmezett nézet
 View_Minerals=Nyersanyag nézet
 View_Water=Víz nézet
 ViewDesc_Water=A vizeket kéken, a nedves területeket zölden jelzi
-Selection_Copy=MÁSOL {input=selectAndCopy}
+Selection_Copy=MÁSOL {INPUT_selectAndCopy}
 Selection_CopyTitle=Másol
-Selection_CopyDescription=Épület tulajdonságainak másolása (új épület építése vagy meglévő fejlesztése/beállítása).\nHasználd a(z) {input=selectAndCopy}, hogy egyszerre építésre jelölj és másolj egy épületet.
+Selection_CopyDescription=Épület tulajdonságainak másolása (új épület építése vagy meglévő fejlesztése/beállítása).\nHasználd a(z) {INPUT_selectAndCopy}, hogy egyszerre építésre jelölj és másolj egy épületet.
 UI_Selection_Mineral_Detail=Nyersanyag mennyiség: {0}
 UI_Selection_ExtractorItem=Kinyert anyag
 UI_Selection_Extractor_Detail=Nyersanyag mennyiség: {0}
@@ -242,8 +242,8 @@ UI_Selection_Line_ChangeStart=Útvonal forráshelyének megváltoztatása.
 UI_Selection_Line_ChangeEnd=Útvonal célhelyének megváltoztatása.
 UI_Selection_Line_LocateStart=Forráshely kiválasztása és mutatása
 UI_Selection_Line_LocateEnd=Célhely kiválasztása és mutatása
-UI_Selection_Line_Add=Egy jármű hozzáadása az útvonalhoz ({input=shift} mellet 10 jármű plusz)
-UI_Selection_Line_Remove=Egy jármű elvétele az útvonalból ({input=shift} mellet 10 jármű minusz)
+UI_Selection_Line_Add=Egy jármű hozzáadása az útvonalhoz ({INPUT_shift} mellet 10 jármű plusz)
+UI_Selection_Line_Remove=Egy jármű elvétele az útvonalból ({INPUT_shift} mellet 10 jármű minusz)
 UI_Selection_Forest_Condition=Állapot: {0}
 UI_Selection_Forest_ConditionOK_Growing=Növekszik
 UI_Selection_Forest_ConditionOK_Healthy=Egészséges
@@ -279,10 +279,11 @@ OBJ_BUILT=Építs egy {0}-t és helyezd a talajra.
 OBJ_BUILT_OVER=Építs egy {0}-t és helyezd {1}-re.
 OBJ_BUILT_NEXT_TO=Építs egy {0}-t és helyezd a talajra {1} mellé.
 OBJ_BUILT_PLURAL=Építs {1} {0}-t és helyezd mind a talajra.
+OBJ_EDIT_DEPOT=Építs egy {0}-t és helyezd a talajra {1} mellé, majd válaszd ki {2}-t, mint a raktár anyagtípusát.
 OBJ_EDIT_DEPOT=Raktár anyagtípus megváltoztatása {0}-re.
-OBJ_MOVE=Kamera mozgatása {input=scroll}.
+OBJ_MOVE=Kamera mozgatása {INPUT_scroll}.
 OBJ_SCROLL=Kicsinyítsd a térképet az [Egér Görgővel] az átfogó bolygónézethez.
-OBJ_SELECT=Válassz ki egy {0}-t a(z) {input=action}-vel.
+OBJ_SELECT=Válassz ki egy {0}-t a(z) {INPUT_action}-vel.
 OBJ_LEVEL=Teljesítsd a(z) {0}. szintet.
 OBJ_POP=A teljes lakosság érje el a(z) {0} főt
 OBJ_POPCITY=A legnagyobb városod lakossága érje el a(z) {0} főt.
@@ -309,9 +310,9 @@ DIALOG_NEXT=KÖVETKEZŐ ({0}...)
 DIALOG_tuto1_1=Üdvözöllek! Én leszek az asszisztensed és segítek megtanulni az új munkaeszközeid használatát.
 DIALOG_tuto1_2=Először is, próbálj ide-oda mozogni ezen az új világon.
 DIALOG_tuto2_1=Most tekintsd át az egész bolygót a térkép kicsinyítésével.
-DIALOG_tuto3_1=A játék célja városok anyagokkal való ellátása és a terraformálási projektek menedzselése.\nAz első lépés a vasérc kitermelése.
+DIALOG_tuto3_1=A játék célja városok anyagokkal való ellátása és a terraformálási projektek menedzselése.
 DIALOG_tuto4_1=Kattints az Ipar gombra a képernyő bal oldalán lévő menüsoron. Kattincs a Kitermelő gombra és építsd fel azt a vasérc mezőn.
-DIALOG_tuto5_1=Kattints a Szállítás gombra a menüsoron és építs egy raktárat a Kitermelő mellett. A raktárak konténereket gyűjtenek össze és tárolnak.
+DIALOG_tuto5_1=Kattints a Szállítás gombra a menüsoron és építs egy vasérc raktárat a Kitermelő mellett. A raktárak konténereket gyűjtenek össze és tárolnak.
 DIALOG_tuto6_1=A raktárnak meg kell adni a tárolandó anyag típusát. Válaszd ki ezt a anyag-kijelölő képernyőjén (a gomb elérhető, ha a raktár ki van választva).
 DIALOG_tuto7_1=A vasércet acélrúddá kell olvasztani egy gyárban.
 DIALOG_tuto8_1=Most már mindenféle szerkezeteket készíthetsz. Az utazásod során kövesd az adott szint célkitűzéseit (kattints az előrehaladás-mutató csíkra a képernyő felső részén)!
@@ -321,7 +322,7 @@ CINEMATICS_INTRO_1=Az céged megbízást kapott az újonnan felfedezett bolygó 
 CINEMATICS_INTRO_2=Szállíts anyagokat a városokhoz és menedzseld a terraformálási projekteket.
 CINEMATICS_INTRO_3=Sok szerencsét.
 PAUSE_TITLE=SZÜNET
-QUICKSAVE=GYORSMENTÉS {input=quickSave}
+QUICKSAVE=GYORSMENTÉS {INPUT_quickSave}
 OPTION_GAME=JÁTÉK
 OPTION_CONTROLS=IRÁNYÍTÁS
 OPTION_GRAPHICS=GRAFIKA
@@ -391,7 +392,7 @@ CREDITS_ARTWORKS=<b>Illusztráció:</b>
 HELP_TITLE=SEGÍTSÉG - {0}
 HELP_P1=ALAPOK
 HELP_P1_T0=A fő célkitűzés az 1 millió fős {0}lakosság{1} elérése és a bolygó lakhatóvá tétele {0}terraformálással{1}.
-HELP_P1_T4=Mozgasd a nézetet ({input=scroll}) és nagyíts/kicsinyíts [Egérgörgővel] (vagy az átállítató billentyűkkel, {input=zoomIn} és {input=zoomOut})
+HELP_P1_T4=Mozgasd a nézetet ({INPUT_scroll}) és nagyíts/kicsinyíts [Egérgörgővel] (vagy az átállítató billentyűkkel, {INPUT_zoomIn} és {INPUT_zoomOut})
 HELP_P2=LOGISZTIKA
 HELP_P2_T1=A Kitermelők {0}nyersanyagokat{1} termelnek ki a talajból és azt konténerekbe töltik.
 HELP_P2_T2=A Raktárak {0}tárolják és mozgatják{1} a különféle anyagokat tartalmazó konténereket a közeli hatszög mezők között.
@@ -400,8 +401,8 @@ HELP_P2_T4=Az Összeszerelő Üzemek készítik a {0}végtermékeket{1} (nem lá
 HELP_P3=ÉPÜLETEK ELHELYEZÉSE
 HELP_P3_T1=Válassz ki egy épületet az {0}építési menüből{1}, majd kattints a talajra az elhelyezéshez.
 HELP_P3_T2=A {0}számláló{1} mutatja, hogy mennyi áll rendelkezésre (amennyi készítettél vagy kaptál a játék kezdetén).
-HELP_P3_T3=Használd ezt a gombot (vagy a {input=delete} gyorsbillentyűt) az {0}épületek lerombolásához{1}. Visszakerül a központi raktárba, {0}hogy máshol felépíthesd újra{1}.
-HELP_P3_T4=A {0}Másolás gomb{1} ({input=selectAndCopy} gyorsbillentyű) segítségével épületeket másolhatsz és illeszthetsz be, {0}megtartva az épület beállításait{1} (kiválasztott anyag vagy recept).
+HELP_P3_T3=Használd ezt a gombot (vagy a {INPUT_delete} gyorsbillentyűt) az {0}épületek lerombolásához{1}. Visszakerül a központi raktárba, {0}hogy máshol felépíthesd újra{1}.
+HELP_P3_T4=A {0}Másolás gomb{1} ({INPUT_selectAndCopy} gyorsbillentyű) segítségével épületeket másolhatsz és illeszthetsz be, {0}megtartva az épület beállításait{1} (kiválasztott anyag vagy recept).
 HELP_P4=GLOBÁLIS INFORMÁCIÓ
 HELP_P4_T1=Megnyitja a {0}Segítség{1} és {0}Szünet{1} képernyőket.
 HELP_P4_T2=A jelenlegi északi és déli félteke évszakának megmutatása.
@@ -413,7 +414,7 @@ HELP_P4_T7=Különféle bolygónézetet mutat:\n- {0}alapértelmezett{1}\n- {0}n
 HELP_P4_T8=Kattintható bolygótérkép
 HELP_P5=SZÁLLÍTÁS
 HELP_P5_T1=1) Építs {0}utat{1} és két {0}megállót{1}.
-HELP_P5_T2=2) Válaszd ki a {0}felrakodásra{1} szánt megállót, majd kattincs a <VÉGPONT JELÖLÉS> gombra és kattints a {0}lerakodásra{1} szánt megállóra.
+HELP_P5_T2=2) Válaszd ki a {0}felrakodásra{1} szánt megállót, majd kattincs a {UI_Selection_Line_Set} gombra és kattints a {0}lerakodásra{1} szánt megállóra.
 HELP_P5_T3=3) Miután kiválasztottad a szállítandó anyagot, a teherautók számát megváltoztathatod a {0}-{1} és {0}+{1} gombokkal.
 HELP_P5_T4=A vasúthálózat az utakhoz hasonlóan működik, kivéve, hogy a síneket úgy kell építened, hogy a vonatok {0}nem tudnak helyben megfordulni{1}.
 HELP_P5_T5=Figyelem : minden megálló csak egy szállítási útvonalat szolgál ki.
@@ -428,3 +429,13 @@ HELP_P7_T3=Ha a hőmérséklet elég magas, a víz el fog párologni a talajból
 HELP_P7_T4=Ha a hőmérséklet elég magas és a talaj elég nedves (ellenőrizd a Viz nézetben), Az általad ültetett {0}fák{1} {0}növekedni{1} és {0}terjedni{1} fognak.
 HELP_P7_T5=Ellenőrizd a hely hőmérsékletet (jelenlegi/minimum/maxim napi átlag) az állapotsorban és hogy összehasonlítsd azt a fa által elvárt értékekkel.
 OPTION_uiScaling=Felhasználói felület skálázás
+INPUT_zoomIn=Nagyítás
+INPUT_zoomOut=Kicsinyítés
+HELP_P2_T5=A raktárak egyenletesen megosztják egymás között a konténereket.
+HELP_P1_T1=Mozgasd a nézetet a {INPUT_scroll}-vel, {INPUT_scrollUp}-vel, {INPUT_scrollLeft}-vel, {INPUT_scrollDown}-vel és {INPUT_scrollRight}-vel.
+HELP_P1_T2=Nagyíts vagy kicsinyíts az [Egérgörgővel] (vagy az átállítható {INPUT_zoomIn} és {INPUT_zoomOut} billentyűkkel)
+DIALOG_tuto3_2=Az első lépés a vasérc kinyerése. Használhatod a Helymeghatározás gombot a jobb oldalon, ha segítség kell.
+OBJ_OPENHELP=A segítség képernyő megnyitása
+DIALOG_tuto7BIS_1=További segítséget találsz a Segítség (?) képernyőn (bal felső gomb a képernyőn).
+DIALOG_tuto7b_1=Építs egy raktárat a Gyár által termelt Acél tárolásához.
+DIALOG_tuto7c_1=Végezetük építhetsz egy Összeszerelő Üzemet, ami az Acélból további Kitermelőket fog építeni.
