@@ -768,13 +768,13 @@ namespace FeatProductionStats
             //logger.LogInfo("City Update Post");
         }
 
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(CStack), nameof(CStack.AddIFP))]
-        static void CStack_AddIFP(ref CStack __instance, int count)
+        static void CStack_AddIFP(ref CStack __instance, int count, bool __result)
         {
             // logger.LogInfo("  Produced: " + __instance.item.codeName + " " + insideFactoryUpdate + " " + count);
             // logger.LogInfo(Environment.StackTrace);
-            if (insideFactoryUpdate)
+            if (insideFactoryUpdate && __instance.item != null && __result)
             {
                 if (count > 0)
                 {
