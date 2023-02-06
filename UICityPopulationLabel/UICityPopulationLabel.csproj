@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>FeatCityPopulationLabel</AssemblyName>
-    <Description>(Feat) City Population Label</Description>
+    <AssemblyName>UICityPopulationLabel</AssemblyName>
+    <Description>(UI) City Population Label</Description>
     <Version>1.0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>

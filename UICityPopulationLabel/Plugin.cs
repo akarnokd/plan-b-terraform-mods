@@ -11,9 +11,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace FeatCityPopulationLabel
+namespace UICityPopulationLabel
 {
-    [BepInPlugin("akarnokd.planbterraformmods.featcitypopulationlabel", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin("akarnokd.planbterraformmods.uicitypopulationlabel", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
 
