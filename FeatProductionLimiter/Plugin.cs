@@ -359,6 +359,8 @@ namespace FeatProductionLimiter
                     sr.gAmount.GetComponent<Text>().text = "N/A";
                 }
 
+                sr.gInventory.GetComponent<Text>().text = string.Format("{0:#,##0}", sr.item.nbOwned);
+
                 ResizeBox(sr.gName, fontSize.Value * theScale);
                 ResizeBox(sr.gInventory, fontSize.Value * theScale);
                 ResizeBox(sr.gZero, fontSize.Value * theScale);
