@@ -78,7 +78,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 ### Features
 
 - [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
-- [City Population Label](#city-population-label) - display the population number underneath the city label.
+- [City Population Label](#city-population-label) - display the population number underneath the city label in the main view and/or minimap.
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
 - [Go to Exhausted Extractors](#go-to-exhausted-extractors) - shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [More Cities](#more-cities) - Generate more cities for a new game.
@@ -894,7 +894,7 @@ Step = 5
 
 ## City Population Label
 
-Display the city population count under the city's name.
+Display the city population number under the city's name in the main view and/or minimap (configurable).
 
 #### Configuration
 
@@ -906,6 +906,17 @@ Display the city population count under the city's name.
 ## Is the mod enabled?
 # Setting type: Boolean
 # Default value: true
+
 Enabled = true
+## Show the label on the main view?
+# Setting type: Boolean
+# Default value: true
+ShowOnMain = true
+
+## Show the label on the minimap view?
+# Setting type: Boolean
+# Default value: true
+ShowOnMinimap = true
+
 ```
 </details>

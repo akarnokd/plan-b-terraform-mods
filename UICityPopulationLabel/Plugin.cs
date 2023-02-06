@@ -18,6 +18,8 @@ namespace UICityPopulationLabel
     {
 
         static ConfigEntry<bool> modEnabled;
+        static ConfigEntry<bool> showOnMain;
+        static ConfigEntry<bool> showOnMinimap;
 
         static ManualLogSource logger;
 
@@ -28,6 +30,8 @@ namespace UICityPopulationLabel
             Logger.LogInfo($"Plugin is loaded!");
 
             modEnabled = Config.Bind("General", "Enabled", true, "Is the mod enabled?");
+            showOnMain = Config.Bind("General", "ShowOnMain", true, "Show the label on the main view?");
+            showOnMinimap = Config.Bind("General", "ShowOnMinimap", true, "Show the label on the minimap view?");
 
             logger = Logger;
 
@@ -38,7 +42,7 @@ namespace UICityPopulationLabel
         [HarmonyPatch(typeof(SScene3D_Overlay), nameof(SScene3D_Overlay.LateUpdateScene))]
         static void SScene3D_Overlay_LateUpdateScene(List<Text> ___uiLabels)
         {
-            if (!modEnabled.Value)
+            if (!modEnabled.Value || !showOnMain.Value)
             {
                 return;
             }
@@ -46,6 +50,27 @@ namespace UICityPopulationLabel
             {
                 if (j < ___uiLabels.Count) {
                     var text = ___uiLabels[j];
+
+                    var city = GGame.cities[j];
+                    text.text = text.text + "\n" + string.Format("( {0:#,##0} )", city.population);
+                    text.verticalOverflow = VerticalWrapMode.Overflow;
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CUiMinimapOverlay), "Update_Labels")]
+        static void CUiMinimapOverlay_Update_Labels(List<Text> ____textLabels)
+        {
+            if (!modEnabled.Value || !showOnMinimap.Value)
+            {
+                return;
+            }
+            for (int j = 0; j < GGame.cities.Count; j++)
+            {
+                if (j < ____textLabels.Count)
+                {
+                    var text = ____textLabels[j];
 
                     var city = GGame.cities[j];
                     text.text = text.text + "\n" + string.Format("( {0:#,##0} )", city.population);
