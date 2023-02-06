@@ -205,7 +205,7 @@ namespace FeatHotbar
                 }
             }
 
-            if (Input.GetKeyDown(toggleKey.Value))
+            if (IsKeyDown(toggleKey.Value))
             {
                 hotbarPanel.SetActive(!hotbarPanel.activeSelf);
             }
@@ -444,7 +444,7 @@ namespace FeatHotbar
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (IsKeyDown(KeyCode.Escape))
             {
                 targetSlot = -1;
                 targetSubpanel = -1;
