@@ -13,7 +13,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 #### Game install directory
 
-**(depending on your game's install directory)**
+**(for example)**
 
 `c:\Program Files (x86)\Steam\steamapps\common\Plan B Terraform\`
 
