@@ -286,6 +286,7 @@ namespace FeatProductionLimiter
                 statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
                 statsPanelHeaderRow.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
+                statsPanelHeaderRow.gInventory = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Inventory", "", fontSize.Value, Color.black);
                 statsPanelHeaderRow.gZero = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
                 statsPanelHeaderRow.gMinus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus100", "", fontSize.Value, Color.black);
                 statsPanelHeaderRow.gMinus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus10", "", fontSize.Value, Color.black);
@@ -319,6 +320,8 @@ namespace FeatProductionLimiter
 
                     row.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Name", "<b>" + row.name + "</b>", fontSize.Value, Color.black);
 
+                    row.gInventory = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Inventory", "<b>" + string.Format("{0:#,##0}", row.item.nbOwned) + "</b>", fontSize.Value, Color.black);
+
                     row.gZero = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Zero", "<b> Zero </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                     row.gMinus100 = CreateBox(limiterPanelBackground, "FeatProductionLimiterPanel_Row_" + i + "_Minus100", "<b> -100 </b>", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
@@ -342,7 +345,7 @@ namespace FeatProductionLimiter
                 return;
             }
 
-            int[] maxWidths = new int[] { 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 };
+            int[] maxWidths = new int[] { 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 };
 
             foreach (var sr in limiterRowsCache)
             {
@@ -357,6 +360,7 @@ namespace FeatProductionLimiter
                 }
 
                 ResizeBox(sr.gName, fontSize.Value * theScale);
+                ResizeBox(sr.gInventory, fontSize.Value * theScale);
                 ResizeBox(sr.gZero, fontSize.Value * theScale);
                 ResizeBox(sr.gMinus100, fontSize.Value * theScale);
                 ResizeBox(sr.gMinus10, fontSize.Value * theScale);
@@ -367,16 +371,18 @@ namespace FeatProductionLimiter
                 ResizeBox(sr.gPlus100, fontSize.Value * theScale);
                 ResizeBox(sr.gUnlimited, fontSize.Value * theScale);
 
-                MaxOf(ref maxWidths[0], GetPreferredWidth(sr.gName));
-                MaxOf(ref maxWidths[1], GetPreferredWidth(sr.gZero));
-                MaxOf(ref maxWidths[2], GetPreferredWidth(sr.gMinus100));
-                MaxOf(ref maxWidths[3], GetPreferredWidth(sr.gMinus10));
-                MaxOf(ref maxWidths[4], GetPreferredWidth(sr.gMinus1));
-                MaxOf(ref maxWidths[5], GetPreferredWidth(sr.gAmount));
-                MaxOf(ref maxWidths[6], GetPreferredWidth(sr.gPlus1));
-                MaxOf(ref maxWidths[7], GetPreferredWidth(sr.gPlus10));
-                MaxOf(ref maxWidths[8], GetPreferredWidth(sr.gPlus100));
-                MaxOf(ref maxWidths[9], GetPreferredWidth(sr.gUnlimited));
+                int col = 0;
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gName));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gInventory));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gZero));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gMinus100));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gMinus10));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gMinus1));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gAmount));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gPlus1));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gPlus10));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gPlus100));
+                MaxOf(ref maxWidths[col++], GetPreferredWidth(sr.gUnlimited));
 
                 sr.SetActive(false);
             }
@@ -388,6 +394,18 @@ namespace FeatProductionLimiter
                 comp = (a, b) => a.name.CompareTo(b.name);
             }
             if (sortByColumn == 1)
+            {
+                comp = (a, b) =>
+                {
+                    var c = a.item.nbOwned.CompareTo(b.item.nbOwned);
+                    if (c == 0)
+                    {
+                        c = a.name.CompareTo(b.name);
+                    }
+                    return c;
+                };
+            }
+            if (sortByColumn == 2)
             {
                 comp = (a, b) =>
                 {
@@ -481,23 +499,27 @@ namespace FeatProductionLimiter
                 statsPanelHeaderRow.SetActive(true);
 
                 statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
-                statsPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(1);
+                statsPanelHeaderRow.gInventory.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Inventory") + GetSortIndicator(1);
+                statsPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(2);
 
                 ResizeBox(statsPanelHeaderRow.gName, fontSize.Value * theScale);
+                ResizeBox(statsPanelHeaderRow.gInventory, fontSize.Value * theScale);
                 ResizeBox(statsPanelHeaderRow.gAmount, fontSize.Value * theScale);
 
                 ApplyPreferredSize(statsPanelHeaderRow.gName);
+                ApplyPreferredSize(statsPanelHeaderRow.gInventory);
                 ApplyPreferredSize(statsPanelHeaderRow.gAmount);
 
                 MaxOf(ref maxWidths[0], GetPreferredWidth(statsPanelHeaderRow.gName));
-                MaxOf(ref maxWidths[5], GetPreferredWidth(statsPanelHeaderRow.gAmount));
+                MaxOf(ref maxWidths[1], GetPreferredWidth(statsPanelHeaderRow.gInventory));
+                MaxOf(ref maxWidths[6], GetPreferredWidth(statsPanelHeaderRow.gAmount));
 
                 maxLines++; // header
             }
 
 
             var bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
-            var bgWidth = 2 * border + 2 * vPadding + 4 * hPadding + 6 * hPaddingSmall + iconSize + maxWidths.Sum();
+            var bgWidth = 2 * border + 2 * vPadding + 5 * hPadding + 6 * hPaddingSmall + iconSize + maxWidths.Sum();
 
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
             // do not resize when the bgWidth does small changes
@@ -538,39 +560,45 @@ namespace FeatProductionLimiter
 
                 SetLocalPosition(row.gName, dx + GetPreferredWidth(row.gName) / 2, y);
 
-                dx += maxWidths[0] + hPadding;
+                int col = 0;
+
+                dx += maxWidths[col++] + hPadding;
+
+                SetLocalPosition(row.gInventory, dx + maxWidths[col] - GetPreferredWidth(row.gInventory) / 2, y);
+
+                dx += maxWidths[col++] + hPadding;
 
                 SetLocalPosition(row.gZero, dx + GetPreferredWidth(row.gZero) / 2, y);
 
-                dx += maxWidths[1] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gMinus100, dx + GetPreferredWidth(row.gMinus100) / 2, y);
 
-                dx += maxWidths[2] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gMinus10, dx + GetPreferredWidth(row.gMinus10) / 2, y);
 
-                dx += maxWidths[3] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gMinus1, dx + GetPreferredWidth(row.gMinus1) / 2, y);
 
-                dx += maxWidths[4] + hPadding;
+                dx += maxWidths[col++] + hPadding;
 
-                SetLocalPosition(row.gAmount, dx + maxWidths[5] - GetPreferredWidth(row.gAmount) / 2, y);
+                SetLocalPosition(row.gAmount, dx + maxWidths[6] - GetPreferredWidth(row.gAmount) / 2, y);
 
-                dx += maxWidths[5] + hPadding;
+                dx += maxWidths[col++] + hPadding;
 
                 SetLocalPosition(row.gPlus1, dx + GetPreferredWidth(row.gPlus1) / 2, y);
 
-                dx += maxWidths[6] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gPlus10, dx + GetPreferredWidth(row.gPlus10) / 2, y);
 
-                dx += maxWidths[7] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gPlus100, dx + GetPreferredWidth(row.gPlus100) / 2, y);
 
-                dx += maxWidths[8] + hPaddingSmall;
+                dx += maxWidths[col++] + hPaddingSmall;
 
                 SetLocalPosition(row.gUnlimited, dx + GetPreferredWidth(row.gUnlimited) / 2, y);
 
@@ -597,7 +625,8 @@ namespace FeatProductionLimiter
             {
 
                 CheckMouseSort(statsPanelHeaderRow.gName, 0);
-                CheckMouseSort(statsPanelHeaderRow.gAmount, 1);
+                CheckMouseSort(statsPanelHeaderRow.gInventory, 1);
+                CheckMouseSort(statsPanelHeaderRow.gAmount, 2);
             }
         }
 
@@ -628,7 +657,7 @@ namespace FeatProductionLimiter
             {
                 return () =>
                 {
-                    var d = delta;
+                    long d = delta;
                     if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                     {
                         d *= 10;
@@ -637,12 +666,22 @@ namespace FeatProductionLimiter
                             d *= 10;
                         }
                     }
-                    row.limitConfig.Value = Mathf.Clamp(0, row.limitConfig.Value + d, int.MaxValue);
+                    row.limitConfig.Value = (int)Clamp(0, row.limitConfig.Value + d, int.MaxValue);
                 };
             }
-            return () => row.limitConfig.Value = Mathf.Clamp(0, row.limitConfig.Value + delta, int.MaxValue);
+            return () => row.limitConfig.Value = (int)Clamp(0, row.limitConfig.Value + (long)delta, int.MaxValue);
         }
 
+        static long Clamp(long min, long value, long max)
+        {
+            if (min > max)
+            {
+                var t = min;
+                min = max; 
+                max = t;
+            }
+            return Math.Max(min, Math.Min(value, max));
+        }
 
         static void CheckRowButton(RectTransform rectBg2, Vector2 mp, GameObject button, Action onPress)
         {
@@ -732,6 +771,7 @@ namespace FeatProductionLimiter
 
             internal GameObject gIcon;
             internal GameObject gName;
+            internal GameObject gInventory;
             internal GameObject gZero;
             internal GameObject gMinus100;
             internal GameObject gMinus10;
@@ -746,6 +786,7 @@ namespace FeatProductionLimiter
             {
                 gIcon.SetActive(active);
                 gName.SetActive(active);
+                gInventory.SetActive(active);
                 gZero.SetActive(active);
                 gMinus100.SetActive(active);
                 gMinus10.SetActive(active);
@@ -786,6 +827,7 @@ namespace FeatProductionLimiter
                 { "FeatProductionLimiter.TooltipDetails", "Toggle the Production Limiter settings panel.\nHotkey: {0}.\n\n<i>FeatProductionLimiter mod</i>" },
                 { "FeatProductionLimiter.Item", "<i>Item</i>" },
                 { "FeatProductionLimiter.Amount", "<i>Limit (pcs)</i>" },
+                { "FeatProductionLimiter.Inventory", "<i>Inventory (pcs)</i>" },
             });
 
             LibCommon.Translation.UpdateTranslations("Hungarian", new()
@@ -794,6 +836,7 @@ namespace FeatProductionLimiter
                 { "FeatProductionLimiter.TooltipDetails", "A gyártási korlátok képernyő megjelenítése vagy elrejtése.\nGyorsbillentyű: {0}.\n\n<i>FeatProductionLimiter mod</i>" },
                 { "FeatProductionLimiter.Item", "<i>Név</i>" },
                 { "FeatProductionLimiter.Amount", "<i>Korlát (db)</i>" },
+                { "FeatProductionLimiter.Inventory", "<i>Készleten (db)</i>" },
             });
         }
 
