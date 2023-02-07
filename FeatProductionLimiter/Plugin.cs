@@ -72,11 +72,11 @@ namespace FeatProductionLimiter
 
         static GameObject limiterPanel;
         static GameObject limiterPanelBackground;
-        static GameObject statsPanelBackground2;
-        static GameObject statsPanelScrollUp;
-        static GameObject statsPanelScrollDown;
+        static GameObject limiterPanelBackground2;
+        static GameObject limiterPanelScrollUp;
+        static GameObject limiterPanelScrollDown;
 
-        static int statsPanelOffset;
+        static int limiterPanelOffset;
         static int sortByColumn;
         static bool sortDesc;
 
@@ -86,8 +86,8 @@ namespace FeatProductionLimiter
         static GameObject limiterButtonIcon;
 
         static List<LimiterRow> limiterRowsCache = new();
-        static LimiterRow statsPanelHeaderRow;
-        static GameObject statsPanelEmpty;
+        static LimiterRow limiterPanelHeaderRow;
+        static GameObject limiterPanelEmpty;
 
         private void Awake()
         {
@@ -166,9 +166,9 @@ namespace FeatProductionLimiter
                     Destroy(limiterPanel);
                     limiterPanel = null;
                     limiterPanelBackground = null;
-                    statsPanelBackground2 = null;
-                    statsPanelHeaderRow = null;
-                    statsPanelEmpty = null;
+                    limiterPanelBackground2 = null;
+                    limiterPanelHeaderRow = null;
+                    limiterPanelEmpty = null;
                 }
             }
         }
@@ -261,43 +261,43 @@ namespace FeatProductionLimiter
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvas.sortingOrder = 54;
 
-                statsPanelBackground2 = new GameObject("FeatProductionLimiterPanel_BackgroundBorder");
-                statsPanelBackground2.transform.SetParent(limiterPanel.transform);
+                limiterPanelBackground2 = new GameObject("FeatProductionLimiterPanel_BackgroundBorder");
+                limiterPanelBackground2.transform.SetParent(limiterPanel.transform);
 
-                var img = statsPanelBackground2.AddComponent<Image>();
+                var img = limiterPanelBackground2.AddComponent<Image>();
                 img.color = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
 
                 limiterPanelBackground = new GameObject("FeatProductionLimiterPanel_Background");
-                limiterPanelBackground.transform.SetParent(statsPanelBackground2.transform);
+                limiterPanelBackground.transform.SetParent(limiterPanelBackground2.transform);
 
                 img = limiterPanelBackground.AddComponent<Image>();
                 img.color = DEFAULT_PANEL_COLOR;
 
-                statsPanelScrollUp = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                limiterPanelScrollUp = CreateBox(limiterPanelBackground2, "FeatProductionLimiterPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                statsPanelScrollDown = CreateBox(statsPanelBackground2, "FeatProductionLimiterPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                limiterPanelScrollDown = CreateBox(limiterPanelBackground2, "FeatProductionLimiterPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                 limiterPanel.SetActive(false);
 
-                statsPanelHeaderRow = new LimiterRow();
-                statsPanelHeaderRow.gIcon = new GameObject("FeatProductionLimiterPanel_HeaderRow_Icon");
-                statsPanelHeaderRow.gIcon.transform.SetParent(limiterPanelBackground.transform);
-                statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
-                statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+                limiterPanelHeaderRow = new LimiterRow();
+                limiterPanelHeaderRow.gIcon = new GameObject("FeatProductionLimiterPanel_HeaderRow_Icon");
+                limiterPanelHeaderRow.gIcon.transform.SetParent(limiterPanelBackground.transform);
+                limiterPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+                limiterPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                statsPanelHeaderRow.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gInventory = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Inventory", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gZero = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gMinus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus100", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gMinus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus10", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gMinus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus1", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Amount", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gPlus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus1", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gPlus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus10", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gPlus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus100", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gUnlimited = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Unlimited", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gName = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gInventory = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Inventory", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gZero = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gMinus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus100", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gMinus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus10", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gMinus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Minus1", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gAmount = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Amount", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gPlus1 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus1", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gPlus10 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus10", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gPlus100 = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Plus100", "", fontSize.Value, Color.black);
+                limiterPanelHeaderRow.gUnlimited = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_HeaderRow_Unlimited", "", fontSize.Value, Color.black);
 
-                statsPanelEmpty = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_NoRows", "<b>No products available</b>", fontSize.Value, Color.black);
+                limiterPanelEmpty = CreateText(limiterPanelBackground, "FeatProductionLimiterPanel_NoRows", "<b>No products available</b>", fontSize.Value, Color.black);
 
                 limiterRowsCache.Clear();
                 int i = 0;
@@ -448,17 +448,17 @@ namespace FeatProductionLimiter
             }
 
             var mp = GetMouseCanvasPos();
-            if (Within(statsPanelBackground2.GetComponent<RectTransform>(), mp))
+            if (Within(limiterPanelBackground2.GetComponent<RectTransform>(), mp))
             {
                 var scrollDelta = Input.mouseScrollDelta.y;
                 if (scrollDelta > 0)
                 {
-                    statsPanelOffset = Math.Max(0, statsPanelOffset - 1);
+                    limiterPanelOffset = Math.Max(0, limiterPanelOffset - 1);
                 }
                 else
                 if (scrollDelta < 0)
                 {
-                    statsPanelOffset = statsPanelOffset + 1;
+                    limiterPanelOffset = limiterPanelOffset + 1;
                 }
             }
             int maxNameWidth = 0;
@@ -478,43 +478,43 @@ namespace FeatProductionLimiter
                 maxLines = canShowLines;
             }
 
-            if (statsPanelOffset + maxLines > rows.Count)
+            if (limiterPanelOffset + maxLines > rows.Count)
             {
-                statsPanelOffset = Math.Max(0, rows.Count - maxLines);
+                limiterPanelOffset = Math.Max(0, rows.Count - maxLines);
             }
 
-            statsPanelScrollUp.SetActive(statsPanelOffset > 0);
-            statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < rows.Count);
+            limiterPanelScrollUp.SetActive(limiterPanelOffset > 0);
+            limiterPanelScrollDown.SetActive(limiterPanelOffset + maxLines < rows.Count);
 
             if (rows.Count == 0)
             {
-                ResizeBox(statsPanelEmpty, fontSize.Value * theScale);
-                maxNameWidth = GetPreferredWidth(statsPanelEmpty);
-                SetLocalPosition(statsPanelEmpty, 0, 0);
-                statsPanelEmpty.SetActive(true);
-                statsPanelHeaderRow.SetActive(false);
+                ResizeBox(limiterPanelEmpty, fontSize.Value * theScale);
+                maxNameWidth = GetPreferredWidth(limiterPanelEmpty);
+                SetLocalPosition(limiterPanelEmpty, 0, 0);
+                limiterPanelEmpty.SetActive(true);
+                limiterPanelHeaderRow.SetActive(false);
             }
             else
             {
-                rows.Insert(statsPanelOffset, statsPanelHeaderRow);
-                statsPanelEmpty.SetActive(false);
-                statsPanelHeaderRow.SetActive(true);
+                rows.Insert(limiterPanelOffset, limiterPanelHeaderRow);
+                limiterPanelEmpty.SetActive(false);
+                limiterPanelHeaderRow.SetActive(true);
 
-                statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
-                statsPanelHeaderRow.gInventory.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Inventory") + GetSortIndicator(1);
-                statsPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(2);
+                limiterPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
+                limiterPanelHeaderRow.gInventory.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Inventory") + GetSortIndicator(1);
+                limiterPanelHeaderRow.gAmount.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Amount") + GetSortIndicator(2);
 
-                ResizeBox(statsPanelHeaderRow.gName, fontSize.Value * theScale);
-                ResizeBox(statsPanelHeaderRow.gInventory, fontSize.Value * theScale);
-                ResizeBox(statsPanelHeaderRow.gAmount, fontSize.Value * theScale);
+                ResizeBox(limiterPanelHeaderRow.gName, fontSize.Value * theScale);
+                ResizeBox(limiterPanelHeaderRow.gInventory, fontSize.Value * theScale);
+                ResizeBox(limiterPanelHeaderRow.gAmount, fontSize.Value * theScale);
 
-                ApplyPreferredSize(statsPanelHeaderRow.gName);
-                ApplyPreferredSize(statsPanelHeaderRow.gInventory);
-                ApplyPreferredSize(statsPanelHeaderRow.gAmount);
+                ApplyPreferredSize(limiterPanelHeaderRow.gName);
+                ApplyPreferredSize(limiterPanelHeaderRow.gInventory);
+                ApplyPreferredSize(limiterPanelHeaderRow.gAmount);
 
-                MaxOf(ref maxWidths[0], GetPreferredWidth(statsPanelHeaderRow.gName));
-                MaxOf(ref maxWidths[1], GetPreferredWidth(statsPanelHeaderRow.gInventory));
-                MaxOf(ref maxWidths[6], GetPreferredWidth(statsPanelHeaderRow.gAmount));
+                MaxOf(ref maxWidths[0], GetPreferredWidth(limiterPanelHeaderRow.gName));
+                MaxOf(ref maxWidths[1], GetPreferredWidth(limiterPanelHeaderRow.gInventory));
+                MaxOf(ref maxWidths[6], GetPreferredWidth(limiterPanelHeaderRow.gAmount));
 
                 maxLines++; // header
             }
@@ -523,7 +523,7 @@ namespace FeatProductionLimiter
             var bgHeight = maxLines * (iconSize + vPadding) + vPadding + 2 * border;
             var bgWidth = 2 * border + 2 * vPadding + 5 * hPadding + 6 * hPaddingSmall + iconSize + maxWidths.Sum();
 
-            var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
+            var rectBg2 = limiterPanelBackground2.GetComponent<RectTransform>();
             // do not resize when the bgWidth does small changes
             var currWidth = rectBg2.sizeDelta.x;
             if (Math.Abs(currWidth - bgWidth) >= 10)
@@ -541,14 +541,14 @@ namespace FeatProductionLimiter
             var rectBg = limiterPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
 
-            ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
-            ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);
+            ResizeBox(limiterPanelScrollUp, fontSize.Value * theScale);
+            ResizeBox(limiterPanelScrollDown, fontSize.Value * theScale);
 
-            statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
-            statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
+            limiterPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
+            limiterPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
 
             float dy = rectBg.sizeDelta.y / 2 - vPadding;
-            for (int i = statsPanelOffset; i < rows.Count && i < statsPanelOffset + maxLines; i++)
+            for (int i = limiterPanelOffset; i < rows.Count && i < limiterPanelOffset + maxLines; i++)
             {
                 var row = rows[i];
 
@@ -610,7 +610,7 @@ namespace FeatProductionLimiter
 
                 row.SetActive(true);
 
-                if (i != statsPanelOffset)
+                if (i != limiterPanelOffset)
                 {
                     CheckRowButton(rectBg2, mp, row.gZero, ChangeLimit(row, -int.MaxValue));
                     CheckRowButton(rectBg2, mp, row.gMinus100, ChangeLimit(row, -100, true));
@@ -623,12 +623,12 @@ namespace FeatProductionLimiter
                 }
             }
 
-            if (statsPanelHeaderRow.gName.activeSelf)
+            if (limiterPanelHeaderRow.gName.activeSelf)
             {
 
-                CheckMouseSort(statsPanelHeaderRow.gName, 0);
-                CheckMouseSort(statsPanelHeaderRow.gInventory, 1);
-                CheckMouseSort(statsPanelHeaderRow.gAmount, 2);
+                CheckMouseSort(limiterPanelHeaderRow.gName, 0);
+                CheckMouseSort(limiterPanelHeaderRow.gInventory, 1);
+                CheckMouseSort(limiterPanelHeaderRow.gAmount, 2);
             }
         }
 
@@ -709,7 +709,7 @@ namespace FeatProductionLimiter
 
         static void CheckMouseSort(GameObject go, int col)
         {
-            if (Within(statsPanelBackground2.GetComponent<RectTransform>(), go.GetComponent<RectTransform>(), GetMouseCanvasPos()))
+            if (Within(limiterPanelBackground2.GetComponent<RectTransform>(), go.GetComponent<RectTransform>(), GetMouseCanvasPos()))
             {
                 go.GetComponent<Text>().color = Color.red;
                 if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -808,7 +808,7 @@ namespace FeatProductionLimiter
         {
             var mp = GetMouseCanvasPos();
             if (limiterPanel != null && limiterPanel.activeSelf
-                && Within(statsPanelBackground2.GetComponent<RectTransform>(), mp))
+                && Within(limiterPanelBackground2.GetComponent<RectTransform>(), mp))
             {
                 __result = false;
             }

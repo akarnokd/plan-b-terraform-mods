@@ -44,16 +44,16 @@ namespace FeatHotbar
         static GameObject hotbarSelectionPanel;
         static GameObject hotbarSelectionPanelBackground;
         static GameObject hotbarSelectionPanelBackground2;
-        static GameObject statsPanelScrollUp;
-        static GameObject statsPanelScrollDown;
+        static GameObject hotbarSelectionPanelScrollUp;
+        static GameObject hotbarSelectionPanelScrollDown;
 
-        static int statsPanelOffset;
+        static int hotbarSelectionPanelOffset;
         static int sortByColumn;
         static bool sortDesc;
 
-        static List<SelectionRow> limiterRowsCache = new();
-        static SelectionRow statsPanelHeaderRow;
-        static GameObject statsPanelEmpty;
+        static List<SelectionRow> selectionRowsCache = new();
+        static SelectionRow hotbarSelectionPanelHeaderRow;
+        static GameObject hotbarSelectionPanelEmpty;
 
         static int targetSubpanel = -1;
         static int targetSlot = -1;
@@ -398,25 +398,25 @@ namespace FeatHotbar
                 img = hotbarSelectionPanelBackground.AddComponent<Image>();
                 img.color = DEFAULT_PANEL_COLOR;
 
-                statsPanelScrollUp = CreateBox(hotbarSelectionPanelBackground2, "FeatHotbarSelectionPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                hotbarSelectionPanelScrollUp = CreateBox(hotbarSelectionPanelBackground2, "FeatHotbarSelectionPanel_ScrollUp", "\u25B2", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-                statsPanelScrollDown = CreateBox(hotbarSelectionPanelBackground2, "FeatHotbarSelectionPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
+                hotbarSelectionPanelScrollDown = CreateBox(hotbarSelectionPanelBackground2, "FeatHotbarSelectionPanel_ScrollDown", "\u25BC", fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
                 hotbarSelectionPanel.SetActive(false);
 
-                statsPanelHeaderRow = new SelectionRow();
-                statsPanelHeaderRow.gIcon = new GameObject("FeatHotbarSelectionPanel_HeaderRow_Icon");
-                statsPanelHeaderRow.gIcon.transform.SetParent(hotbarSelectionPanelBackground.transform);
-                statsPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
-                statsPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
+                hotbarSelectionPanelHeaderRow = new SelectionRow();
+                hotbarSelectionPanelHeaderRow.gIcon = new GameObject("FeatHotbarSelectionPanel_HeaderRow_Icon");
+                hotbarSelectionPanelHeaderRow.gIcon.transform.SetParent(hotbarSelectionPanelBackground.transform);
+                hotbarSelectionPanelHeaderRow.gIcon.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+                hotbarSelectionPanelHeaderRow.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 
-                statsPanelHeaderRow.gName = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gInventory = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Inventory", "", fontSize.Value, Color.black);
-                statsPanelHeaderRow.gSelect = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
+                hotbarSelectionPanelHeaderRow.gName = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Name", "", fontSize.Value, Color.black);
+                hotbarSelectionPanelHeaderRow.gInventory = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Inventory", "", fontSize.Value, Color.black);
+                hotbarSelectionPanelHeaderRow.gSelect = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_HeaderRow_Zero", "", fontSize.Value, Color.black);
 
-                statsPanelEmpty = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_NoRows", SLoc.Get("FeatHotbar.NoBuildings"), fontSize.Value, Color.black);
+                hotbarSelectionPanelEmpty = CreateText(hotbarSelectionPanelBackground, "FeatHotbarSelectionPanel_NoRows", SLoc.Get("FeatHotbar.NoBuildings"), fontSize.Value, Color.black);
 
-                limiterRowsCache.Clear();
+                selectionRowsCache.Clear();
                 int i = 0;
                 foreach (var codeName in globalProducts)
                 {
@@ -425,7 +425,7 @@ namespace FeatHotbar
                     items.TryGetValue(codeName, out row.item);
                     row.codeName = codeName;
                     row.name = SLoc.Get("ITEM_NAME_" + codeName);
-                    limiterRowsCache.Add(row);
+                    selectionRowsCache.Add(row);
 
                     row.gIcon = new GameObject("FeatHotbarSelectionPanel_Row_" + i + "_Icon");
                     row.gIcon.transform.SetParent(hotbarSelectionPanelBackground.transform);
@@ -458,7 +458,7 @@ namespace FeatHotbar
 
             int[] maxWidths = new int[] { 0, 0, 0 };
 
-            foreach (var sr in limiterRowsCache)
+            foreach (var sr in selectionRowsCache)
             {
                 sr.gInventory.GetComponent<Text>().text = string.Format("{0:#,##0}", sr.item.nbOwned);
 
@@ -501,11 +501,11 @@ namespace FeatHotbar
                     comp = (a, b) => oldComp(b, a);
                 }
 
-                limiterRowsCache.Sort(comp);
+                selectionRowsCache.Sort(comp);
             }
 
             List<SelectionRow> rows = new();
-            rows.AddRange(limiterRowsCache);
+            rows.AddRange(selectionRowsCache);
 
             // hide items not unlocked yet
             /*
@@ -528,12 +528,12 @@ namespace FeatHotbar
                 var scrollDelta = Input.mouseScrollDelta.y;
                 if (scrollDelta > 0)
                 {
-                    statsPanelOffset = Math.Max(0, statsPanelOffset - 1);
+                    hotbarSelectionPanelOffset = Math.Max(0, hotbarSelectionPanelOffset - 1);
                 }
                 else
                 if (scrollDelta < 0)
                 {
-                    statsPanelOffset = statsPanelOffset + 1;
+                    hotbarSelectionPanelOffset = hotbarSelectionPanelOffset + 1;
                 }
             }
             int maxNameWidth = 0;
@@ -553,39 +553,39 @@ namespace FeatHotbar
                 maxLines = canShowLines;
             }
 
-            if (statsPanelOffset + maxLines > rows.Count)
+            if (hotbarSelectionPanelOffset + maxLines > rows.Count)
             {
-                statsPanelOffset = Math.Max(0, rows.Count - maxLines);
+                hotbarSelectionPanelOffset = Math.Max(0, rows.Count - maxLines);
             }
 
-            statsPanelScrollUp.SetActive(statsPanelOffset > 0);
-            statsPanelScrollDown.SetActive(statsPanelOffset + maxLines < rows.Count);
+            hotbarSelectionPanelScrollUp.SetActive(hotbarSelectionPanelOffset > 0);
+            hotbarSelectionPanelScrollDown.SetActive(hotbarSelectionPanelOffset + maxLines < rows.Count);
 
             if (rows.Count == 0)
             {
-                ResizeBox(statsPanelEmpty, fontSize.Value * theScale);
-                maxNameWidth = GetPreferredWidth(statsPanelEmpty);
-                SetLocalPosition(statsPanelEmpty, 0, 0);
-                statsPanelEmpty.SetActive(true);
-                statsPanelHeaderRow.SetActive(false);
+                ResizeBox(hotbarSelectionPanelEmpty, fontSize.Value * theScale);
+                maxNameWidth = GetPreferredWidth(hotbarSelectionPanelEmpty);
+                SetLocalPosition(hotbarSelectionPanelEmpty, 0, 0);
+                hotbarSelectionPanelEmpty.SetActive(true);
+                hotbarSelectionPanelHeaderRow.SetActive(false);
             }
             else
             {
-                rows.Insert(statsPanelOffset, statsPanelHeaderRow);
-                statsPanelEmpty.SetActive(false);
-                statsPanelHeaderRow.SetActive(true);
+                rows.Insert(hotbarSelectionPanelOffset, hotbarSelectionPanelHeaderRow);
+                hotbarSelectionPanelEmpty.SetActive(false);
+                hotbarSelectionPanelHeaderRow.SetActive(true);
 
-                statsPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
-                statsPanelHeaderRow.gInventory.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Inventory") + GetSortIndicator(1);
+                hotbarSelectionPanelHeaderRow.gName.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Item") + GetSortIndicator(0);
+                hotbarSelectionPanelHeaderRow.gInventory.GetComponent<Text>().text = SLoc.Get("FeatProductionLimiter.Inventory") + GetSortIndicator(1);
 
-                ResizeBox(statsPanelHeaderRow.gName, fontSize.Value * theScale);
-                ResizeBox(statsPanelHeaderRow.gInventory, fontSize.Value * theScale);
+                ResizeBox(hotbarSelectionPanelHeaderRow.gName, fontSize.Value * theScale);
+                ResizeBox(hotbarSelectionPanelHeaderRow.gInventory, fontSize.Value * theScale);
 
-                ApplyPreferredSize(statsPanelHeaderRow.gName);
-                ApplyPreferredSize(statsPanelHeaderRow.gInventory);
+                ApplyPreferredSize(hotbarSelectionPanelHeaderRow.gName);
+                ApplyPreferredSize(hotbarSelectionPanelHeaderRow.gInventory);
 
-                MaxOf(ref maxWidths[0], GetPreferredWidth(statsPanelHeaderRow.gName));
-                MaxOf(ref maxWidths[1], GetPreferredWidth(statsPanelHeaderRow.gInventory));
+                MaxOf(ref maxWidths[0], GetPreferredWidth(hotbarSelectionPanelHeaderRow.gName));
+                MaxOf(ref maxWidths[1], GetPreferredWidth(hotbarSelectionPanelHeaderRow.gInventory));
 
                 maxLines++; // header
             }
@@ -612,14 +612,14 @@ namespace FeatHotbar
             var rectBg = hotbarSelectionPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
 
-            ResizeBox(statsPanelScrollUp, fontSize.Value * theScale);
-            ResizeBox(statsPanelScrollDown, fontSize.Value * theScale);
+            ResizeBox(hotbarSelectionPanelScrollUp, fontSize.Value * theScale);
+            ResizeBox(hotbarSelectionPanelScrollDown, fontSize.Value * theScale);
 
-            statsPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
-            statsPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
+            hotbarSelectionPanelScrollUp.GetComponent<RectTransform>().localPosition = new Vector2(0, rectBg2.sizeDelta.y / 2 - 2);
+            hotbarSelectionPanelScrollDown.GetComponent<RectTransform>().localPosition = new Vector2(0, -rectBg2.sizeDelta.y / 2 + 2);
 
             float dy = rectBg.sizeDelta.y / 2 - vPadding;
-            for (int i = statsPanelOffset; i < rows.Count && i < statsPanelOffset + maxLines; i++)
+            for (int i = hotbarSelectionPanelOffset; i < rows.Count && i < hotbarSelectionPanelOffset + maxLines; i++)
             {
                 var row = rows[i];
 
@@ -649,7 +649,7 @@ namespace FeatHotbar
 
                 row.SetActive(true);
 
-                if (i != statsPanelOffset)
+                if (i != hotbarSelectionPanelOffset)
                 {
                     var building = row.codeName;
 
@@ -666,10 +666,10 @@ namespace FeatHotbar
                 }
             }
 
-            if (statsPanelHeaderRow.gName.activeSelf)
+            if (hotbarSelectionPanelHeaderRow.gName.activeSelf)
             {
-                CheckMouseSort(statsPanelHeaderRow.gName, 0);
-                CheckMouseSort(statsPanelHeaderRow.gInventory, 1);
+                CheckMouseSort(hotbarSelectionPanelHeaderRow.gName, 0);
+                CheckMouseSort(hotbarSelectionPanelHeaderRow.gInventory, 1);
             }
 
             if (Within(rectBg2, mp) && Input.GetKeyDown(KeyCode.Mouse1))
