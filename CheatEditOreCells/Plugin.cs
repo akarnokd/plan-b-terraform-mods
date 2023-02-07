@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -12,8 +13,11 @@ using UnityEngine.UI;
 namespace CheatEditOreCells
 {
     [BepInPlugin("akarnokd.planbterraformmods.cheateditorecells", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency(featHotbarGuid, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
+
+        const string featHotbarGuid = "akarnokd.planbterraformmods.feathotbar";
 
         static ManualLogSource logger;
 
@@ -31,6 +35,8 @@ namespace CheatEditOreCells
         static byte[] oreIndices = { 7, 6, 8, 9 };
         static string[] oreNames = { "sulfur", "iron", "aluminumOre", "fluoride" };
 
+        static FieldInfo hotbarPluginPanel;
+
         private void Awake()
         {
             // Plugin startup logic
@@ -47,6 +53,12 @@ namespace CheatEditOreCells
             nextOreInput = KeyCode.KeypadPlus;
             prevOreInput = KeyCode.KeypadMinus;
             placementModeInput = KeyCode.KeypadMultiply;
+
+            if (Chainloader.PluginInfos.TryGetValue(featHotbarGuid, out var pi))
+            {
+                hotbarPluginPanel = AccessTools.Field(pi.Instance.GetType(), "hotbarPanelBackground");
+                logger.LogInfo("Found " + featHotbarGuid);
+            }
 
             Harmony.CreateAndPatchAll(typeof(Plugin));
 
@@ -231,9 +243,20 @@ namespace CheatEditOreCells
             var x = 0;
             var y = -Screen.height / 2 + h + 20;
 
+            if (hotbarPluginPanel != null)
+            {
+                var hotbarPanel = (GameObject)hotbarPluginPanel.GetValue(null);
+                if (hotbarPanel != null && hotbarPanel.transform.parent.gameObject.activeSelf)
+                {
+                    var hbRect = hotbarPanel.GetComponent<RectTransform>();
+                    y += hbRect.sizeDelta.y;
+                }
+            }
+
             var rectBg = placementModePanelBackground.GetComponent<RectTransform>();
             rectBg.localPosition = new Vector2(x, y);
             rectBg.sizeDelta = newSizew;
+
 
             var rect = text.GetComponent<RectTransform>();
             rect.localPosition = new Vector2(x, y + h / 2 - 15 - text.preferredHeight / 2);
