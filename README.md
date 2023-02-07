@@ -7,7 +7,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 ## Supported version: Demo (0.6.2-630), Beta (0.6.2-632)
 
-:information_source: Might work with the now closed Beta/Full version, but those are under constant development so mods might stop working after an update.
+:information_source: **The plan is to support the main branch of the (Early Access) game**, depending on how differences will accumulate between it and the beta branch. Afaik, the Demo will completely go away and may return later, but it is unknown how far behind it will be kept mechanics-vise.
 
 ### Notable file paths
 
