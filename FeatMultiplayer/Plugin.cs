@@ -19,6 +19,8 @@ namespace FeatMultiplayer
             Logger.LogInfo($"Plugin is loading!");
 
             InitConfig();
+            InitLogging();
+            InitMessageDispatcher();
 
             var h = Harmony.CreateAndPatchAll(typeof(Plugin));
             GUIScalingSupport.TryEnable(h);

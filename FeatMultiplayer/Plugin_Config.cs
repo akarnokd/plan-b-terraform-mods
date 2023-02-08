@@ -26,6 +26,9 @@ namespace FeatMultiplayer
         static ConfigEntry<string> hostUserAndPasswords;
         static ConfigEntry<string> clientUserAndPasswords;
 
+        static ConfigEntry<int> hostLogLevel;
+        static ConfigEntry<int> clientLogLevel;
+
         static ConfigEntry<int> fontSize;
 
         static readonly Dictionary<string, string> hostUsers = new();
@@ -49,13 +52,16 @@ namespace FeatMultiplayer
             hostUserAndPasswords = Cfg("Host", "Users", "buddy:buddysPassword,dude:dudesPassword", "The comma separated list of user:password pairs the host will let in a multiplayer game. Spaces ignored.");
             clientUserAndPasswords = Cfg("Client", "Users", "buddy:buddysPassword,dude:dudesPassword", "The comma separated list of user:password pairs to connect to a game as a client. Spaces ignored.");
 
+            hostLogLevel = Cfg("Host", "LogLevel", 1, "0 = Debug+, 1 = Info+, 2 = Warning+, 3 = Error+, 4 = Fatal");
+            clientLogLevel = Cfg("Client", "LogLevel", 1, "0 = Debug+, 1 = Info+, 2 = Warning+, 3 = Error+, 4 = Fatal");
+
             ParseUsers(hostUserAndPasswords.Value, hostUsers);
             ParseUsers(clientUserAndPasswords.Value, clientUsers);
         }
 
         private ConfigEntry<T> Cfg<T>(string group, string name, T value, string desc)
         {
-            return Config.Bind<T>(group, name, value, desc);
+            return Config.Bind(group, name, value, desc);
         }
 
         private void ParseUsers(string text, Dictionary<string, string> dict)

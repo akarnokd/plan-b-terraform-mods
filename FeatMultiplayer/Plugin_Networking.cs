@@ -1,0 +1,327 @@
+﻿using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using HarmonyLib;
+using LibCommon;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace FeatMultiplayer
+{
+    public partial class Plugin : BaseUnityPlugin
+    {
+        const int loopWakeupMillis = 500;
+        const int sendBufferSize = 1024 * 1024;
+        const bool fullResetBuffer = false;
+
+        static CancellationTokenSource stopNetwork = new();
+
+        static ConcurrentQueue<BaseMessage> receiverQueue = new();
+
+        static ClientSession hostSession;
+
+        static int uniqueClientId;
+
+        static readonly Dictionary<int, ClientSession> sessions = new();
+
+        static void StartServer()
+        {
+            stopNetwork = new();
+            Task.Factory.StartNew(HostAcceptor, TaskCreationOptions.LongRunning);
+        }
+
+        static void HostAcceptor()
+        {
+            var hostIp = hostServiceAddress.Value;
+            IPAddress hostIPAddress = IPAddress.Any;
+            if (hostIp == "default")
+            {
+                hostIPAddress = GetMainIPv4();
+            }
+            else
+            if (hostIp == "defaultv6")
+            {
+                hostIPAddress = GetMainIPv6();
+            }
+            else
+            {
+                hostIPAddress = IPAddress.Parse(hostIp);
+            }
+            LogInfo("Starting HostAcceptor on " + hostIp + ":" + hostPort.Value + " (" + hostIPAddress + ")");
+            try
+            {
+                TcpListener listener = new TcpListener(hostIPAddress, hostPort.Value);
+                listener.Start();
+                stopNetwork.Token.Register(listener.Stop);
+                try
+                {
+                    while (!stopNetwork.IsCancellationRequested)
+                    {
+                        var client = listener.AcceptTcpClient();
+                        ManageClient(client);
+                    }
+                }
+                finally
+                {
+                    listener.Stop();
+                    LogInfo("Stopping HostAcceptor on port " + hostPort.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!stopNetwork.IsCancellationRequested)
+                {
+                    LogError(ex);
+                }
+            }
+        }
+
+        static void ManageClient(TcpClient client)
+        {
+            LogDebug("Accepting client from " + client.Client.RemoteEndPoint);
+            var session = new ClientSession(Interlocked.Increment(ref uniqueClientId));
+            session.tcpClient = client;
+            sessions.Add(session.id, session);
+
+            Task.Factory.StartNew(() => ReceiverLoop(session), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => SenderLoop(session), TaskCreationOptions.LongRunning);
+        }
+
+        static void StartClient()
+        {
+            stopNetwork = new();
+            hostSession = new ClientSession(0);
+            hostSession.clientName = ""; // host
+
+            Task.Run(ClientRunner);
+        }
+
+        static void ClientRunner()
+        {
+            LogInfo("Client connecting to " + clientConnectAddress.Value + ":" + clientPort.Value);
+
+            try
+            {
+                var client = new TcpClient();
+                hostSession.tcpClient = client;
+
+
+                stopNetwork.Token.Register(client.Close);
+
+                hostSession.tcpClient.Connect(clientConnectAddress.Value, clientPort.Value);
+                LogInfo("Client connection success");
+
+                Task.Factory.StartNew(() => ReceiverLoop(hostSession), TaskCreationOptions.LongRunning);
+                Task.Factory.StartNew(() => SenderLoop(hostSession), TaskCreationOptions.LongRunning);
+            }
+            catch (Exception ex)
+            {
+                if (!stopNetwork.IsCancellationRequested)
+                {
+                    LogError(ex);
+                }
+            }
+        }
+
+        static void SenderLoop(ClientSession session)
+        {
+            var tcpClient = session.tcpClient;
+            var stream = tcpClient.GetStream();
+
+            LogDebug("SenderLoop Start for session " + session.id + " from " + tcpClient.Client.RemoteEndPoint);
+            try
+            {
+                try
+                {
+                    var encodeBuffer = new MemoryStream(sendBufferSize);
+                    var encodeWriter = new BinaryWriter(encodeBuffer, Encoding.UTF8);
+
+                    while (!stopNetwork.IsCancellationRequested && !session.disconnectToken.IsCancellationRequested)
+                    {
+                        if (session.senderQueue.TryDequeue(out var msg))
+                        {
+                            LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
+                            ClearMemoryStream(encodeBuffer, fullResetBuffer);
+                            encodeWriter.Seek(0, SeekOrigin.Begin);
+
+                            var code = msg.MessageCodeBytes();
+
+                            // placeholder for the header sizes
+                            encodeWriter.Write(0); // length of the message code + 1 for its size + the length of the message body
+                            encodeWriter.Write((byte)code.Length);
+                            encodeWriter.Write(code);
+
+                            var pos = encodeBuffer.Position;
+                            msg.Encode(encodeWriter);
+
+                            var msgLength = (int)(encodeBuffer.Position - pos);
+                            var messageTotalLength = code.Length + msgLength;
+                            encodeWriter.Seek(0, SeekOrigin.Begin);
+                            encodeWriter.Write(messageTotalLength);
+                            encodeWriter.Seek(0, SeekOrigin.Begin);
+
+                            LogDebug("    Message sizes: 4 + 1 + " + code.Length + " + " + msgLength);
+
+                            encodeBuffer.WriteTo(stream);
+                            stream.Flush();
+                        }
+                        else
+                        {
+                            session.signal.WaitOne(loopWakeupMillis); // wake up anyway
+                        }
+                    }
+                }
+                finally
+                {
+                    tcpClient.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!stopNetwork.IsCancellationRequested && !session.disconnectToken.IsCancellationRequested)
+                {
+                    LogError("Crash in SenderLoop for session " + session.id + " < " + session.clientName + " > from "
+                        + tcpClient.Client.RemoteEndPoint + "\r\n" + ex);
+                }
+            }
+        }
+
+        static void ReceiverLoop(ClientSession session)
+        {
+            var tcpClient = session.tcpClient;
+            var stream = tcpClient.GetStream();
+            session.disconnectToken.Register(tcpClient.Close);
+
+            LogDebug("ReceiverLoop Start for client " + session.id + " from " + session.tcpClient.Client.RemoteEndPoint);
+            try
+            {
+                try
+                {
+                    var encodeBuffer = new MemoryStream(sendBufferSize);
+                    var encodeReader = new BinaryReader(encodeBuffer);
+
+                    while (!stopNetwork.IsCancellationRequested && !session.disconnectToken.IsCancellationRequested)
+                    {
+                        ClearMemoryStream(encodeBuffer, fullResetBuffer);
+
+                        // Read the header with the total and the message code lengths
+                        var read = ReadFully(stream, encodeBuffer.GetBuffer(), 0, 5);
+                        encodeBuffer.SetLength(5);
+                        if (read != 5)
+                        {
+                            throw new IOException("ReceiverLoop expected 5 more bytes but got " + read);
+                        }
+                        var totalLength = encodeReader.ReadInt32();
+                        var messageCodeLen = encodeReader.ReadByte();
+
+                        // make sure the buffer can hold the remaining of the message
+                        if (encodeBuffer.Capacity < 5 + totalLength)
+                        {
+                            encodeBuffer.Capacity = 5 + totalLength;
+                        }
+
+                        // read the rest
+                        read = ReadFully(stream, encodeBuffer.GetBuffer(), 5, totalLength);
+
+                        // broken stream?
+                        if (read != totalLength)
+                        {
+                            throw new IOException("ReceiverLoop expected " + totalLength + " more bytes but got " + read);
+                        }
+
+                        // make the buffer appear to hold all.
+                        encodeBuffer.SetLength(5 + totalLength);
+                        encodeBuffer.Position = 5;
+
+                        // decode the the messageCode
+                        var messageCode = Encoding.UTF8.GetString(encodeBuffer.GetBuffer(), 5, messageCodeLen);
+                        encodeBuffer.Position = 5 + messageCodeLen;
+
+                        // lookup an actual code decoder
+                        if (messageRegistry.TryGetValue(messageCode, out var msg))
+                        {
+                            if (msg.TryDecode(encodeReader, out var decoded))
+                            {
+                                decoded.sender = session;
+                                receiverQueue.Enqueue(decoded);
+                            }
+                            else
+                            {
+                                LogWarning("ReceiverLoop failed to decode message of " + messageCode + " via " + msg.GetType());
+                            }
+                        }
+                        else
+                        {
+                            LogWarning("ReceiverLoop unsupported message type: " + messageCode);
+                        }
+                    }
+                } 
+                finally
+                {
+                    tcpClient.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!stopNetwork.IsCancellationRequested && !session.disconnectToken.IsCancellationRequested)
+                {
+                    LogError("Crash in ReceiverLoop for client " + session.id + " < " + session.clientName + " > from "
+                        + session.tcpClient.Client.RemoteEndPoint + "\r\n" + ex);
+                }
+            }
+        }
+
+        static int ReadFully(Stream stream, byte[] buffer, int offset, int length)
+        {
+            int read;
+            int remaining = length;
+            while (remaining > 0)
+            {
+                read = stream.Read(buffer, offset, remaining);
+                if (read <= 0)
+                {
+                    break;
+                }
+                offset += read;
+                remaining -= read;
+            }
+            return length - remaining;
+        }
+
+        static void ClearMemoryStream(MemoryStream ms, bool fullClear)
+        {
+            if (fullClear)
+            {
+                var arr = ms.GetBuffer();
+                Array.Clear(arr, 0, arr.Length);
+            }
+            ms.Position = 0;
+            ms.SetLength(0);
+        }
+
+        static bool IsIPv4(IPAddress ipa) => ipa.AddressFamily == AddressFamily.InterNetwork;
+
+        static bool IsIPv6(IPAddress ipa) => ipa.AddressFamily == AddressFamily.InterNetworkV6;
+
+        static IPAddress GetMainIPv4() => NetworkInterface.GetAllNetworkInterfaces()
+            .Select((ni) => ni.GetIPProperties())
+            .Where((ip) => ip.GatewayAddresses.Where((ga) => IsIPv4(ga.Address)).Count() > 0)
+            .FirstOrDefault()?.UnicastAddresses?
+            .Where((ua) => IsIPv4(ua.Address))?.FirstOrDefault()?.Address;
+
+        static IPAddress GetMainIPv6() => NetworkInterface.GetAllNetworkInterfaces()
+            .Select((ni) => ni.GetIPProperties())
+            .Where((ip) => ip.GatewayAddresses.Where((ga) => IsIPv6(ga.Address)).Count() > 0)
+            .FirstOrDefault()?.UnicastAddresses?
+            .Where((ua) => IsIPv6(ua.Address))?.FirstOrDefault()?.Address;
+    }
+}
