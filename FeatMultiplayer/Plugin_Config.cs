@@ -29,6 +29,8 @@ namespace FeatMultiplayer
         static ConfigEntry<int> hostLogLevel;
         static ConfigEntry<int> clientLogLevel;
 
+        static ConfigEntry<int> maxClients;
+
         static ConfigEntry<int> fontSize;
 
         static readonly Dictionary<string, string> hostUsers = new();
@@ -54,6 +56,8 @@ namespace FeatMultiplayer
 
             hostLogLevel = Cfg("Host", "LogLevel", 1, "0 = Debug+, 1 = Info+, 2 = Warning+, 3 = Error+, 4 = Fatal");
             clientLogLevel = Cfg("Client", "LogLevel", 1, "0 = Debug+, 1 = Info+, 2 = Warning+, 3 = Error+, 4 = Fatal");
+
+            maxClients = Cfg("Host", "MaxClients", 3, "Number of distinct clients that can join a session");
 
             ParseUsers(hostUserAndPasswords.Value, hostUsers);
             ParseUsers(clientUserAndPasswords.Value, clientUsers);

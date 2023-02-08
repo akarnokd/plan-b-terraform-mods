@@ -1,16 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace FeatMultiplayer
 {
     /// <summary>
     /// Base class for encoding and decoding message types.
     /// </summary>
-    public abstract class BaseMessage
+    public abstract class MessageBase
     {
         /// <summary>
         /// Set for messages received from clients.
         /// </summary>
         public ClientSession sender;
+
+        /// <summary>
+        /// Set in the message dispatching init to call a method when this message was received
+        /// </summary>
+        public Action<MessageBase> onReceive;
 
         /// <summary>
         /// Specify this code to be used when decoding and dispatching binary messages.
@@ -30,7 +36,7 @@ namespace FeatMultiplayer
         /// <param name="input">Contains only the message-specific bytes (excludes headers)</param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public abstract bool TryDecode(BinaryReader input, out BaseMessage message);
+        public abstract bool TryDecode(BinaryReader input, out MessageBase message);
 
         /// <summary>
         /// Implement this to encode this message into a stream; called on the network thread.

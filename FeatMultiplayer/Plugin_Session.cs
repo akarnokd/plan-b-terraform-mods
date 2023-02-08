@@ -21,39 +21,82 @@ namespace FeatMultiplayer
         /// </summary>
         static volatile string clientName = "";
 
+        static string clientPassword = "";
+
         static readonly Dictionary<string, ClientSession> loggedInClients = new();
-    }
 
-    /// <summary>
-    /// Represents all information regarding a connecting or connected client.
-    /// </summary>
-    public class ClientSession
-    {
-        public readonly int id;
-
-        public volatile string clientName;
-
-        public volatile bool loginSuccess;
-
-        public TcpClient tcpClient;
-
-        public readonly CancellationToken disconnectToken = new();
-
-        internal readonly ConcurrentQueue<BaseMessage> senderQueue = new();
-
-        internal readonly AutoResetEvent signal = new(false);
-
-        public ClientSession(int id) 
+        static void SessionTerminate(ClientSession sess)
         {
-            this.id = id;
+            sess.disconnected = true;
+            if (sess.clientName != null)
+            {
+                if (loggedInClients.Remove(sess.clientName))
+                {
+                    // notify
+                }
+            }
+            sessions.Remove(sess.id);
         }
 
-        public void Send(BaseMessage message, bool signal = true)
+        static void ReceiveMessageLogin(MessageLogin ml)
         {
-            senderQueue.Enqueue(message);
-            if (signal)
+            if (multiplayerMode != MultiplayerMode.Host)
             {
-                this.signal.Set();
+                return;
+            }
+
+            if (loggedInClients.Count == maxClients.Value)
+            {
+                LogInfo("User " + ml.userName + " beyond capacity");
+
+                var response = new MessageLoginResponse();
+                response.reason = "Error_MaxClients";
+                ml.sender.Send(response);
+                ml.sender.Send(MessageDisconnect.Instance);
+                return;
+            }
+
+            if (loggedInClients.ContainsKey(ml.userName))
+            {
+                LogInfo("User " + ml.userName + " already logged in");
+
+                var response = new MessageLoginResponse();
+                response.reason = "Error_AlreadyLoggedIn";
+                ml.sender.Send(response);
+                ml.sender.Send(MessageDisconnect.Instance);
+                return;
+            }
+
+            if (hostUsers.TryGetValue(ml.userName, out var pass))
+            {
+                if (pass == ml.password)
+                {
+                    LogInfo("User " + ml.userName + " logged in successfully");
+                    ml.sender.loginSuccess = true;
+                    loggedInClients.Add(ml.userName, ml.sender);
+
+                    var response = new MessageLoginResponse();
+                    response.reason = "Welcome";
+                    ml.sender.Send(response);
+                }
+                else
+                {
+                    LogInfo("User " + ml.userName + " provided invalid password");
+
+                    var response = new MessageLoginResponse();
+                    response.reason = "Error_InvalidUserOrPassword";
+                    ml.sender.Send(response);
+                    ml.sender.Send(MessageDisconnect.Instance);
+                }
+            }
+            else
+            {
+                LogInfo("User " + ml.userName + " not found");
+
+                var response = new MessageLoginResponse();
+                response.reason = "Error_InvalidUserOrPassword";
+                ml.sender.Send(response);
+                ml.sender.Send(MessageDisconnect.Instance);
             }
         }
     }

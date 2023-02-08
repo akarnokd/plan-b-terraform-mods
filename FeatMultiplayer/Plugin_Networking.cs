@@ -25,13 +25,56 @@ namespace FeatMultiplayer
 
         static CancellationTokenSource stopNetwork = new();
 
-        static ConcurrentQueue<BaseMessage> receiverQueue = new();
+        static ConcurrentQueue<MessageBase> receiverQueue = new();
 
         static ClientSession hostSession;
 
         static int uniqueClientId;
 
         static readonly Dictionary<int, ClientSession> sessions = new();
+
+        /// <summary>
+        /// Send a message to the host.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="signal"></param>
+        public static void SendHost(MessageBase message, bool signal = true)
+        {
+            hostSession?.Send(message, signal);
+        }
+
+        /// <summary>
+        /// Send the same message to all clients.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="signal"></param>
+        public static void SendAllClients(MessageBase message, bool signal = true)
+        {
+            foreach (var sess in sessions.Values)
+            {
+                sess.Send(message, signal);
+            }
+        }
+
+        /// <summary>
+        /// Send the same message to all clients except one.
+        /// This is needed when one client's message has to be routed to all other clients,
+        /// but not back to itself.
+        /// </summary>
+        /// <param name="except"></param>
+        /// <param name="message"></param>
+        /// <param name="signal"></param>
+        public static void SendAllClientsExcept(ClientSession except, MessageBase message, bool signal = true)
+        {
+            int id = except.id;
+            foreach (var sess in sessions.Values)
+            {
+                if (sess.id != id)
+                {
+                    sess.Send(message, signal);
+                }
+            }
+        }
 
         static void StartServer()
         {
@@ -149,6 +192,12 @@ namespace FeatMultiplayer
                     {
                         if (session.senderQueue.TryDequeue(out var msg))
                         {
+                            if (msg == MessageDisconnect.Instance)
+                            {
+                                LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
+                                break;
+                            }
+
                             LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
                             ClearMemoryStream(encodeBuffer, fullResetBuffer);
                             encodeWriter.Seek(0, SeekOrigin.Begin);
@@ -182,6 +231,7 @@ namespace FeatMultiplayer
                 }
                 finally
                 {
+                    SessionTerminate(session);
                     tcpClient.Close();
                 }
             }
@@ -267,6 +317,7 @@ namespace FeatMultiplayer
                 } 
                 finally
                 {
+                    SessionTerminate(session);
                     tcpClient.Close();
                 }
             }
@@ -323,5 +374,47 @@ namespace FeatMultiplayer
             .Where((ip) => ip.GatewayAddresses.Where((ga) => IsIPv6(ga.Address)).Count() > 0)
             .FirstOrDefault()?.UnicastAddresses?
             .Where((ua) => IsIPv6(ua.Address))?.FirstOrDefault()?.Address;
+
+
+        
+    }
+
+    /// <summary>
+    /// Represents all information regarding a connecting or connected client.
+    /// </summary>
+    public class ClientSession
+    {
+        public readonly int id;
+
+        public volatile string clientName;
+
+        public volatile bool loginSuccess;
+
+        public volatile bool disconnected;
+
+        public TcpClient tcpClient;
+
+        public readonly CancellationToken disconnectToken = new();
+
+        internal readonly ConcurrentQueue<MessageBase> senderQueue = new();
+
+        internal readonly AutoResetEvent signal = new(false);
+
+        public ClientSession(int id)
+        {
+            this.id = id;
+        }
+
+        public void Send(MessageBase message, bool signal = true)
+        {
+            if (!disconnected)
+            {
+                senderQueue.Enqueue(message);
+                if (signal)
+                {
+                    this.signal.Set();
+                }
+            }
+        }
     }
 }

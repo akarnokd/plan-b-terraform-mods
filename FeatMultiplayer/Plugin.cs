@@ -11,12 +11,17 @@ using UnityEngine;
 namespace FeatMultiplayer
 {
     [BepInPlugin("akarnokd.planbterraformmods.featmultiplayer", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public partial class Plugin : BaseUnityPlugin
     {
+
+        internal static Plugin thePlugin;
 
         private void Awake()
         {
             Logger.LogInfo($"Plugin is loading!");
+
+            thePlugin = this;
 
             InitConfig();
             InitLogging();

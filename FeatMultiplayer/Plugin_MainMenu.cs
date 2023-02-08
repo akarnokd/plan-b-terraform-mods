@@ -29,6 +29,7 @@ namespace FeatMultiplayer
         static GameObject mainMenuPanelUPnPAddress;
         static GameObject mainMenuPanelClientAddress;
         static List<GameObject> mainMenuPanelClients = new();
+        static List<string> mainMenuClientNames = new();
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SSceneHome), "OnActivate")]
@@ -74,6 +75,7 @@ namespace FeatMultiplayer
             {
                 var btn = CreateBox(mainMenuPanelBackground, Naming("MainMenuPanel_Client_" + j), SLoc.Get("FeatMultiplayer.ClientAs", kv.Key), fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
                 mainMenuPanelClients.Add(btn);
+                mainMenuClientNames.Add(kv.Key);
                 j++;
             }
 
@@ -128,16 +130,25 @@ namespace FeatMultiplayer
             }
 
             var mp = GetMouseCanvasPos();
+            int j = 0;
             foreach (var client in mainMenuPanelClients)
             {
                 if (Within(rectBorder, client.GetComponent<RectTransform>(), mp))
                 {
                     client.GetComponentInChildren<Image>().color = DEFAULT_BOX_COLOR_HOVER;
+                    if (Input.GetKeyDown(KeyCode.Mouse0))
+                    {
+                        string u = mainMenuClientNames[j];
+                        string p = clientUsers[u];
+
+                        thePlugin.StartCoroutine(ClientJoin(u, p));
+                    }
                 }
                 else
                 {
                     client.GetComponentInChildren<Image>().color = DEFAULT_BOX_COLOR;
                 }
+                j++;
             }
             Checkbox(rectBorder, mainMenuPanelHostModeConfig, mp, hostMode, GetHostModeString);
             Checkbox(rectBorder, mainMenuPanelUseUPnPConfig, mp, useUPnP, GetUPnPString);
