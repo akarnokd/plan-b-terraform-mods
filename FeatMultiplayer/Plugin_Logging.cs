@@ -28,7 +28,7 @@ namespace FeatMultiplayer
                     AppendLog("Player_Host.log", level, message);
                 }
             }
-            else if (md == MultiplayerMode.ClientLogin || md == MultiplayerMode.ClientLoading || md == MultiplayerMode.Client)
+            else if (md == MultiplayerMode.ClientJoin || md == MultiplayerMode.Client)
             {
                 if (clientLogLevel.Value <= level)
                 {

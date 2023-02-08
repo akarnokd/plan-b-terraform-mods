@@ -54,8 +54,7 @@ namespace FeatMultiplayer
             }
             while (multiplayerMode == MultiplayerMode.Host 
                 || multiplayerMode == MultiplayerMode.Client
-                || multiplayerMode == MultiplayerMode.ClientLogin
-                || multiplayerMode == MultiplayerMode.ClientLoading) 
+                || multiplayerMode == MultiplayerMode.ClientJoin) 
             {
 
                 try

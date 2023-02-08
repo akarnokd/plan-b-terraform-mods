@@ -39,7 +39,7 @@ namespace FeatMultiplayer
             clientName = userName;
             clientPassword = password;
 
-            multiplayerMode = MultiplayerMode.ClientLogin;
+            multiplayerMode = MultiplayerMode.ClientJoin;
 
             var sload = SSingleton<SLoad>.Inst;
             yield return sload.LoadingStep(1f, "Joining as " + userName, 0);
@@ -81,8 +81,6 @@ namespace FeatMultiplayer
             }
 
             loginResponse = null;
-
-            multiplayerMode = MultiplayerMode.ClientLoading;
 
             yield return sload.LoadingStep(5f, new Action(SSingleton<SWorld_Generation>.Inst.InitGlobalData), 0);
             yield return sload.LoadingStep(10f, new Action(SSingleton<SWorld_Generation>.Inst.Compute_HexesStandards), 0);
@@ -205,7 +203,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageLoginResponse(MessageLoginResponse mlr)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLogin)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -215,7 +213,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllFlags(MessageSyncAllFlags msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -224,7 +222,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllAltitude(MessageSyncAllAltitude msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -233,7 +231,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllWater(MessageSyncAllWater msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -242,7 +240,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllContentId(MessageSyncAllContentId msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -251,7 +249,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllContentData(MessageSyncAllContentData msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -260,7 +258,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllGroundId(MessageSyncAllGroundId msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -269,7 +267,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllGroundData(MessageSyncAllGroundData msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -278,7 +276,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllMain(MessageSyncAllMain msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }
@@ -287,7 +285,7 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageSyncAllGame(MessageSyncAllGame msg)
         {
-            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
                 return;
             }

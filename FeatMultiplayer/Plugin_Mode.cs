@@ -40,13 +40,9 @@ namespace FeatMultiplayer
         /// </summary>
         Host,
         /// <summary>
-        /// Client is in the login phase.
+        /// Client is in the login and initial sync phase.
         /// </summary>
-        ClientLogin,
-        /// <summary>
-        /// Client is loading the world from the host.
-        /// </summary>
-        ClientLoading,
+        ClientJoin,
         /// <summary>
         /// Game is running.
         /// </summary>
