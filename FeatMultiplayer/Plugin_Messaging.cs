@@ -15,10 +15,23 @@ namespace FeatMultiplayer
     {
         static readonly Dictionary<string, MessageBase> messageRegistry = new Dictionary<string, MessageBase>();
 
+        static readonly Queue<MessageBase> deferredMessages = new();
+
         void InitMessageDispatcher()
         {
             AddMessageRegistry<MessageLogin>(ReceiveMessageLogin);
             AddMessageRegistry<MessageLoginResponse>(ReceiveMessageLoginResponse);
+
+            AddMessageRegistry<MessageSyncAllAltitude>(ReceiveMessageSyncAllAltitude);
+            AddMessageRegistry<MessageSyncAllContentData>(ReceiveMessageSyncAllContentData);
+            AddMessageRegistry<MessageSyncAllContentId>(ReceiveMessageSyncAllContentId);
+            AddMessageRegistry<MessageSyncAllFlags>(ReceiveMessageSyncAllFlags);
+            AddMessageRegistry<MessageSyncAllGroundData>(ReceiveMessageSyncAllGroundData);
+            AddMessageRegistry<MessageSyncAllGroundId>(ReceiveMessageSyncAllGroundId);
+            AddMessageRegistry<MessageSyncAllWater>(ReceiveMessageSyncAllWater);
+
+            AddMessageRegistry<MessageSyncAllMain>(ReceiveMessageSyncAllMain);
+            AddMessageRegistry<MessageSyncAllGame>(ReceiveMessageSyncAllGame);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()
@@ -30,6 +43,15 @@ namespace FeatMultiplayer
 
         static void DispatchMessageLoop()
         {
+            // process messages that were deferred during the ClientLoading phase
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                while (deferredMessages.Count != 0)
+                {
+                    var m = deferredMessages.Dequeue();
+                    m.onReceive(m);
+                }
+            }
             while (multiplayerMode == MultiplayerMode.Host 
                 || multiplayerMode == MultiplayerMode.Client
                 || multiplayerMode == MultiplayerMode.ClientLogin
@@ -41,6 +63,10 @@ namespace FeatMultiplayer
                     if (receiverQueue.TryDequeue(out var receiver))
                     {
                         receiver.onReceive(receiver);
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
                 catch (Exception ex)

@@ -29,6 +29,10 @@ namespace FeatMultiplayer
 
             FullSync<MessageSyncAllGroundData>(session);
 
+            FullSync<MessageSyncAllMain>(session);
+
+            FullSync<MessageSyncAllGame>(session);
+
         }
 
         static void FullSync<T>(ClientSession sess) where T : MessageSync, new()

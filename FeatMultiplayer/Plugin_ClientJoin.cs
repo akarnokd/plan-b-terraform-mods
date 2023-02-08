@@ -26,6 +26,9 @@ namespace FeatMultiplayer
         static MessageSyncAllGroundId syncAllGroundId;
         static MessageSyncAllGroundData syncAllGroundData;
 
+        static MessageSyncAllMain syncAllMain;
+        static MessageSyncAllGame syncAllGame;
+
         static IEnumerator ClientJoin(string userName, string password)
         {
             if (multiplayerMode != MultiplayerMode.MainMenu)
@@ -126,7 +129,11 @@ namespace FeatMultiplayer
 
             yield return sload.LoadingStep(36f, "Waiting for SMain data", 0);
 
+            yield return WaitForField(() => syncAllMain, () => syncAllMain = null);
+
             yield return sload.LoadingStep(38f, "Waiting for SGame data", 0);
+
+            yield return WaitForField(() => syncAllGame, () => syncAllGame = null);
 
             yield return sload.LoadingStep(40f, "Waiting for SSceneDialog data", 0);
 
@@ -267,6 +274,24 @@ namespace FeatMultiplayer
                 return;
             }
             syncAllGroundData = msg;
+        }
+
+        static void ReceiveMessageSyncAllMain(MessageSyncAllMain msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllMain = msg;
+        }
+
+        static void ReceiveMessageSyncAllGame(MessageSyncAllGame msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllGame = msg;
         }
     }
 }
