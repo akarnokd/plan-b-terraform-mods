@@ -72,6 +72,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UICityPopulationLabel", "UI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatHotbar", "FeatHotbar\FeatHotbar.csproj", "{5C31D4C4-9B98-4C97-81CD-E1E426944A85}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiscDebugOffline", "MiscDebugOffline\MiscDebugOffline.csproj", "{7A0E5D87-FCD1-42B4-81AF-CE5F49B668A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +164,10 @@ Global
 		{5C31D4C4-9B98-4C97-81CD-E1E426944A85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C31D4C4-9B98-4C97-81CD-E1E426944A85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C31D4C4-9B98-4C97-81CD-E1E426944A85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A0E5D87-FCD1-42B4-81AF-CE5F49B668A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A0E5D87-FCD1-42B4-81AF-CE5F49B668A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A0E5D87-FCD1-42B4-81AF-CE5F49B668A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A0E5D87-FCD1-42B4-81AF-CE5F49B668A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
