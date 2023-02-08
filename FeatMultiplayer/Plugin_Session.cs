@@ -78,6 +78,8 @@ namespace FeatMultiplayer
                     var response = new MessageLoginResponse();
                     response.reason = "Welcome";
                     ml.sender.Send(response);
+
+                    FullSync(ml.sender);
                 }
                 else
                 {

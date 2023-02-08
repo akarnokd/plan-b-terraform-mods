@@ -18,6 +18,14 @@ namespace FeatMultiplayer
 
         static MessageLoginResponse loginResponse;
 
+        static MessageSyncAllFlags syncAllFlags;
+        static MessageSyncAllAltitude syncAllAltitude;
+        static MessageSyncAllWater syncAllWater;
+        static MessageSyncAllContentId syncAllContentId;
+        static MessageSyncAllContentData syncAllContentData;
+        static MessageSyncAllGroundId syncAllGroundId;
+        static MessageSyncAllGroundData syncAllGroundData;
+
         static IEnumerator ClientJoin(string userName, string password)
         {
             if (multiplayerMode != MultiplayerMode.MainMenu)
@@ -80,13 +88,75 @@ namespace FeatMultiplayer
             yield return sload.LoadingStep(16f, new Action(SMain.Inst.Reset), 0);
             yield return sload.LoadingStep(17f, new Action(SSingleton<SDrones>.Inst.Reset_DroneGrid), 0);
 
-            yield return sload.LoadingStep(10f, "Waiting for GHexes.altitude", 0);
-
             // ------------------------------------------------------------------------------------
             // TODO: the various loading steps
             // ------------------------------------------------------------------------------------
 
+            yield return sload.LoadingStep(20f, "Waiting for GHexes.flags", 0);
+
+            yield return WaitForField(() => syncAllFlags, () => syncAllFlags = null);
+
+            yield return sload.LoadingStep(22f, "Waiting for GHexes.altitude", 0);
+
+            yield return WaitForField(() => syncAllAltitude, () => syncAllAltitude = null);
+
+            yield return sload.LoadingStep(24f, "Waiting for GHexes.water", 0);
+
+            yield return WaitForField(() => syncAllWater, () => syncAllWater = null);
+
+            yield return sload.LoadingStep(26f, "Waiting for GHexes.contentId", 0);
+
+            yield return WaitForField(() => syncAllContentId, () => syncAllContentId = null);
+
+            yield return sload.LoadingStep(28f, "Waiting for GHexes.contentData", 0);
+
+            yield return WaitForField(() => syncAllContentData, () => syncAllContentData = null);
+
+            yield return sload.LoadingStep(30f, "Waiting for GHexes.groundId", 0);
+
+            yield return WaitForField(() => syncAllGroundId, () => syncAllGroundId = null);
+
+            yield return sload.LoadingStep(32f, "Waiting for GHexes.groundData", 0);
+
+            yield return WaitForField(() => syncAllGroundData, () => syncAllGroundData = null);
+
+            yield return sload.LoadingStep(34f, "Computing Hexes Altitude Data", 0);
+
+            yield return SSingleton<SWorld_Generation>.Inst.Compute_HexesAltitudeData(true, 50);
+
+            yield return sload.LoadingStep(36f, "Waiting for SMain data", 0);
+
+            yield return sload.LoadingStep(38f, "Waiting for SGame data", 0);
+
+            yield return sload.LoadingStep(40f, "Waiting for SSceneDialog data", 0);
+
+            yield return sload.LoadingStep(42f, "Waiting for SPlanet data", 0);
+
+            yield return sload.LoadingStep(44f, "Waiting for SItems data", 0);
+
+            yield return sload.LoadingStep(46f, "Waiting for SWater data", 0);
+
+            yield return sload.LoadingStep(48f, "Waiting for SDrones data", 0);
+
+            yield return sload.LoadingStep(50f, "Waiting for SWays data", 0);
+
+            yield return sload.LoadingStep(52f, "Waiting for SCamera data", 0);
+
+
+
             // ------------------------------------------------------------------------------------
+            
+            // remake the terrain
+
+            yield return sload.LoadingStep(70f, new Action(SSingleton<SBlocks>.Inst.GenerateData), 0);
+            yield return sload.LoadingStep(72f, new Action(SSingleton<SPlanet>.Inst.ComputeTemperaturesInitial), 0);
+            yield return sload.LoadingStep(74f, new Action(SSingleton<SRain>.Inst.Generate), 0);
+            SSingleton<SCamera>.Inst.Reset(true);
+            yield return sload.LoadingStep(82f, new Action(SSingleton<SViewWorld>.Inst.GenerateMeshes), 0);
+            yield return sload.LoadingStep(84f, new Action(SSingleton<SViewBlocks>.Inst.GenerateMeshes), 0);
+            yield return sload.LoadingStep(85f, new Action(SSingleton<SViewOverlay>.Inst.GenerateMeshes), 0);
+            yield return sload.LoadingStep(86f, new Action(SSingleton<SWater>.Inst.GenerateMesh), 0);
+            yield return sload.LoadingStep(90f, "Loading finalization", 0);
 
             yield return sload.LoadingStep(100f, "Loading complete", 0);
 
@@ -111,6 +181,21 @@ namespace FeatMultiplayer
             yield return new WaitForSeconds(0.1f);
         }
 
+        static IEnumerator WaitForField<T>(Func<T> getter, Action clear) where T : MessageSync
+        {
+            for (; ; )
+            {
+                var v = getter();
+                if (v != null)
+                {
+                    v.ApplySnapshot();
+                    clear();
+                    yield break;
+                }
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+
         static void ReceiveMessageLoginResponse(MessageLoginResponse mlr)
         {
             if (multiplayerMode != MultiplayerMode.ClientLogin)
@@ -119,6 +204,69 @@ namespace FeatMultiplayer
             }
 
             loginResponse = mlr;
+        }
+
+        static void ReceiveMessageSyncAllFlags(MessageSyncAllFlags msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllFlags = msg;
+        }
+
+        static void ReceiveMessageSyncAllAltitude(MessageSyncAllAltitude msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllAltitude = msg;
+        }
+
+        static void ReceiveMessageSyncAllWater(MessageSyncAllWater msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllWater = msg;
+        }
+
+        static void ReceiveMessageSyncAllContentId(MessageSyncAllContentId msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllContentId = msg;
+        }
+
+        static void ReceiveMessageSyncAllContentData(MessageSyncAllContentData msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllContentData = msg;
+        }
+
+        static void ReceiveMessageSyncAllGroundId(MessageSyncAllGroundId msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllGroundId = msg;
+        }
+
+        static void ReceiveMessageSyncAllGroundData(MessageSyncAllGroundData msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientLoading)
+            {
+                return;
+            }
+            syncAllGroundData = msg;
         }
     }
 }

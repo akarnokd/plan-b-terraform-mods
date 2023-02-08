@@ -296,12 +296,15 @@ namespace FeatMultiplayer
                         var messageCode = Encoding.UTF8.GetString(encodeBuffer.GetBuffer(), 5, messageCodeLen);
                         encodeBuffer.Position = 5 + messageCodeLen;
 
+                        LogDebug("ReceiverLoop message " + messageCode + " with length 4 + 1 + " + messageCodeLen + " + " + (totalLength - messageCodeLen));
+
                         // lookup an actual code decoder
                         if (messageRegistry.TryGetValue(messageCode, out var msg))
                         {
                             if (msg.TryDecode(encodeReader, out var decoded))
                             {
                                 decoded.sender = session;
+                                decoded.onReceive = msg.onReceive;
                                 receiverQueue.Enqueue(decoded);
                             }
                             else

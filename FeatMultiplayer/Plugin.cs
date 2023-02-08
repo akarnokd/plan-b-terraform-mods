@@ -32,5 +32,10 @@ namespace FeatMultiplayer
 
             Logger.LogInfo($"Plugin loaded!");
         }
+
+        void Update()
+        {
+            DispatchMessageLoop();
+        }
     }
 }
