@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using UnityEngine;
 
 namespace FeatMultiplayer
 {
@@ -59,6 +60,28 @@ namespace FeatMultiplayer
         protected void LogInfo(object message)
         {
             Plugin.LogInfo(message);
+        }
+    }
+
+    /// <summary>
+    /// Extension methods for reading and writing game/engine types.
+    /// </summary>
+    public static class BinaryReadWriteEx 
+    {
+        public static void Write(this BinaryWriter writer, in Vector3 vector)
+        {
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+            writer.Write(vector.z);
+        }
+
+        public static Vector3 ReadVector3(this BinaryReader reader)
+        {
+            return new Vector3(
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            );
         }
     }
 }

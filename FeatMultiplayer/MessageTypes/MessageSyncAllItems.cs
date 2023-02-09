@@ -49,12 +49,8 @@ namespace FeatMultiplayer
 
         internal override void ApplySnapshot()
         {
-            var itemsDictionary = new Dictionary<string, CItem>();
-            for (int i = 1; i < GItems.items.Count; i++)
-            {
-                CItem item = GItems.items[i];
-                itemsDictionary.Add(item.codeName, item);
-            }
+            Dictionary<string, CItem> itemsDictionary = GetItemsDictionary();
+
             foreach (var isnp in items)
             {
                 if (itemsDictionary.TryGetValue(isnp.codeName, out var item))
@@ -93,6 +89,18 @@ namespace FeatMultiplayer
                     contentStock.RefreshStacksInfos(coords, cStacks);
                 }
             }
+        }
+
+        internal static Dictionary<string, CItem> GetItemsDictionary()
+        {
+            var itemsDictionary = new Dictionary<string, CItem>();
+            for (int i = 1; i < GItems.items.Count; i++)
+            {
+                CItem item = GItems.items[i];
+                itemsDictionary.Add(item.codeName, item);
+            }
+
+            return itemsDictionary;
         }
 
         public override void Encode(BinaryWriter output)
@@ -202,6 +210,20 @@ namespace FeatMultiplayer
                 lookup.TryGetValue(codeName, out stack.item);
                 stack.nb = count;
                 stack.nbBooked = booked;
+            }
+
+            internal void Encode(BinaryWriter output)
+            {
+                output.Write(codeName);
+                output.Write(count);
+                output.Write(booked);
+            }
+
+            internal void Decode(BinaryReader input)
+            {
+                codeName = input.ReadString();
+                count = input.ReadInt32();
+                booked = input.ReadInt32();
             }
         }
     }

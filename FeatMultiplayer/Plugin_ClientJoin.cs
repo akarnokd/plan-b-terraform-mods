@@ -32,6 +32,8 @@ namespace FeatMultiplayer
         static MessageSyncAllItems syncAllItems;
         static MessageSyncAllWaterInfo syncAllWaterInfo;
         static MessageSyncAllDrones syncAllDrones;
+        static MessageSyncAllWays syncAllWays;
+        static MessageSyncAllCamera syncAllCamera;
 
         static IEnumerator ClientJoin(string userName, string password)
         {
@@ -161,6 +163,8 @@ namespace FeatMultiplayer
             yield return WaitForField(() => syncAllDrones, () => syncAllDrones = null);
 
             yield return sload.LoadingStep(52f, "Waiting for SWays data", 0);
+
+            yield return WaitForField(() => syncAllWays, () => syncAllWays = null);
 
             yield return sload.LoadingStep(54f, "Waiting for SCamera data", 0);
 
@@ -362,6 +366,24 @@ namespace FeatMultiplayer
                 return;
             }
             syncAllDrones = msg;
+        }
+
+        static void ReceiveMessageSyncAllWays(MessageSyncAllWays msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
+            {
+                return;
+            }
+            syncAllWays = msg;
+        }
+
+        static void ReceiveMessageSyncAllCamera(MessageSyncAllCamera msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
+            {
+                return;
+            }
+            syncAllCamera = msg;
         }
     }
 }

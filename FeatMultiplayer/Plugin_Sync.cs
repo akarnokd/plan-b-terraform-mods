@@ -40,6 +40,10 @@ namespace FeatMultiplayer
             FullSync<MessageSyncAllWaterInfo>(session);
 
             FullSync<MessageSyncAllDrones>(session);
+
+            FullSync<MessageSyncAllWays>(session);
+
+            FullSync<MessageSyncAllCamera>(session);
         }
 
         static void FullSync<T>(ClientSession sess) where T : MessageSync, new()

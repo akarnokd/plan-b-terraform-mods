@@ -36,6 +36,8 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageSyncAllItems>(ReceiveMessageSyncAllItems);
             AddMessageRegistry<MessageSyncAllWaterInfo>(ReceiveMessageSyncAllWaterInfo);
             AddMessageRegistry<MessageSyncAllDrones>(ReceiveMessageSyncAllDrones);
+            AddMessageRegistry<MessageSyncAllWays>(ReceiveMessageSyncAllWays);
+            AddMessageRegistry<MessageSyncAllCamera>(ReceiveMessageSyncAllCamera);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()
