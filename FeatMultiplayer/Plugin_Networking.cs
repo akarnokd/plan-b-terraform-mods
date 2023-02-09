@@ -303,9 +303,16 @@ namespace FeatMultiplayer
                         {
                             if (msg.TryDecode(encodeReader, out var decoded))
                             {
-                                decoded.sender = session;
-                                decoded.onReceive = msg.onReceive;
-                                receiverQueue.Enqueue(decoded);
+                                if (decoded.GetType() != msg.GetType())
+                                {
+                                    LogError("ReceiverLoop decoder type bug. Expected = " + msg.GetType() + ", Actual = " + decoded.GetType());
+                                }
+                                else
+                                {
+                                    decoded.sender = session;
+                                    decoded.onReceive = msg.onReceive;
+                                    receiverQueue.Enqueue(decoded);
+                                }
                             }
                             else
                             {

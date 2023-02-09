@@ -28,6 +28,8 @@ namespace FeatMultiplayer
 
         static MessageSyncAllMain syncAllMain;
         static MessageSyncAllGame syncAllGame;
+        static MessageSyncAllPlanet syncAllPlanet;
+        static MessageSyncAllItems syncAllItems;
 
         static IEnumerator ClientJoin(string userName, string password)
         {
@@ -133,19 +135,28 @@ namespace FeatMultiplayer
 
             yield return WaitForField(() => syncAllGame, () => syncAllGame = null);
 
-            yield return sload.LoadingStep(40f, "Waiting for SSceneDialog data", 0);
+            // Just indicates if the tutorial panel is open or not.
+            // yield return sload.LoadingStep(40f, "Waiting for SSceneDialog data", 0);
 
             yield return sload.LoadingStep(42f, "Waiting for SPlanet data", 0);
 
+            yield return WaitForField(() => syncAllPlanet, () => syncAllPlanet = null);
+
             yield return sload.LoadingStep(44f, "Waiting for SItems data", 0);
+
+            yield return WaitForField(() => syncAllItems, () => syncAllItems = null);
+
+            yield return sload.LoadingStep(46f, "Counting trees", 0);
+
+            CountForestHexes();
 
             yield return sload.LoadingStep(46f, "Waiting for SWater data", 0);
 
-            yield return sload.LoadingStep(48f, "Waiting for SDrones data", 0);
+            yield return sload.LoadingStep(50f, "Waiting for SDrones data", 0);
 
-            yield return sload.LoadingStep(50f, "Waiting for SWays data", 0);
+            yield return sload.LoadingStep(52f, "Waiting for SWays data", 0);
 
-            yield return sload.LoadingStep(52f, "Waiting for SCamera data", 0);
+            yield return sload.LoadingStep(54f, "Waiting for SCamera data", 0);
 
 
 
@@ -199,6 +210,25 @@ namespace FeatMultiplayer
                 }
                 yield return new WaitForSeconds(0.1f);
             }
+        }
+
+        static void CountForestHexes()
+        {
+            int c = 0;
+            for (int l = 0; l < GWorld.size.x; l++)
+            {
+                for (int m = GWorld.rowsMin[l]; m <= GWorld.rowsMax[l]; m++)
+                {
+                    var @int = new int2(l, m);
+                    var content = SSingleton<SWorld>.Inst.GetContent(@int);
+
+                    if (content is CItem_ContentForest forest && forest.IsAliveAndVisible(@int))
+                    {
+                        c++;
+                    }
+                }
+            }
+            GItems.forestNbHexes = c;
         }
 
         static void ReceiveMessageLoginResponse(MessageLoginResponse mlr)
@@ -290,6 +320,24 @@ namespace FeatMultiplayer
                 return;
             }
             syncAllGame = msg;
+        }
+
+        static void ReceiveMessageSyncAllPlanet(MessageSyncAllPlanet msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
+            {
+                return;
+            }
+            syncAllPlanet = msg;
+        }
+
+        static void ReceiveMessageSyncAllItems(MessageSyncAllItems msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
+            {
+                return;
+            }
+            syncAllItems = msg;
         }
     }
 }

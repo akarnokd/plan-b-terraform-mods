@@ -32,6 +32,8 @@ namespace FeatMultiplayer
 
             AddMessageRegistry<MessageSyncAllMain>(ReceiveMessageSyncAllMain);
             AddMessageRegistry<MessageSyncAllGame>(ReceiveMessageSyncAllGame);
+            AddMessageRegistry<MessageSyncAllPlanet>(ReceiveMessageSyncAllPlanet);
+            AddMessageRegistry<MessageSyncAllItems>(ReceiveMessageSyncAllItems);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()
