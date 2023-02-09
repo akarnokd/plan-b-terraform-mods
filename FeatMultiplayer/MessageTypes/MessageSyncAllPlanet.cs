@@ -73,6 +73,14 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllPlanet();
 
+            msg.Decode(input);
+
+            message = msg;
+            return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
             name = input.ReadString();
             sf6ContainerCount = input.ReadInt32();
             nf3ContainerCount = input.ReadInt32();
@@ -92,9 +100,6 @@ namespace FeatMultiplayer
             {
                 dailyTemperature.Add(input.ReadSingle());
             }
-
-            message = msg;
-            return true;
         }
     }
 }

@@ -45,9 +45,9 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllCamera();
 
-            focusPosition = new angles(input.ReadSingle(), input.ReadSingle(), input.ReadSingle());
-            zoomLevelTarget = input.ReadInt32();
-            zoomLog = input.ReadSingle();
+            msg.focusPosition = new angles(input.ReadSingle(), input.ReadSingle(), input.ReadSingle());
+            msg.zoomLevelTarget = input.ReadInt32();
+            msg.zoomLog = input.ReadSingle();
 
             message = msg;
             return true;

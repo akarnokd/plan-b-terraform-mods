@@ -42,6 +42,8 @@ namespace FeatMultiplayer
                 yield break;
             }
 
+            QuitGameAndUI();
+
             clientName = userName;
             clientPassword = password;
 
@@ -253,6 +255,22 @@ namespace FeatMultiplayer
                 }
             }
             GItems.forestNbHexes = c;
+        }
+
+        static void QuitGameAndUI()
+        {
+            GGame.isPlaying = false;
+            SSceneSingleton<SSceneHome>.Inst.Deactivate();
+            SSceneSingleton<SScenePlay>.Inst.Deactivate();
+            SSceneSingleton<SSceneNewPlanet>.Inst.Deactivate();
+            SSceneSingleton<SSceneChooseLoad>.Inst.Deactivate();
+            SSceneSingleton<SScene3D>.Inst.Deactivate();
+            SSceneSingleton<SScene3D_Overlay>.Inst.Deactivate();
+            SSceneSingleton<SSceneHud>.Inst.Deactivate();
+            SSceneSingleton<SSceneHud_Selection>.Inst.Deactivate();
+            SSceneSingleton<SSceneHud_ItemsBars>.Inst.Deactivate();
+            SSceneSingleton<SSceneTooltip>.Inst.Deactivate();
+            SSceneSingleton<SSceneDialog>.Inst.Deactivate();
         }
 
         static void ReceiveMessageLoginResponse(MessageLoginResponse mlr)

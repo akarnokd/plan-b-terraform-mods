@@ -66,6 +66,14 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllDrones();
 
+            msg.Decode(input);
+
+            message = msg;
+            return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
             maxId = input.ReadInt32();
 
             int c = input.ReadInt32();
@@ -77,9 +85,6 @@ namespace FeatMultiplayer
                 drone.depotIndex = input.ReadInt32();
                 drones.Add(drone);
             }
-
-            message = msg;
-            return true;
         }
 
         internal class DroneSnapshot

@@ -28,6 +28,8 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SSceneHud), "OnDeactivate")]
         static void SSceneHud_OnDeactivate()
         {
             if (multiplayerMode == MultiplayerMode.Host)
@@ -40,6 +42,10 @@ namespace FeatMultiplayer
                 }
                 LogInfo("Terminating host listener");
                 stopHostAcceptor.Cancel();
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                hostSession.Send(MessageDisconnect.Instance);
             }
         }
 

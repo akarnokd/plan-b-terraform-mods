@@ -160,6 +160,7 @@ namespace FeatMultiplayer
                         string p = clientUsers[u];
 
                         thePlugin.StartCoroutine(ClientJoin(u, p));
+                        break;
                     }
                 }
                 else

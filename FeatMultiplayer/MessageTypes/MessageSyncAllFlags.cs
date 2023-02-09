@@ -37,7 +37,7 @@ namespace FeatMultiplayer
         internal override void ApplySnapshot()
         {
             var s = GWorld.size;
-            var x = s.x;
+            var y = s.y;
             var dst = GHexes.flags;
 
             var row = 0;
@@ -46,7 +46,7 @@ namespace FeatMultiplayer
             {
                 dst[row, col] = (GHexes.Flag)data[a];
 
-                if (++col == x)
+                if (++col == y)
                 {
                     row++;
                     col = 0;

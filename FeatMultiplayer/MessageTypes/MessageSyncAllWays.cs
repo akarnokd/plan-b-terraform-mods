@@ -62,29 +62,7 @@ namespace FeatMultiplayer
 
             foreach (var line in lines)
             {
-                output.Write(line.id);
-                output.Write(line.itemStopOrigin);
-                output.Write(line.itemTransported);
-
-                output.Write(line.stops.Count);
-
-                foreach (var stop in line.stops) 
-                {
-                    stop.Encode(output);
-                }
-
-                output.Write(line.nodes.Count);
-                foreach (var node in line.nodes)
-                {
-                     node.Encode(output);
-                }
-
-                output.Write(line.vehicles.Count);
-
-                foreach (var vehicle in line.vehicles)
-                {
-                    vehicle.Encode(output);
-                }
+                line.Encode(output);
             }
         }
 
@@ -92,9 +70,24 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllWays();
 
+            msg.Decode(input);
 
             message = msg;
             return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
+            lineIdMax = input.ReadInt32();
+            vehicleIdMax = input.ReadInt32();
+            var linesCount = input.ReadInt32();
+
+            for (int i = 0; i < linesCount; i++)
+            {
+                var ln = new LineSnapshot();
+                ln.Decode(input);
+                lines.Add(ln);
+            }
         }
 
         internal class LineSnapshot
@@ -164,6 +157,61 @@ namespace FeatMultiplayer
                 result.UpdateStopDataOrginEnd(false, false);
 
                 return result;
+            }
+
+            internal void Encode(BinaryWriter output)
+            {
+                output.Write(id);
+                output.Write(itemStopOrigin);
+                output.Write(itemTransported);
+
+                output.Write(stops.Count);
+
+                foreach (var stop in stops)
+                {
+                    stop.Encode(output);
+                }
+
+                output.Write(nodes.Count);
+                foreach (var node in nodes)
+                {
+                    node.Encode(output);
+                }
+
+                output.Write(vehicles.Count);
+
+                foreach (var vehicle in vehicles)
+                {
+                    vehicle.Encode(output);
+                }
+            }
+
+            internal void Decode(BinaryReader input)
+            {
+                id = input.ReadInt32();
+                itemStopOrigin = input.ReadString();
+                itemTransported = input.ReadString();
+
+                var stopCount = input.ReadInt32();
+                for (int i = 0; i < stopCount; i++) 
+                {
+                    var stop = new StopSnapshot();
+                    stop.Decode(input);
+                    stops.Add(stop);
+                }
+                var nodesCount = input.ReadInt32();
+                for (int i = 0; i < nodesCount; i++) {
+                    var node = new NodeSnapshot();
+                    node.Decode(input);
+                    nodes.Add(node);
+                }
+                var vehiclesCount = input.ReadInt32();
+                for (int i = 0; i < vehiclesCount; i++)
+                {
+                    var vehicle = new VehicleSnapshot();
+                    vehicle.Decode(input);
+                    vehicles.Add(vehicle);
+                }
             }
         }        
         

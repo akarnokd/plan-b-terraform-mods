@@ -100,6 +100,14 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllGame();
 
+            msg.Decode(input);
+
+            message = msg;
+            return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
             level = input.ReadInt32();
             population = input.ReadInt64();
             int cc = input.ReadInt32();
@@ -126,9 +134,6 @@ namespace FeatMultiplayer
             }
 
             tutorialSkipped = input.ReadBoolean();
-
-            message = msg;
-            return true;
         }
 
         internal class CitySnapshot

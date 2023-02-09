@@ -138,6 +138,14 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllItems();
 
+            msg.Decode(input);
+
+            message = msg;
+            return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
             Dictionary<byte, string> codeNameTable = new(); // FIXME adjust when there are more than 256 item types
             codeNameTable[0] = "";
 
@@ -175,9 +183,6 @@ namespace FeatMultiplayer
                     sst.booked = input.ReadInt32();
                 }
             }
-
-            message = msg;
-            return true;
         }
 
         internal class ItemSnapshot

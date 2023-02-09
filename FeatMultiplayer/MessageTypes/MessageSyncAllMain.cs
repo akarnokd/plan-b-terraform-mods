@@ -47,12 +47,17 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllMain();
 
-            msg.simuPlanetTime = input.ReadDouble();
-            msg.simuUnitsTime = input.ReadDouble();
-            msg.timePlayed = input.ReadSingle();
+            msg.Decode(input);
 
             message = msg;
             return true;
+        }
+
+        void Decode(BinaryReader input)
+        {
+            simuPlanetTime = input.ReadDouble();
+            simuUnitsTime = input.ReadDouble();
+            timePlayed = input.ReadSingle();
         }
     }
 }
