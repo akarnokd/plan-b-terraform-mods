@@ -42,6 +42,7 @@ namespace FeatMultiplayer
         /// <param name="signal"></param>
         public static void SendHost(MessageBase message, bool signal = true)
         {
+            LogDebug("SendHost: " + message.GetType());
             hostSession?.Send(message, signal);
         }
 
@@ -52,6 +53,7 @@ namespace FeatMultiplayer
         /// <param name="signal"></param>
         public static void SendAllClients(MessageBase message, bool signal = true)
         {
+            LogDebug("SendAllClients: " + message.GetType());
             foreach (var sess in sessions.Values)
             {
                 sess.Send(message, signal);
@@ -69,6 +71,7 @@ namespace FeatMultiplayer
         public static void SendAllClientsExcept(ClientSession except, MessageBase message, bool signal = true)
         {
             int id = except.id;
+            LogDebug("SendAllClientsExcept: " + message.GetType() + " (except " + id + ")");
             foreach (var sess in sessions.Values)
             {
                 if (sess.id != id)

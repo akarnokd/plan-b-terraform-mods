@@ -15,7 +15,7 @@ namespace FeatMultiplayer
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SLoc), nameof(SLoc.Load))]
-        static void SLoc_Load()
+        static void Patch_SLoc_Load()
         {
             Translation.UpdateTranslations("English", new()
             {
@@ -32,6 +32,7 @@ namespace FeatMultiplayer
                 { "FeatMultiplayer.Error_AlreadyLoggedIn", "User already logged in!" },
                 { "FeatMultiplayer.Error_MaxClients", "Maximum number of clients reached. Sorry." },
                 { "FeatMultiplayer.Error_InvalidUserOrPassword", "Invalid username or password." },
+                { "FeatMultiplayer.Error_LoginTimeout", "Login attempt timed out." },
             });
 
             Translation.UpdateTranslations("Hungarian", new()
@@ -49,6 +50,7 @@ namespace FeatMultiplayer
                 { "FeatMultiplayer.Error_AlreadyLoggedIn", "A felhasználó már egyszer bejelentkezett!" },
                 { "FeatMultiplayer.Error_MaxClients", "Megtelt a szerver. Sajnálom." },
                 { "FeatMultiplayer.Error_InvalidUserOrPassword", "Érvénytelen felhasználó vagy jelszó." },
+                { "FeatMultiplayer.Error_LoginTimeout", "A bejelentkezési kísérlet időtúllépési hibát eredményezett." },
             });
         }
     }

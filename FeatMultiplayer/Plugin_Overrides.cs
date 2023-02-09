@@ -15,13 +15,16 @@ namespace FeatMultiplayer
     public partial class Plugin : BaseUnityPlugin
     {
         /// <summary>
-        /// Use this to name GameObjects with a mod-specific common prefix.
+        /// The vanilla calls this method to randomly create a city block,
+        /// which is not good in MP because it overwrites the city center
+        /// of the host in contentId[center].
         /// </summary>
-        /// <param name="subname"></param>
         /// <returns></returns>
-        static string Naming(string subname)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentCity), nameof(CItem_ContentCity.CreateCenter))]
+        static bool Patch_CItem_ContentCity_CreateCenter()
         {
-            return "FeatMultiplayer_" + subname;
+            return multiplayerMode != MultiplayerMode.ClientJoin;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SSceneHome), "OnActivate")]
-        static void SSceneHome_OnActivate()
+        static void Patch_SSceneHome_OnActivate()
         {
             if (!modEnabled.Value)
             {
@@ -87,7 +87,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SSceneHome), "OnUpdate")]
-        static void SSceneHome_OnUpdate()
+        static void Patch_SSceneHome_OnUpdate()
         {
             if (!modEnabled.Value)
             {
@@ -175,7 +175,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SScene), "OnDeactivate")]
-        static void SScene_OnDeactivate(SScene __instance)
+        static void Patch_SScene_OnDeactivate(SScene __instance)
         {
             if (!modEnabled.Value)
             {

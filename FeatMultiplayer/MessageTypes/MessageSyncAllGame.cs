@@ -163,6 +163,7 @@ namespace FeatMultiplayer
             internal CCity Create()
             {
                 var city = new CCity(id, center);
+                city.hexes.Clear();
 
                 city.population = population;
                 city.hexes.AddRange(hexes);

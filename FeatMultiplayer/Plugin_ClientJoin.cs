@@ -42,14 +42,16 @@ namespace FeatMultiplayer
                 yield break;
             }
 
-            QuitGameAndUI();
+            var sload = SSingleton<SLoad>.Inst;
+
 
             clientName = userName;
             clientPassword = password;
 
             multiplayerMode = MultiplayerMode.ClientJoin;
 
-            var sload = SSingleton<SLoad>.Inst;
+            sload.QuitGameAndUI();
+
             yield return sload.LoadingStep(1f, "Joining as " + userName, 0);
 
             SSceneSingleton<SSceneUIOverlay>.Inst.ShowLoading();
@@ -59,9 +61,23 @@ namespace FeatMultiplayer
 
             SendHost(new MessageLogin() { userName = userName, password = password });
 
+            int remaining = 300;
             int dots = 0;
             while (loginResponse == null)
             {
+                LogDebug("Login Wait " + remaining);
+                if (remaining-- == 0)
+                {
+                    LogError("Error logging in as " + userName + ": Login timeout.\n");
+
+                    SSceneSingleton<SSceneUIOverlay>.Inst.ShowMessage(SLoc.Get("FeatMultiplayer.Error_LoginTimeout"), SSceneUIOverlay.MessageType.Error, 10f);
+                    SSceneSingleton<SSceneHome>.Inst.Activate();
+                    SSceneSingleton<SSceneUIOverlay>.Inst.HideLoading();
+
+                    multiplayerMode = MultiplayerMode.MainMenu;
+
+                    yield break;
+                }
                 string progress = "";
                 for (int j = 0; j < dots; j++)
                 {
@@ -73,15 +89,16 @@ namespace FeatMultiplayer
                     dots = 0;
                 }
                 yield return sload.LoadingStep(1f, "Joining as " + userName + " " + progress, 0);
-                yield return new WaitForSeconds(0.1f);
+                //yield return new WaitForSeconds(0.1f);
             }
 
             if (loginResponse.reason != "Welcome")
             {
                 LogError("Error joining: " + loginResponse.reason + "\n");
 
-                SSceneSingleton<SSceneUIOverlay>.Inst.ShowMessage(SLoc.Get(Naming(loginResponse.reason)), SSceneUIOverlay.MessageType.Error, 10f);
+                SSceneSingleton<SSceneUIOverlay>.Inst.ShowMessage(SLoc.Get("FeatMultiplayer." + loginResponse.reason), SSceneUIOverlay.MessageType.Error, 10f);
                 SSceneSingleton<SSceneHome>.Inst.Activate();
+                SSceneSingleton<SSceneUIOverlay>.Inst.HideLoading();
 
                 multiplayerMode = MultiplayerMode.MainMenu;
 
@@ -170,10 +187,10 @@ namespace FeatMultiplayer
 
             yield return sload.LoadingStep(54f, "Waiting for SCamera data", 0);
 
-
+            yield return WaitForField(() => syncAllCamera, () => syncAllCamera = null);
 
             // ------------------------------------------------------------------------------------
-            
+
             // remake the terrain
 
             yield return sload.LoadingStep(70f, new Action(SSingleton<SBlocks>.Inst.GenerateData), 0);
@@ -257,36 +274,22 @@ namespace FeatMultiplayer
             GItems.forestNbHexes = c;
         }
 
-        static void QuitGameAndUI()
-        {
-            GGame.isPlaying = false;
-            SSceneSingleton<SSceneHome>.Inst.Deactivate();
-            SSceneSingleton<SScenePlay>.Inst.Deactivate();
-            SSceneSingleton<SSceneNewPlanet>.Inst.Deactivate();
-            SSceneSingleton<SSceneChooseLoad>.Inst.Deactivate();
-            SSceneSingleton<SScene3D>.Inst.Deactivate();
-            SSceneSingleton<SScene3D_Overlay>.Inst.Deactivate();
-            SSceneSingleton<SSceneHud>.Inst.Deactivate();
-            SSceneSingleton<SSceneHud_Selection>.Inst.Deactivate();
-            SSceneSingleton<SSceneHud_ItemsBars>.Inst.Deactivate();
-            SSceneSingleton<SSceneTooltip>.Inst.Deactivate();
-            SSceneSingleton<SSceneDialog>.Inst.Deactivate();
-        }
-
-        static void ReceiveMessageLoginResponse(MessageLoginResponse mlr)
+        static void ReceiveMessageLoginResponse(MessageLoginResponse msg)
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
 
-            loginResponse = mlr;
+            loginResponse = msg;
         }
 
         static void ReceiveMessageSyncAllFlags(MessageSyncAllFlags msg)
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllFlags = msg;
@@ -296,6 +299,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllAltitude = msg;
@@ -305,6 +309,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllWater = msg;
@@ -314,6 +319,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllContentId = msg;
@@ -323,6 +329,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllContentData = msg;
@@ -332,6 +339,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllGroundId = msg;
@@ -341,6 +349,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllGroundData = msg;
@@ -350,6 +359,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllMain = msg;
@@ -359,6 +369,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllGame = msg;
@@ -368,6 +379,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllPlanet = msg;
@@ -377,6 +389,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllItems = msg;
@@ -386,6 +399,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllWaterInfo = msg;
@@ -395,6 +409,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllDrones = msg;
@@ -404,6 +419,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllWays = msg;
@@ -413,6 +429,7 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode != MultiplayerMode.ClientJoin)
             {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
                 return;
             }
             syncAllCamera = msg;

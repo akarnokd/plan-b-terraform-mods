@@ -17,7 +17,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SSceneHud), "OnActivate")]
-        static void SSceneHud_OnActivate()
+        static void Patch_SSceneHud_OnActivate()
         {
             if (multiplayerMode == MultiplayerMode.MainMenu && hostMode.Value)
             {
@@ -29,8 +29,8 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(SSceneHud), "OnDeactivate")]
-        static void SSceneHud_OnDeactivate()
+        [HarmonyPatch(typeof(SLoad), nameof(SLoad.QuitGameAndUI))]
+        static void Patch_SLoad_QuitGameAndUI()
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
@@ -42,6 +42,7 @@ namespace FeatMultiplayer
                 }
                 LogInfo("Terminating host listener");
                 stopHostAcceptor.Cancel();
+                LogInfo(Environment.StackTrace);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
