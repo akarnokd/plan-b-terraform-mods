@@ -33,6 +33,13 @@ namespace FeatMultiplayer
 
             FullSync<MessageSyncAllGame>(session);
 
+            FullSync<MessageSyncAllPlanet>(session);
+
+            FullSync<MessageSyncAllItems>(session);
+
+            FullSync<MessageSyncAllWaterInfo>(session);
+
+            FullSync<MessageSyncAllDrones>(session);
         }
 
         static void FullSync<T>(ClientSession sess) where T : MessageSync, new()

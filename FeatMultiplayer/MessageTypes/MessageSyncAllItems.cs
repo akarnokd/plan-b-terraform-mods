@@ -98,6 +98,8 @@ namespace FeatMultiplayer
         public override void Encode(BinaryWriter output)
         {
             Dictionary<string, byte> codeNameTable = new(); // FIXME adjust when there are more than 256 item types
+            codeNameTable[""] = 0;
+
             output.Write(items.Count);
             foreach (var item in items)
             {
@@ -129,6 +131,7 @@ namespace FeatMultiplayer
             var msg = new MessageSyncAllItems();
 
             Dictionary<byte, string> codeNameTable = new(); // FIXME adjust when there are more than 256 item types
+            codeNameTable[0] = "";
 
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)

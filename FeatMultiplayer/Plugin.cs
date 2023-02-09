@@ -24,6 +24,7 @@ namespace FeatMultiplayer
             thePlugin = this;
 
             InitConfig();
+            InitHaxx();
             InitLogging();
             InitMessageDispatcher();
 
