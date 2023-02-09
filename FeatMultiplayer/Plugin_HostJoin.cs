@@ -21,17 +21,36 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode == MultiplayerMode.MainMenu && hostMode.Value)
             {
+                LogInfo("Entering multiplayer host mode");
                 multiplayerMode = MultiplayerMode.Host;
 
                 StartServer();
             }
         }
 
+        static void SSceneHud_OnDeactivate()
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                LogInfo("Terminating sessions: " + sessions.Count);
+                foreach (var cc in new Dictionary<int, ClientSession>(sessions))
+                {
+                    LogInfo("  Bye " + cc.Key + " < " + cc.Value.clientName + " >");
+                    cc.Value.Send(MessageDisconnect.Instance);
+                }
+                LogInfo("Terminating host listener");
+                stopHostAcceptor.Cancel();
+            }
+        }
+
         void OnApplicationQuit()
         {
-            stopNetwork.Cancel();
+            if (multiplayerMode != MultiplayerMode.MainMenu && multiplayerMode != MultiplayerMode.None)
+            {
+                stopNetwork.Cancel();
 
-            Thread.Sleep(2000); // FIXME find a better way
+                Thread.Sleep(2000); // FIXME find a better way
+            }
         }
 
     }

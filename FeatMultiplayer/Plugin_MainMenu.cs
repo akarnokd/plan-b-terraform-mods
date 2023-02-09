@@ -5,13 +5,16 @@ using HarmonyLib;
 using LibCommon;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements.UIR;
 using static LibCommon.GUITools;
+using Open.Nat;
 
 namespace FeatMultiplayer
 {
@@ -59,12 +62,12 @@ namespace FeatMultiplayer
 
             mainMenuPanelHostModeConfig = CreateBox(mainMenuPanelBackground, Naming("MainMenuPanel_HostMode"), GetHostModeString(), fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-            mainMenuPanelHostIP = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_HostIP"), SLoc.Get("FeatMultiplayer.HostIP", hostServiceAddress.Value, hostPort.Value), fontSize.Value, Color.black);
+            mainMenuPanelHostIP = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_HostIP"), SLoc.Get("FeatMultiplayer.HostIP", GetHostLocalAddress(), hostPort.Value), fontSize.Value, Color.black);
 
             mainMenuPanelUseUPnPConfig = CreateBox(mainMenuPanelBackground, Naming("MainMenuPanel_UseUPnP"), GetUPnPString(), fontSize.Value, DEFAULT_BOX_COLOR, Color.white);
 
-            mainMenuPanelUPnPStatus = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_UPnPStatus"), SLoc.Get("FeatMultiplayer.UPnPStatus", "N/A"), fontSize.Value, Color.black);
-            mainMenuPanelUPnPAddress = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_UPnPStatus"), SLoc.Get("FeatMultiplayer.UPnPAddress", "N/A"), fontSize.Value, Color.black);
+            mainMenuPanelUPnPStatus = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_UPnPStatus"), SLoc.Get("FeatMultiplayer.UPnPStatus", GetExternalMappingString()), fontSize.Value, Color.black);
+            mainMenuPanelUPnPAddress = CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_UPnPAddress"), SLoc.Get("FeatMultiplayer.UPnPAddress", GetExternalAddressString()), fontSize.Value, Color.black);
 
             CreateText(mainMenuPanelBackground, Naming("MainMenuPanel_HostHeader"), SLoc.Get("FeatMultiplayer.ClientConfig"), fontSize.Value, Color.black);
 
@@ -89,6 +92,21 @@ namespace FeatMultiplayer
             if (!modEnabled.Value)
             {
                 return;
+            }
+
+            var eip = externalIP;
+            if (eip != null)
+            {
+                externalIP = null;
+                mainMenuPanelUPnPAddress.GetComponent<Text>().text = SLoc.Get("FeatMultiplayer.UPnPAddress", eip);
+                ApplyPreferredSize(mainMenuPanelUPnPAddress);
+            }
+            var emp = externalMap;
+            if (emp != null)
+            {
+                externalMap = null;
+                mainMenuPanelUPnPStatus.GetComponent<Text>().text = SLoc.Get("FeatMultiplayer.UPnPStatus", emp);
+                ApplyPreferredSize(mainMenuPanelUPnPStatus);
             }
 
             var border = 5;
@@ -151,10 +169,27 @@ namespace FeatMultiplayer
                 j++;
             }
             Checkbox(rectBorder, mainMenuPanelHostModeConfig, mp, hostMode, GetHostModeString);
-            Checkbox(rectBorder, mainMenuPanelUseUPnPConfig, mp, useUPnP, GetUPnPString);
+            Checkbox(rectBorder, mainMenuPanelUseUPnPConfig, mp, useUPnP, GetUPnPString, () => GetExternalAddressString());
         }
 
-        static void Checkbox(RectTransform rectBg, GameObject go, Vector2 mp, ConfigEntry<bool> cfg, Func<string> labelProvider)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SScene), "OnDeactivate")]
+        static void SScene_OnDeactivate(SScene __instance)
+        {
+            if (!modEnabled.Value)
+            {
+                return;
+            }
+            if (__instance is SSceneHome)
+            {
+                Destroy(mainMenuPanel);
+                mainMenuPanel = null;
+                mainMenuPanelClients.Clear();
+                mainMenuClientNames.Clear();
+            }
+        }
+
+        static void Checkbox(RectTransform rectBg, GameObject go, Vector2 mp, ConfigEntry<bool> cfg, Func<string> labelProvider, Action onToggle = null)
         {
             if (Within(rectBg, go.GetComponent<RectTransform>(), mp))
             {
@@ -163,6 +198,8 @@ namespace FeatMultiplayer
                 {
                     cfg.Value = !cfg.Value;
                     go.GetComponentInChildren<Text>().text = labelProvider();
+                    
+                    onToggle?.Invoke();
                 }
             }
             else
@@ -178,6 +215,90 @@ namespace FeatMultiplayer
         static string GetUPnPString()
         {
             return SLoc.Get("FeatMultiplayer.UseUPnP", useUPnP.Value ? "X" : "   ");
+        }
+
+        static string GetHostLocalAddress()
+        {
+            var hostIp = hostServiceAddress.Value;
+            IPAddress hostIPAddress = IPAddress.Any;
+            if (hostIp == "default" || hostIp == "")
+            {
+                hostIPAddress = GetMainIPv4();
+            }
+            else
+            if (hostIp == "defaultv6")
+            {
+                hostIPAddress = GetMainIPv6();
+            }
+            else
+            {
+                hostIPAddress = IPAddress.Parse(hostIp);
+            }
+            return hostIPAddress.ToString();
+        }
+
+        static volatile string externalIP;
+        static volatile string externalMap;
+
+        static string GetExternalAddressString()
+        {
+            if (useUPnP.Value)
+            {
+                var portNum = hostPort.Value;
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        var discoverer = new NatDiscoverer();
+                        LogInfo("Begin NAT Discovery");
+                        var device = await discoverer.DiscoverDeviceAsync().ConfigureAwait(false);
+                        LogInfo(device.ToString());
+                        LogInfo("Begin Get External IP");
+                        // The following hangs indefinitely, not sure why
+                        var ip = await device.GetExternalIPAsync().ConfigureAwait(false);
+                        LogInfo("External IP = " + ip);
+                        externalIP = ip.ToString();
+
+                        try
+                        {
+                            var mapping = await device.GetSpecificMappingAsync(Protocol.Tcp, portNum).ConfigureAwait(false);
+                            LogInfo("Current Mapping = " + mapping);
+
+                            await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, portNum, portNum, "The Planet Crafter Multiplayer")).ConfigureAwait(false);
+                            externalMap = "ok";
+                        }
+                        catch (Exception ex)
+                        {
+                            LogInfo(ex);
+                            externalMap = "error";
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInfo(ex);
+                        externalIP = "error";
+                        externalMap = "error";
+                    }
+                });
+
+                externalIP = "checking";
+                externalMap = "checking";
+                return "checking";
+            }
+            externalIP = "N/A";
+            externalMap = "N/A";
+            return "N/A";
+        }
+
+        static string GetExternalMappingString()
+        {
+            if (useUPnP.Value)
+            {
+                return "checking";
+            }
+            return "N/A";
         }
     }
 }

@@ -19,6 +19,7 @@
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.14" IncludeAssets="compile" />
+	  <PackageReference Include="Open.Nat" Version="2.1.0" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -44,12 +45,22 @@
   </ItemGroup>
 
   <Target Name="CopyDLLs" AfterTargets="Build">
+	  <PropertyGroup>
+		  <ForZip>$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)</ForZip>
+		  <ForZipAll>$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)</ForZipAll>
+	  </PropertyGroup>
+	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
-
+	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(Destination1)" />
+	  
 	  <!-- Don't release yet 
 	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
+	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(ForZip)" />
+	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
+	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(ForZipAll)" />
+	  
 	  <ZipDirectory SourceDirectory="$(TargetDir)\$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip" Overwrite="true" />
 	  
 	  -->

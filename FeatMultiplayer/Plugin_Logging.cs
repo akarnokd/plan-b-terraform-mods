@@ -20,42 +20,50 @@ namespace FeatMultiplayer
 
         static void Log(int level, object message)
         {
-            var md = multiplayerMode;
-            if (md == MultiplayerMode.HostLoading || md == MultiplayerMode.Host)
+            try
             {
-                if (hostLogLevel.Value <= level)
+                var md = multiplayerMode;
+                if (md == MultiplayerMode.HostLoading || md == MultiplayerMode.Host)
                 {
-                    AppendLog("Player_Host.log", level, message);
+                    if (hostLogLevel.Value <= level)
+                    {
+                        AppendLog("Player_Host.log", level, message);
+                    }
                 }
-            }
-            else if (md == MultiplayerMode.ClientJoin || md == MultiplayerMode.Client)
+                else if (md == MultiplayerMode.ClientJoin || md == MultiplayerMode.Client)
+                {
+                    if (clientLogLevel.Value <= level)
+                    {
+                        AppendLog("Player_Client_" + clientName + ".log", level, message);
+                    }
+                }
+                else
+                {
+                    if (level == 0)
+                    {
+                        globalLogger.LogDebug(message);
+                    }
+                    else if (level == 1)
+                    {
+                        globalLogger.LogInfo(message);
+                    }
+                    else if (level == 2)
+                    {
+                        globalLogger.LogWarning(message);
+                    }
+                    else if (level == 3)
+                    {
+                        globalLogger.LogError(message);
+                    }
+                    else if (level == 4)
+                    {
+                        globalLogger.LogFatal(message);
+                    }
+                }
+            } 
+            catch (Exception ex)
             {
-                if (clientLogLevel.Value <= level)
-                {
-                    AppendLog("Player_Client_" + clientName + ".log", level, message);
-                }
-            }
-            else
-            {
-                if (level == 0)
-                {
-                    globalLogger.LogDebug(message);
-                }
-                else if (level == 1) {
-                    globalLogger.LogInfo(message);
-                }
-                else if (level == 2)
-                {
-                    globalLogger.LogWarning(message);
-                }
-                else if (level == 3)
-                {
-                    globalLogger.LogError(message);
-                }
-                else if (level == 4)
-                {
-                    globalLogger.LogFatal(message);
-                }
+                globalLogger.LogError(ex);
             }
         }
 
@@ -64,10 +72,10 @@ namespace FeatMultiplayer
             lock (logExclusion)
             {
                 var path = Path.Combine(Application.persistentDataPath, logFile);
-
+                
                 var sb = new StringBuilder();
 
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.FFF"));
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 if (level == 0)
                 {
                     sb.Append(" | DEBUG   | ");

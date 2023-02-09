@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using LibCommon;
+using Mono.Cecil.Cil;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace FeatMultiplayer
         const bool fullResetBuffer = false;
 
         static CancellationTokenSource stopNetwork = new();
+        static CancellationTokenSource stopHostAcceptor = new();
 
         static ConcurrentQueue<MessageBase> receiverQueue = new();
 
@@ -79,6 +81,7 @@ namespace FeatMultiplayer
         static void StartServer()
         {
             stopNetwork = new();
+            stopHostAcceptor = new();
             Task.Factory.StartNew(HostAcceptor, TaskCreationOptions.LongRunning);
         }
 
@@ -86,6 +89,11 @@ namespace FeatMultiplayer
         {
             var hostIp = hostServiceAddress.Value;
             IPAddress hostIPAddress = IPAddress.Any;
+            if (hostIp == "")
+            {
+                hostIPAddress = IPAddress.Any;
+            }
+            else
             if (hostIp == "default")
             {
                 hostIPAddress = GetMainIPv4();
@@ -97,7 +105,15 @@ namespace FeatMultiplayer
             }
             else
             {
-                hostIPAddress = IPAddress.Parse(hostIp);
+                try
+                {
+                    hostIPAddress = IPAddress.Parse(hostIp);
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    return;
+                }
             }
             LogInfo("Starting HostAcceptor on " + hostIp + ":" + hostPort.Value + " (" + hostIPAddress + ")");
             try
@@ -105,9 +121,10 @@ namespace FeatMultiplayer
                 TcpListener listener = new TcpListener(hostIPAddress, hostPort.Value);
                 listener.Start();
                 stopNetwork.Token.Register(listener.Stop);
+                stopHostAcceptor.Token.Register(listener.Stop);
                 try
                 {
-                    while (!stopNetwork.IsCancellationRequested)
+                    while (!stopNetwork.IsCancellationRequested && !stopHostAcceptor.IsCancellationRequested)
                     {
                         var client = listener.AcceptTcpClient();
                         ManageClient(client);
@@ -121,7 +138,7 @@ namespace FeatMultiplayer
             }
             catch (Exception ex)
             {
-                if (!stopNetwork.IsCancellationRequested)
+                if (!stopNetwork.IsCancellationRequested && !stopHostAcceptor.IsCancellationRequested)
                 {
                     LogError(ex);
                 }
@@ -200,7 +217,6 @@ namespace FeatMultiplayer
 
                             LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
                             ClearMemoryStream(encodeBuffer, fullResetBuffer);
-                            encodeWriter.Seek(0, SeekOrigin.Begin);
 
                             var code = msg.MessageCodeBytes();
 
@@ -214,11 +230,19 @@ namespace FeatMultiplayer
 
                             var msgLength = (int)(encodeBuffer.Position - pos);
                             var messageTotalLength = code.Length + msgLength;
-                            encodeWriter.Seek(0, SeekOrigin.Begin);
+                            encodeBuffer.Position = 0;
                             encodeWriter.Write(messageTotalLength);
-                            encodeWriter.Seek(0, SeekOrigin.Begin);
+                            encodeBuffer.Position = 0;
 
-                            LogDebug("    Message sizes: 4 + 1 + " + code.Length + " + " + msgLength);
+                            LogDebug("    Message sizes: 4 + 1 + " + code.Length + " + " + msgLength + " ?= " + encodeBuffer.Length);
+
+                            StringBuilder sb = new();
+                            sb.Append("        ");
+                            for (int i = 0; i < 5 + code.Length; i++)
+                            {
+                                sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                            }
+                            LogDebug(sb.ToString());
 
                             encodeBuffer.WriteTo(stream);
                             stream.Flush();
@@ -262,16 +286,29 @@ namespace FeatMultiplayer
                     while (!stopNetwork.IsCancellationRequested && !session.disconnectToken.IsCancellationRequested)
                     {
                         ClearMemoryStream(encodeBuffer, fullResetBuffer);
+                        encodeBuffer.SetLength(5);
 
                         // Read the header with the total and the message code lengths
                         var read = ReadFully(stream, encodeBuffer.GetBuffer(), 0, 5);
-                        encodeBuffer.SetLength(5);
                         if (read != 5)
                         {
                             throw new IOException("ReceiverLoop expected 5 more bytes but got " + read);
                         }
+
+                        LogDebug("ReceiverLoop message incoming");
+
+                        StringBuilder sb = new();
+                        sb.Append("        ");
+                        for (int i = 0; i < 5; i++)
+                        {
+                            sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                        }
+                        LogDebug(sb.ToString());
+
                         var totalLength = encodeReader.ReadInt32();
                         var messageCodeLen = encodeReader.ReadByte();
+
+                        LogDebug("ReceiverLoop message totalLength = " + totalLength + ", messageCodeLen = " + messageCodeLen);
 
                         // make sure the buffer can hold the remaining of the message
                         if (encodeBuffer.Capacity < 5 + totalLength)
@@ -279,6 +316,7 @@ namespace FeatMultiplayer
                             encodeBuffer.Capacity = 5 + totalLength;
                         }
 
+                        encodeBuffer.SetLength(5 + totalLength);
                         // read the rest
                         read = ReadFully(stream, encodeBuffer.GetBuffer(), 5, totalLength);
 
@@ -289,7 +327,6 @@ namespace FeatMultiplayer
                         }
 
                         // make the buffer appear to hold all.
-                        encodeBuffer.SetLength(5 + totalLength);
                         encodeBuffer.Position = 5;
 
                         // decode the the messageCode

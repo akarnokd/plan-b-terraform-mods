@@ -193,6 +193,17 @@ namespace LibCommon
             var rect = go.GetComponent<RectTransform>();
             rect.localPosition = new Vector2(x, y);
         }
+
+        /// <summary>
+        /// Apply the preferred size of the Text component to the main RectTransform.sizeDelta.
+        /// </summary>
+        /// <param name="go"></param>
+        public static void ApplyPreferredSize(GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            var txt = go.GetComponent<Text>();
+            rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
+        }
     }
 
     /// <summary>
