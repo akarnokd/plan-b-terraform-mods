@@ -26,6 +26,10 @@ namespace FeatMultiplayer
 
                 StartServer();
             }
+            else
+            {
+                multiplayerMode = MultiplayerMode.SinglePlayer;
+            }
         }
 
         [HarmonyPostfix]

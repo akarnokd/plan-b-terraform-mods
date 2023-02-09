@@ -26,6 +26,19 @@ namespace FeatMultiplayer
             Haxx.cVehicleStopObjective = AccessTools.FieldRefAccess<CVehicle, int>("_stopObjective");
 
             Haxx.cVehicleLoadWait = AccessTools.FieldRefAccess<CVehicle, float>("_loadWait");
+
+            Haxx.cItemContentFirstBuildCoords = AccessTools.FieldRefAccess<CItem_Content, int2>("_firstBuildCoords");
+
+
+            Haxx.cItemContentBuild = AccessTools.Method(typeof(CItem_Content), "Build", new[] { typeof(int2), typeof(bool) });
+
+            /*
+            Haxx.cItemContentFactoryBuild = AccessTools.Method(typeof(CItem_ContentFactory), "Build", new[] { typeof(int2), typeof(bool) });
+
+            Haxx.cItemContentDepotBuild = AccessTools.Method(typeof(CItem_ContentDepot), "Build", new[] { typeof(int2), typeof(bool) });
+
+            Haxx.cItemContentExtractorBuild = AccessTools.Method(typeof(CItem_ContentExtractor), "Build", new[] { typeof(int2), typeof(bool) });
+            */
         }
     }
 
@@ -41,5 +54,17 @@ namespace FeatMultiplayer
         internal static AccessTools.FieldRef<CVehicle, int> cVehicleStopObjective;
 
         internal static AccessTools.FieldRef<CVehicle, float> cVehicleLoadWait;
+
+        internal static AccessTools.FieldRef<CItem_Content, int2> cItemContentFirstBuildCoords;
+
+        internal static MethodInfo cItemContentBuild;
+
+        /*
+        internal static MethodInfo cItemContentFactoryBuild;
+
+        internal static MethodInfo cItemContentDepotBuild;
+
+        internal static MethodInfo cItemContentExtractorBuild;
+        */
     }
 }

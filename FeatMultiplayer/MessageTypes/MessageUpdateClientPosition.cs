@@ -7,29 +7,31 @@ using System.Threading.Tasks;
 
 namespace FeatMultiplayer
 {
-    internal class MessageLogin : MessageBase
+    internal class MessageUpdateClientPosition : MessageBase
     {
-        const string messageCode = "Login";
+        const string messageCode = "ClientPosition";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal string userName;
+        internal int2 coords;
 
-        internal string password;
+        public void GetSnapshot()
+        {
+            coords = GScene3D.mouseoverCoords;
+        }
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(userName);
-            output.Write(password);
+            output.Write(coords.x);
+            output.Write(coords.y);
         }
 
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageLogin();
-            msg.userName = input.ReadString();
-            msg.password = input.ReadString();
+            var msg = new MessageUpdateClientPosition();
+            msg.coords = new int2(input.ReadInt32(), input.ReadInt32());
             message = msg;
             return true;
         }

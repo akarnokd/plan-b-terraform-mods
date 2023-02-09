@@ -32,6 +32,10 @@ namespace FeatMultiplayer
         /// </summary>
         MainMenu,
         /// <summary>
+        /// Game was entered as single-player.
+        /// </summary>
+        SinglePlayer,
+        /// <summary>
         /// The cost is currently loading a world but hasn't enabled joining yet.
         /// </summary>
         HostLoading,
