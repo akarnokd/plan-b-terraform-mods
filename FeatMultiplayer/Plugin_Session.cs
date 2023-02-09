@@ -74,6 +74,7 @@ namespace FeatMultiplayer
                     LogInfo("User " + ml.userName + " logged in successfully");
                     ml.sender.loginSuccess = true;
                     loggedInClients.Add(ml.userName, ml.sender);
+                    ml.sender.clientName = ml.userName;
 
                     var response = new MessageLoginResponse();
                     response.reason = "Welcome";

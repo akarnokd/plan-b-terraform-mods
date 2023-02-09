@@ -33,7 +33,7 @@ namespace FeatMultiplayer
 
         internal void Decode(BinaryReader input)
         {
-            RLE.Decode(input, data);
+            RLE.Decode(input, ref data);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -73,7 +73,7 @@ namespace XUnitTests
 
                 mw.Position = 0;
 
-                RLE.Decode(br, output);
+                RLE.Decode(br, ref output);
 
                 CollectionAssert.AreEqual(input, output);
             }
@@ -115,7 +115,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -147,7 +147,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -179,7 +179,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -222,7 +222,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -265,7 +265,7 @@ namespace XUnitTests
             mw.Position = 0;
 
 
-            RLE.Decode(br, output);
+            RLE.Decode(br, ref output);
 
             CollectionAssert.AreEqual(input, output);
         }
@@ -293,7 +293,7 @@ namespace XUnitTests
 
                 mw.Position = 0;
 
-                RLE.Decode(br, output);
+                RLE.Decode(br, ref output);
 
                 CollectionAssert.AreEqual(input, output);
             }

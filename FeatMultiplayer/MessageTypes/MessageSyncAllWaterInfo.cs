@@ -45,7 +45,7 @@ namespace FeatMultiplayer
 
             msg.waterInGroundEvaporated = input.ReadDouble();
 
-            RLE.Decode(input, msg.supergridWater);
+            RLE.Decode(input, ref msg.supergridWater);
 
             message = msg;
             return true;

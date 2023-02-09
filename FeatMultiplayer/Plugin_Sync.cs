@@ -48,6 +48,7 @@ namespace FeatMultiplayer
 
         static void FullSync<T>(ClientSession sess) where T : MessageSync, new()
         {
+            LogDebug("FullSync: " + typeof(T) + " to " + sess.clientName);
             var msg = new T();
             msg.GetSnapshot();
             sess.Send(msg);

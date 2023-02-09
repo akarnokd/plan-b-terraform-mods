@@ -16,7 +16,7 @@ namespace FeatMultiplayer
 
         public static void Encode(float[] data, BinaryWriter writer)
         {
-
+            writer.Write(data.Length);
             for (int i = 0; i < data.Length; i++) 
             {
                 float pivot = data[i];
@@ -83,7 +83,7 @@ namespace FeatMultiplayer
 
         public static void Encode(int[] data, BinaryWriter writer)
         {
-
+            writer.Write(data.Length);
             for (int i = 0; i < data.Length; i++)
             {
                 int pivot = data[i];
@@ -151,7 +151,7 @@ namespace FeatMultiplayer
 
         public static void Encode(byte[] data, BinaryWriter writer)
         {
-
+            writer.Write(data.Length);
             for (int i = 0; i < data.Length; i++)
             {
                 byte pivot = data[i];
@@ -219,7 +219,7 @@ namespace FeatMultiplayer
 
         public static void Encode(ushort[] data, BinaryWriter writer)
         {
-
+            writer.Write(data.Length);
             for (int i = 0; i < data.Length; i++)
             {
                 ushort pivot = data[i];
@@ -285,12 +285,15 @@ namespace FeatMultiplayer
             }
         }
 
-        public static void Decode(BinaryReader reader, float[] data)
+        public static void Decode(BinaryReader reader, ref float[] data)
         {
+            data = new float[reader.ReadInt32()];
+
             int offset = 0;
             while (offset < data.Length)
             {
                 int code = reader.ReadSByte();
+                // Plugin.LogDebug("Code: " + code + ", Offset = " + offset + ", Len = " + data.Length);
                 if (code < 0)
                 {
                     for (int i = code; i < 0; i++)
@@ -309,8 +312,9 @@ namespace FeatMultiplayer
             }
         }
 
-        public static void Decode(BinaryReader reader, int[] data)
+        public static void Decode(BinaryReader reader, ref int[] data)
         {
+            data = new int[reader.ReadInt32()];
             int offset = 0;
             while (offset < data.Length)
             {
@@ -333,8 +337,9 @@ namespace FeatMultiplayer
             }
         }
 
-        public static void Decode(BinaryReader reader, byte[] data)
+        public static void Decode(BinaryReader reader, ref byte[] data)
         {
+            data = new byte[reader.ReadInt32()];
             int offset = 0;
             while (offset < data.Length)
             {
@@ -357,8 +362,9 @@ namespace FeatMultiplayer
             }
         }
 
-        public static void Decode(BinaryReader reader, ushort[] data)
+        public static void Decode(BinaryReader reader, ref ushort[] data)
         {
+            data = new ushort[reader.ReadInt32()];
             int offset = 0;
             while (offset < data.Length)
             {

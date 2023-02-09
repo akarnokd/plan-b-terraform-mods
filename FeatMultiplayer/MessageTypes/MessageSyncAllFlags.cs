@@ -23,11 +23,13 @@ namespace FeatMultiplayer
             var y = s.y;
             var src = GHexes.flags;
             data = new int[x * y];
+            var k = 0;
             for (int i = 0; i < x; i++)
             {
                 for (int j = 0; j < y; j++)
                 {
-                    data[i * x + j] = (int)src[i, j];
+                    int v = (int)src[i, j];
+                    data[k++] = v;
                 }
             }
         }
@@ -62,12 +64,7 @@ namespace FeatMultiplayer
         {
             var msg = new MessageSyncAllFlags();
 
-            var s = GWorld.size;
-            var x = s.x;
-            var y = s.y;
-            msg.data = new int[x * y];
-
-            RLE.Decode(input, msg.data);
+            RLE.Decode(input, ref msg.data);
             message = msg;
             return true;
         }

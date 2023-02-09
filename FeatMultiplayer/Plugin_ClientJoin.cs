@@ -214,8 +214,22 @@ namespace FeatMultiplayer
                 var v = getter();
                 if (v != null)
                 {
-                    v.ApplySnapshot();
-                    clear();
+                    try
+                    {
+                        try
+                        {
+                            v.ApplySnapshot();
+                        }
+                        finally
+                        {
+                            clear();
+                        }
+                    } 
+                    catch (Exception ex)
+                    {
+                        LogError((typeof(T) + ".ApplySnapshot() crashed\r\n" + ex));
+                        throw ex;
+                    }
                     yield break;
                 }
                 yield return new WaitForSeconds(0.1f);

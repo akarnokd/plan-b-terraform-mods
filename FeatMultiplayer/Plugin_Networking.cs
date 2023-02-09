@@ -246,6 +246,8 @@ namespace FeatMultiplayer
 
                             encodeBuffer.WriteTo(stream);
                             stream.Flush();
+
+                            LogDebug("    Sent.");
                         }
                         else
                         {
@@ -308,7 +310,7 @@ namespace FeatMultiplayer
                         var totalLength = encodeReader.ReadInt32();
                         var messageCodeLen = encodeReader.ReadByte();
 
-                        LogDebug("ReceiverLoop message totalLength = " + totalLength + ", messageCodeLen = " + messageCodeLen);
+                        LogDebug("    Message totalLength = " + totalLength + ", messageCodeLen = " + messageCodeLen);
 
                         // make sure the buffer can hold the remaining of the message
                         if (encodeBuffer.Capacity < 5 + totalLength)
@@ -333,27 +335,35 @@ namespace FeatMultiplayer
                         var messageCode = Encoding.UTF8.GetString(encodeBuffer.GetBuffer(), 5, messageCodeLen);
                         encodeBuffer.Position = 5 + messageCodeLen;
 
-                        LogDebug("ReceiverLoop message " + messageCode + " with length 4 + 1 + " + messageCodeLen + " + " + (totalLength - messageCodeLen));
+                        LogDebug("    Code: " + messageCode + " with length 4 + 1 + " + messageCodeLen + " + " + (totalLength - messageCodeLen));
 
                         // lookup an actual code decoder
                         if (messageRegistry.TryGetValue(messageCode, out var msg))
                         {
-                            if (msg.TryDecode(encodeReader, out var decoded))
+                            try
                             {
-                                if (decoded.GetType() != msg.GetType())
+                                if (msg.TryDecode(encodeReader, out var decoded))
                                 {
-                                    LogError("ReceiverLoop decoder type bug. Expected = " + msg.GetType() + ", Actual = " + decoded.GetType());
+                                    if (decoded.GetType() != msg.GetType())
+                                    {
+                                        LogError("    Decoder type bug. Expected = " + msg.GetType() + ", Actual = " + decoded.GetType());
+                                    }
+                                    else
+                                    {
+                                        LogDebug("    Decode complete.");
+                                        decoded.sender = session;
+                                        decoded.onReceive = msg.onReceive;
+                                        receiverQueue.Enqueue(decoded);
+                                    }
                                 }
                                 else
                                 {
-                                    decoded.sender = session;
-                                    decoded.onReceive = msg.onReceive;
-                                    receiverQueue.Enqueue(decoded);
+                                    LogWarning("ReceiverLoop failed to decode message of " + messageCode + " via " + msg.GetType());
                                 }
-                            }
-                            else
+                            } 
+                            catch (Exception ex)
                             {
-                                LogWarning("ReceiverLoop failed to decode message of " + messageCode + " via " + msg.GetType());
+                                LogError("    Decoder crash " + msg.GetType() + "\r\n" + ex);
                             }
                         }
                         else
@@ -364,8 +374,10 @@ namespace FeatMultiplayer
                 } 
                 finally
                 {
+                    LogDebug("ReceiverLoop ending for " + session.id + " from " + session.tcpClient.Client.RemoteEndPoint);
                     SessionTerminate(session);
                     tcpClient.Close();
+                    LogDebug("ReceiverLoop ended for " + session.id + " from " + session.tcpClient.Client.RemoteEndPoint);
                 }
             }
             catch (Exception ex)
