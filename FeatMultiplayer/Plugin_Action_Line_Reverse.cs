@@ -68,7 +68,12 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageUpdateLine(MessageUpdateLine msg)
         {
-            if (multiplayerMode == MultiplayerMode.Host)
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageActionReverseLine: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
             {
                 LogDebug("MessageUpdateLine: Handling " + msg.GetType());
 
