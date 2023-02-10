@@ -9,7 +9,7 @@ namespace FeatMultiplayer
 {
     internal class MessageActionDestroy : MessageBase
     {
-        const string messageCode = "Destroy";
+        const string messageCode = "ActionDestroy";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;

@@ -34,12 +34,7 @@ namespace FeatMultiplayer
 
         internal void ApplySnapshot()
         {
-            var lineLookup = new Dictionary<int, CLine>();
-            for (int i = 1; i < GWays.lines.Count; i++)
-            {
-                CLine line = GWays.lines[i];
-                lineLookup.Add(line.id, line);
-            }
+            var lineLookup = Plugin.GetLineDictionary();
             var itemLookup = Plugin.GetItemsDictionary();
 
             foreach (var line in lines)

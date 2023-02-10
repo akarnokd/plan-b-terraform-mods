@@ -9,7 +9,7 @@ namespace FeatMultiplayer
 {
     internal class MessageActionBuild : MessageBase
     {
-        const string messageCode = "Build";
+        const string messageCode = "ActionBuild";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;

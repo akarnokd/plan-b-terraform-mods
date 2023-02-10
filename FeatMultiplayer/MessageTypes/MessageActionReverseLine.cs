@@ -7,32 +7,28 @@ using System.Threading.Tasks;
 
 namespace FeatMultiplayer
 {
-    internal class MessageActionRenameLandmark : MessageBase
+    internal class MessageActionReverseLine : MessageBase
     {
-        const string messageCode = "ActionRenameLandmark";
+        const string messageCode = "ActionReverseLine";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal int2 coords;
-        internal string name;
+        internal int lineId;
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(coords.x);
-            output.Write(coords.y);
-            output.Write(name);
+            output.Write(lineId);
         }
 
         void Decode(BinaryReader input)
         {
-            coords = new int2(input.ReadInt32(), input.ReadInt32());
-            name = input.ReadString();
+            lineId = input.ReadInt32();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageActionRenameLandmark();
+            var msg = new MessageActionReverseLine();
             msg.Decode(input);
             message = msg;
             return true;

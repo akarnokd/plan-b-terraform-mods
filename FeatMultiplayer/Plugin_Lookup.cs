@@ -75,5 +75,16 @@ namespace FeatMultiplayer
 
             return result;
         }
+
+        internal static Dictionary<int, CLine> GetLineDictionary()
+        {
+            var result = new Dictionary<int, CLine>();
+            for (int i = 1; i < GWays.lines.Count; i++)
+            {
+                CLine line = GWays.lines[i];
+                result.Add(line.id, line);
+            }
+            return result;
+        }
     }
 }

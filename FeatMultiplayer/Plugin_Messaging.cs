@@ -49,6 +49,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageActionBuild>(ReceiveMessageActionBuild);
             AddMessageRegistry<MessageActionDestroy>(ReceiveMessageActionDestroy);
             AddMessageRegistry<MessageActionRenameLandmark>(ReceiveMessageActionRenameLandmark);
+            AddMessageRegistry<MessageActionReverseLine>(ReceiveMessageActionReverseLine);
 
             AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
             AddMessageRegistry<MessageUpdateRecipeAt>(ReceiveMessageUpdateRecipeAt);
@@ -63,6 +64,7 @@ namespace FeatMultiplayer
 
             AddMessageRegistry<MessageUpdateTime>(ReceiveMessageUpdateTime);
             AddMessageRegistry<MessageUpdatePlanet>(ReceiveMessageUpdatePlanet);
+            AddMessageRegistry<MessageUpdateLine>(ReceiveMessageUpdateLine);
             AddMessageRegistry<MessageUpdateLines>(ReceiveMessageUpdateLines);
             AddMessageRegistry<MessageUpdateDrones>(ReceiveMessageUpdateDrones);
             AddMessageRegistry<MessageUpdateTransportStacks>(ReceiveMessageUpdateTransportStacks);
