@@ -3,7 +3,7 @@ using System.IO;
 
 namespace FeatMultiplayer
 {
-    public struct SnapshotPlanet
+    public class SnapshotPlanet
     {
         internal string name;
         internal int sf6ContainerCount;
@@ -11,8 +11,6 @@ namespace FeatMultiplayer
         internal readonly List<float> dailySF6 = new();
         internal readonly List<float> dailyNF3 = new();
         internal readonly List<float> dailyTemperature = new();
-
-        public SnapshotPlanet() { }
 
         internal void GetSnapshot()
         {

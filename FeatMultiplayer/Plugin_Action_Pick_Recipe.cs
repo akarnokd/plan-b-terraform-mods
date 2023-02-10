@@ -102,7 +102,7 @@ namespace FeatMultiplayer
 
                 if (multiplayerMode == MultiplayerMode.Host)
                 {
-                    SendAllClientsExcept(msg.sender, msg);
+                    SendAllClients(msg);
 
                     for (int i = 0; i < GDrones.drones.Count; i++)
                     {
@@ -130,7 +130,7 @@ namespace FeatMultiplayer
 
                 if (multiplayerMode == MultiplayerMode.Host)
                 {
-                    SendAllClientsExcept(msg.sender, msg);
+                    SendAllClients(msg);
                 }
 
                 PickRecipeNotifyBlocks(msg.coords);
@@ -152,7 +152,7 @@ namespace FeatMultiplayer
 
                 if (multiplayerMode == MultiplayerMode.Host)
                 {
-                    SendAllClientsExcept(msg.sender, msg);
+                    SendAllClients(msg);
                 }
 
                 PickRecipeNotifyBlocks(msg.coords);

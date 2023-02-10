@@ -13,7 +13,7 @@ namespace FeatMultiplayer
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal SnapshotPlanet snapshot;
+        internal readonly SnapshotPlanet snapshot = new SnapshotPlanet();
 
         void Decode(BinaryReader input)
         {
