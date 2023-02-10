@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FeatMultiplayer
 {
-    internal class MessageSyncAllPlanet : MessageSync
+    internal class MessageUpdatePlanet : MessageSync
     {
-        const string messageCode = "SyncAllPlanet";
+        const string messageCode = "UpdatePlanet";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
@@ -22,7 +22,7 @@ namespace FeatMultiplayer
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageSyncAllPlanet();
+            var msg = new MessageUpdatePlanet();
 
             msg.Decode(input);
 

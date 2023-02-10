@@ -57,6 +57,8 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateContentData>(ReceiveMessageUpdateContentData);
             AddMessageRegistry<MessageUpdateDatasAt>(ReceiveMessageUpdateGroundAndContentData);
             AddMessageRegistry<MessageUpdateStacksAndContentDataAt>(ReceiveMessageUpdateStacksAndContentDataAt);
+            AddMessageRegistry<MessageUpdatePlanetGasses>(ReceiveMessageUpdatePlanetGasses);
+            AddMessageRegistry<MessageUpdateForest>(ReceiveMessageUpdateForest);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()

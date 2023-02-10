@@ -296,7 +296,7 @@ namespace FeatMultiplayer
             internal float speed;
             internal int stopObjective;
             internal float loadWait;
-            internal readonly List<StackSnapshot> stacks = new();
+            internal readonly List<SnapshotStack> stacks = new();
 
             internal void Encode(BinaryWriter output)
             {
@@ -326,7 +326,7 @@ namespace FeatMultiplayer
                 int c = input.ReadInt32();
                 for (int i = 0; i < c; i++)
                 {
-                    var ssnp = new StackSnapshot();
+                    var ssnp = new SnapshotStack();
                     ssnp.Decode(input);
                     stacks.Add(ssnp);
                 }
@@ -343,7 +343,7 @@ namespace FeatMultiplayer
 
                 foreach (var s in vehicle.stacks.stacks)
                 {
-                    var ssn = new StackSnapshot();
+                    var ssn = new SnapshotStack();
                     ssn.GetSnapshot(in s);
                     stacks.Add(ssn);
                 }
@@ -361,7 +361,7 @@ namespace FeatMultiplayer
 
                 for (int i = 0; i < stacks.Count; i++)
                 {
-                    StackSnapshot s = stacks[i];
+                    SnapshotStack s = stacks[i];
 
                     s.ApplySnapshot(ref result.stacks.stacks[i], itemDictionary);
                 }

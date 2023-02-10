@@ -17,14 +17,14 @@ namespace FeatMultiplayer
 
         internal int2 coords;
         internal int index;
-        internal StackSnapshot stack;
+        internal SnapshotStack stack;
 
         public void GetSnapshot(int2 coords, int index)
         {
             this.coords = coords;
             this.index = index;
             var gstacks = GHexes.stacks[coords.x, coords.y];
-            var stack = new StackSnapshot();
+            var stack = new SnapshotStack();
             stack.GetSnapshot(in gstacks.stacks[index]);
         }
 
@@ -32,7 +32,7 @@ namespace FeatMultiplayer
         {
             this.coords = coords;
             this.index = index;
-            var stack = new StackSnapshot();
+            var stack = new SnapshotStack();
             stack.codeName = item?.codeName ?? "";
             stack.count = count;
             stack.booked = booked;
@@ -72,7 +72,7 @@ namespace FeatMultiplayer
         {
             coords = new int2(input.ReadInt32(), input.ReadInt32());
             index = input.ReadInt32();
-            stack = new StackSnapshot();
+            stack = new SnapshotStack();
             stack.Decode(input);
         }
     }

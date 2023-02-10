@@ -15,8 +15,8 @@ namespace FeatMultiplayer
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal readonly List<ItemSnapshot> items = new();
-        internal readonly Dictionary<int2, List<StackSnapshot>> stacks = new();
+        internal readonly List<SnapshotItem> items = new();
+        internal readonly Dictionary<int2, List<SnapshotStack>> stacks = new();
 
         internal override void GetSnapshot()
         {
@@ -24,7 +24,7 @@ namespace FeatMultiplayer
             for (int i = 1; i < GItems.items.Count; i++)
             {
                 CItem item = GItems.items[i];
-                var isnap = new ItemSnapshot();
+                var isnap = new SnapshotItem();
                 isnap.GetSnapshot(item);
                 items.Add(isnap);
             }
@@ -34,12 +34,12 @@ namespace FeatMultiplayer
                 var gstacks = GHexes.stacks[coords.x, coords.y];
                 if (gstacks != null)
                 {
-                    var stacksAt = new List<StackSnapshot>();
+                    var stacksAt = new List<SnapshotStack>();
                     stacks.Add(coords, stacksAt);
 
                     foreach (var s in gstacks.stacks)
                     {
-                        var ssn = new StackSnapshot();
+                        var ssn = new SnapshotStack();
                         ssn.GetSnapshot(in s);
                         stacksAt.Add(ssn);
                     }
@@ -140,7 +140,7 @@ namespace FeatMultiplayer
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)
             {
-                var isnp = new ItemSnapshot();
+                var isnp = new SnapshotItem();
                 items.Add(isnp);
                 isnp.codeName = input.ReadString();
                 isnp.count = input.ReadInt32();
@@ -155,7 +155,7 @@ namespace FeatMultiplayer
                 var y = input.ReadInt32();
                 var coords = new int2(x, y);
 
-                var sstacks = new List<StackSnapshot>();
+                var sstacks = new List<SnapshotStack>();
 
                 stacks.Add(coords, sstacks);
 
@@ -163,60 +163,13 @@ namespace FeatMultiplayer
 
                 for (int j = 0; j < d; j++)
                 {
-                    var sst = new StackSnapshot();
+                    var sst = new SnapshotStack();
                     sstacks.Add(sst);
 
                     sst.codeName = codeNameTable[input.ReadByte()];
                     sst.count = input.ReadInt32();
                     sst.booked = input.ReadInt32();
                 }
-            }
-        }
-
-        internal class ItemSnapshot
-        {
-            internal string codeName;
-            internal int count;
-
-            internal void GetSnapshot(CItem item)
-            {
-                codeName = item.codeName;
-                count = item.nbOwned;
-            }
-        }
-
-        internal class StackSnapshot
-        {
-            internal string codeName;
-            internal int count;
-            internal int booked;
-
-            internal void GetSnapshot(in CStack stack)
-            {
-                codeName = stack.item?.codeName ?? "";
-                count = stack.nb;
-                booked = stack.nbBooked;
-            }
-
-            internal void ApplySnapshot(ref CStack stack, Dictionary<string, CItem> lookup)
-            {
-                lookup.TryGetValue(codeName, out stack.item);
-                stack.nb = count;
-                stack.nbBooked = booked;
-            }
-
-            internal void Encode(BinaryWriter output)
-            {
-                output.Write(codeName);
-                output.Write(count);
-                output.Write(booked);
-            }
-
-            internal void Decode(BinaryReader input)
-            {
-                codeName = input.ReadString();
-                count = input.ReadInt32();
-                booked = input.ReadInt32();
             }
         }
     }

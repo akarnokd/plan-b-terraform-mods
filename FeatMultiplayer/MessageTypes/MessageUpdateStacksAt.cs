@@ -15,7 +15,7 @@ namespace FeatMultiplayer
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal readonly List<StackSnapshot> stacks = new();
+        internal readonly List<SnapshotStack> stacks = new();
         public override void GetSnapshot(int2 coords)
         {
             this.coords = coords;
@@ -25,7 +25,7 @@ namespace FeatMultiplayer
             {
                 for (int i = 0; i < gstacks.stacks.Length; i++)
                 {
-                    var ssnp = new StackSnapshot();
+                    var ssnp = new SnapshotStack();
                     ssnp.GetSnapshot(in gstacks.stacks[i]);
                     stacks.Add(ssnp);
                 }
@@ -80,7 +80,7 @@ namespace FeatMultiplayer
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)
             {
-                var s = new StackSnapshot();
+                var s = new SnapshotStack();
                 s.Decode(input);
                 stacks.Add(s);
             }
