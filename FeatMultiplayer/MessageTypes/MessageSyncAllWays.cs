@@ -42,7 +42,7 @@ namespace FeatMultiplayer
             GWays.lines.Add(null);
             SMisc.DestroyChildren(CVehicle.vehiclesParentTransform, null);
 
-            var itemDictionary = GetItemsDictionary();
+            var itemDictionary = Plugin.GetItemsDictionary();
 
             foreach (var line in lines)
             {

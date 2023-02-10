@@ -57,7 +57,7 @@ namespace FeatMultiplayer
             else
             {
                 LogDebug("ReceiveMessageActionDestroy: Handling " + msg.GetType());
-                var content = SSingleton<SWorld>.Inst.GetContent(msg.coords);
+                var content = ContentAt(msg.coords);
                 if (content != null)
                 {
                     suppressDestroyNotification = multiplayerMode == MultiplayerMode.Client;

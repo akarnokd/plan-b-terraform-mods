@@ -53,6 +53,10 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
             AddMessageRegistry<MessageUpdateRecipeAt>(ReceiveMessageUpdateRecipeAt);
             AddMessageRegistry<MessageUpdateTransportedAt>(ReceiveMessageUpdateTransportedAt);
+
+            AddMessageRegistry<MessageUpdateContentData>(ReceiveMessageUpdateContentData);
+            AddMessageRegistry<MessageUpdateDatasAt>(ReceiveMessageUpdateGroundAndContentData);
+            AddMessageRegistry<MessageUpdateStacksAndContentDataAt>(ReceiveMessageUpdateStacksAndContentDataAt);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()

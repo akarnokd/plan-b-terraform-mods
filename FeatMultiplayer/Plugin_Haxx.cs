@@ -31,7 +31,7 @@ namespace FeatMultiplayer
 
             Haxx.cItemContentBuild = AccessTools.Method(typeof(CItem_Content), "Build", new[] { typeof(int2), typeof(bool) });
 
-            Haxx.sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
+            Haxx._sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
         }
     }
 
@@ -52,6 +52,14 @@ namespace FeatMultiplayer
 
         internal static MethodInfo cItemContentBuild;
 
-        internal static MethodInfo sBlocksOnChangeItem;
+        internal static MethodInfo _sBlocksOnChangeItem;
+
+        static Action<int2, bool, bool, bool> _sBlocksOnChangeItemDelegate;
+
+        internal static void SBlocks_OnChangeItem(int2 c, bool updateNeighbors = false, bool updateGroundToo = false, bool containersOnly = false)
+        {
+            _sBlocksOnChangeItemDelegate ??= AccessTools.MethodDelegate<Action<int2, bool, bool, bool>>(_sBlocksOnChangeItem, SSingleton<SBlocks>.Inst);
+            _sBlocksOnChangeItemDelegate(c, updateNeighbors, updateGroundToo, containersOnly);
+        }
     }
 }

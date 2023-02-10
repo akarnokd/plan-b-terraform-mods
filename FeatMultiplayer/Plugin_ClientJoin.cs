@@ -263,7 +263,7 @@ namespace FeatMultiplayer
                 for (int m = GWorld.rowsMin[l]; m <= GWorld.rowsMax[l]; m++)
                 {
                     var @int = new int2(l, m);
-                    var content = SSingleton<SWorld>.Inst.GetContent(@int);
+                    var content = ContentAt(@int);
 
                     if (content is CItem_ContentForest forest && forest.IsAliveAndVisible(@int))
                     {

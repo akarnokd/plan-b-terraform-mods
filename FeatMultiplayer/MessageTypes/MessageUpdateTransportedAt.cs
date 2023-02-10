@@ -21,8 +21,8 @@ namespace FeatMultiplayer
         public void GetSnapshot(int2 coords)
         {
             this.coords = coords;
-            var content = SSingleton<SWorld>.Inst.GetContent(coords);
-            if (content is CItem_WayStop stop)
+            var content = Plugin.ContentAt(coords);
+            if (content is CItem_WayStop)
             {
                 var line = SSingleton<SWays>.Inst.GetLine(coords);
 
@@ -38,7 +38,7 @@ namespace FeatMultiplayer
 
         public void ApplySnapshot()
         {
-            var lookup = GetItemsDictionary();
+            var lookup = Plugin.GetItemsDictionary();
             if (lookup.TryGetValue(codeName, out var item))
             {
                 SSingleton<SWays>.Inst.GetLine(coords)?.SetItemTransported(item);

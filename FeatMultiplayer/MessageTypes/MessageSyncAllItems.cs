@@ -49,7 +49,7 @@ namespace FeatMultiplayer
 
         internal override void ApplySnapshot()
         {
-            Dictionary<string, CItem> itemsDictionary = GetItemsDictionary();
+            Dictionary<string, CItem> itemsDictionary = Plugin.GetItemsDictionary();
 
             foreach (var isnp in items)
             {
@@ -89,18 +89,6 @@ namespace FeatMultiplayer
                     contentStock.RefreshStacksInfos(coords, cStacks);
                 }
             }
-        }
-
-        internal static Dictionary<string, CItem> GetItemsDictionary()
-        {
-            var itemsDictionary = new Dictionary<string, CItem>();
-            for (int i = 1; i < GItems.items.Count; i++)
-            {
-                CItem item = GItems.items[i];
-                itemsDictionary.Add(item.codeName, item);
-            }
-
-            return itemsDictionary;
         }
 
         public override void Encode(BinaryWriter output)

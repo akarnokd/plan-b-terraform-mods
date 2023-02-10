@@ -21,7 +21,7 @@ namespace FeatMultiplayer
         public void GetSnapshot(int2 coords)
         {
             this.coords = coords;
-            var content = SSingleton<SWorld>.Inst.GetContent(coords);
+            var content = Plugin.ContentAt(coords);
             if (content is CItem_ContentFactory factory)
             {
                 int recipeIndex = factory.dataRecipe.GetValue(coords);
@@ -37,8 +37,8 @@ namespace FeatMultiplayer
 
         public void ApplySnapshot()
         {
-            var lookup = GetItemsDictionary();
-            var content = SSingleton<SWorld>.Inst.GetContent(coords);
+            var lookup = Plugin.GetItemsDictionary();
+            var content = Plugin.ContentAt(coords);
             if (content is CItem_ContentFactory factory)
             {
                 int recipeIndex = Array.FindIndex(factory.recipes, x => x.outputs[0].item.codeName == codeName);

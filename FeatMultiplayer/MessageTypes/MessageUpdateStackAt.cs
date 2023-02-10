@@ -40,7 +40,7 @@ namespace FeatMultiplayer
 
         public void ApplySnapshot()
         {
-            var lookup = GetItemsDictionary();
+            var lookup = Plugin.GetItemsDictionary();
             var gstacks = GHexes.stacks[coords.x, coords.y];
             if (gstacks != null)
             {

@@ -22,7 +22,7 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Client || multiplayerMode == MultiplayerMode.Host)
             {
 
-                var content = SSingleton<SWorld>.Inst.GetContent(____pickCoords); ;
+                var content = ContentAt(____pickCoords); ;
 
                 if (content is CItem_ContentDepot)
                 {
@@ -38,7 +38,7 @@ namespace FeatMultiplayer
                         SendAllClients(msg);
                     }
                 }
-                else if (content is CItem_ContentFactory factory)
+                else if (content is CItem_ContentFactory)
                 {
                     var msg = new MessageUpdateRecipeAt();
                     msg.CreateRequest(____pickCoords, uiItem.item.codeName);
@@ -52,7 +52,7 @@ namespace FeatMultiplayer
                         SendAllClients(msg);
                     }
                 }
-                else if (content is CItem_WayStop stop)
+                else if (content is CItem_WayStop)
                 {
                     var msg = new MessageUpdateTransportedAt();
                     msg.CreateRequest(____pickCoords, uiItem.item.codeName);
@@ -78,10 +78,13 @@ namespace FeatMultiplayer
 
         static void PickRecipeNotifyBlocks(int2 coords)
         {
-            // TODO if currently looking at this particular spot
-            // SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
+            // if currently looking at that particular spot
+            if (GScene3D.selectionCoords == coords)
+            {
+                SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
+            }
 
-            Haxx.sBlocksOnChangeItem.Invoke(SSingleton<SBlocks>.Inst, new object[] { coords, true, false, false });
+            Haxx.SBlocks_OnChangeItem(coords, true, false, false);
         }
 
         static void ReceiveMessageUpdateStackAt(MessageUpdateStackAt msg)

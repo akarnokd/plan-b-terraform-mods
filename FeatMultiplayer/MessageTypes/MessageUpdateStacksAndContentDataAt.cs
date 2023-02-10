@@ -8,17 +8,23 @@ using static FeatMultiplayer.MessageSyncAllItems;
 
 namespace FeatMultiplayer
 {
-    internal class MessageUpdateStacks : MessageUpdate
+    internal class MessageUpdateStacksAndContentDataAt : MessageBase
     {
-        const string messageCode = "UpdateStacks";
+        const string messageCode = "UpdateStacksAndContentDataAt";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
+        internal int2 coords;
+        internal bool updateBlocks;
+        internal uint contentData;
         internal readonly List<StackSnapshot> stacks = new();
-        public override void GetSnapshot(int2 coords)
+
+        public void GetSnapshot(int2 coords, bool updateBlocks)
         {
             this.coords = coords;
+            this.updateBlocks = updateBlocks;
+            contentData = GHexes.contentData[coords.x, coords.y];
             var gstacks = GHexes.stacks[coords.x, coords.y];
 
             if (gstacks != null)
@@ -32,9 +38,10 @@ namespace FeatMultiplayer
             }
         }
 
-        public override void ApplySnapshot()
+        public void ApplySnapshot()
         {
-            var lookup = GetItemsDictionary();
+            GHexes.contentData[coords.x, coords.y] = contentData;
+            var lookup = Plugin.GetItemsDictionary();
             var gstacks = GHexes.stacks[coords.x, coords.y];
             if (gstacks != null)
             {
@@ -57,6 +64,8 @@ namespace FeatMultiplayer
         {
             output.Write(coords.x);
             output.Write(coords.y);
+            output.Write(updateBlocks);
+            output.Write(contentData);
             output.Write(stacks.Count);
             foreach (var s in stacks)
             {
@@ -66,9 +75,7 @@ namespace FeatMultiplayer
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageUpdateStacks();
-            msg.coords = new int2(input.ReadInt32(), input.ReadInt32());
-
+            var msg = new MessageUpdateStacksAndContentDataAt();
             msg.Decode(input);
 
             message = msg;
@@ -77,6 +84,9 @@ namespace FeatMultiplayer
 
         void Decode(BinaryReader input)
         {
+            coords = new int2(input.ReadInt32(), input.ReadInt32());
+            updateBlocks = input.ReadBoolean();
+            contentData = input.ReadUInt32();
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)
             {

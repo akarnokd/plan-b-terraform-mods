@@ -22,7 +22,7 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Client || multiplayerMode == MultiplayerMode.Host)
             {
                 var coords = GScene3D.selectionCoords;
-                if (SSingleton<SWorld>.Inst.GetContent(coords) is CItem_ContentLandmark)
+                if (ContentAt(coords) is CItem_ContentLandmark)
                 {
                     var msg = new MessageActionRenameLandmark();
                     msg.coords = coords;
