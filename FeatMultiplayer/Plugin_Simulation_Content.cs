@@ -48,13 +48,6 @@ namespace FeatMultiplayer
             return !suppressBlocksOnChange;
         }
 
-        static void SendUpdateContentData(int2 coords)
-        {
-            var msg = new MessageUpdateContentData();
-            msg.GetSnapshot(coords);
-            SendAllClients(msg);
-        }
-
         static void SendUpdateGroundAndContentData(int2 coords, bool updateBlocks)
         {
             var msg = new MessageUpdateDatasAt();
@@ -67,27 +60,6 @@ namespace FeatMultiplayer
             var msg = new MessageUpdateStacksAndContentDataAt();
             msg.GetSnapshot(coords, updateBlocks);
             SendAllClients(msg);
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.Update01s))]
-        static bool Patch_CItem_ContentCityInOut_Update01s_Pre(int2 coords)
-        {
-            if (multiplayerMode == MultiplayerMode.Client)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.Update01s))]
-        static void Patch_CItem_ContentCityInOut_Update01s_Post(int2 coords)
-        {
-            if (multiplayerMode == MultiplayerMode.Host)
-            {
-                SendUpdateContentData(coords);
-            }
         }
 
         [HarmonyPrefix]

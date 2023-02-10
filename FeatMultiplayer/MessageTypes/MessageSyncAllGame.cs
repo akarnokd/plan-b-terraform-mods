@@ -17,7 +17,7 @@ namespace FeatMultiplayer
 
         internal int level;
         internal long population;
-        internal List<CitySnapshot> cities = new();
+        internal List<SnapshotCity> cities = new();
         internal HashSet<string> completedDialogs = new();
         internal Dictionary<int2, string> landmarks = new();
         internal bool tutorialSkipped;
@@ -29,7 +29,7 @@ namespace FeatMultiplayer
 
             foreach (var city in GGame.cities)
             {
-                var cs = new CitySnapshot();
+                var cs = new SnapshotCity();
                 cs.GetSnapshot(city);
 
                 cities.Add(cs);
@@ -113,7 +113,7 @@ namespace FeatMultiplayer
             int cc = input.ReadInt32();
             for (int i = 0; i < cc; i++)
             {
-                var cs = new CitySnapshot();
+                var cs = new SnapshotCity();
                 cs.Read(input);
                 cities.Add(cs);
             }
@@ -135,171 +135,6 @@ namespace FeatMultiplayer
 
             tutorialSkipped = input.ReadBoolean();
         }
-
-        internal class CitySnapshot
-        {
-            internal int id;
-            internal int2 center;
-            internal readonly List<int2> hexes = new();
-            internal string name;
-            internal double population;
-            internal float score;
-            internal readonly InOutSnapshot inputs = new();
-            internal readonly InOutSnapshot outputs = new();
-
-            internal void GetSnapshot(CCity city)
-            {
-                id = city.cityId;
-                center = city.center;
-                population = city.population;
-                hexes.AddRange(city.hexes);
-                name = city.name;
-                score = city.score;
-
-                inputs.GetSnapshot(city.GetInOutData(false));
-                outputs.GetSnapshot(city.GetInOutData(true));
-            }
-
-            internal CCity Create()
-            {
-                var city = new CCity(id, center);
-                city.hexes.Clear();
-
-                city.population = population;
-                city.hexes.AddRange(hexes);
-                city.name = name;
-                city.score = score;
-
-                inputs.ApplySnapshot(city.GetInOutData(false));
-                outputs.ApplySnapshot(city.GetInOutData(true));
-
-                return city;
-            }
-
-            internal void Write(BinaryWriter output)
-            {
-                output.Write(id);
-                output.Write(center.x);
-                output.Write(center.y);
-                output.Write(population);
-                output.Write(name);
-                output.Write(score);
-
-                output.Write(hexes.Count);
-                foreach (var hx in hexes)
-                {
-                    output.Write(hx.x);
-                    output.Write(hx.y);
-                }
-                inputs.Write(output);
-                outputs.Write(output);
-            }
-
-            internal void Read(BinaryReader input)
-            {
-                id = input.ReadInt32();
-                int cx = input.ReadInt32();
-                int cy = input.ReadInt32();
-                center = new int2(cx, cy);
-                population = input.ReadDouble();
-                name = input.ReadString();
-                score = input.ReadSingle();
-
-                int hc = input.ReadInt32();
-                for (int i = 0; i < hc; i++)
-                {
-                    int hx = input.ReadInt32();
-                    int hy = input.ReadInt32();
-                    hexes.Add(new int2(hx, hy));
-                }
-                inputs.Read(input);
-                outputs.Read(input);
-            }
-        }
-
-        internal class InOutSnapshot
-        {
-            internal int needed;
-            internal int done;
-            internal int framesSinceProcess;
-            internal float score;
-            internal readonly Queue<bool>[] results = new Queue<bool>[4]; 
-
-            internal void GetSnapshot(CCityInOutData ind)
-            {
-                needed = ind.nbNeeded;
-                done = ind.nbDone;
-                framesSinceProcess = ind.nbFramesSinceProcess;
-                score = ind.score;
-                for (int i = 0; i < 4; i++)
-                {
-                    var q = new Queue<bool>();
-                    results[i] = q;
-
-                    foreach (var e in ind.elementsResults[i])
-                    {
-                        q.Enqueue(e);
-                    }
-                }
-            }
-
-            internal void ApplySnapshot(CCityInOutData ind)
-            {
-                ind.nbNeeded = needed;
-                ind.nbDone = done;
-                ind.nbFramesSinceProcess = framesSinceProcess;
-                ind.score = score;
-
-
-                for (int i = 0; i < 4; i++)
-                {
-                    var dest = ind.elementsResults[i];
-                    dest.Clear();
-                    foreach (var e in results[i])
-                    {
-                        dest.Enqueue(e);
-                    }
-                }
-            }
-
-            internal void Write(BinaryWriter output)
-            {
-                output.Write(needed);
-                output.Write(done);
-                output.Write(framesSinceProcess);
-                output.Write(score);
-                for (int i = 0; i < 4; i++)
-                {
-                    var q = results[i];
-                    output.Write(q.Count);
-
-                    foreach (var e in q)
-                    {
-                        output.Write(e);
-                    }
-                }
-            }
-
-            internal void Read(BinaryReader input)
-            {
-                needed = input.ReadInt32();
-                done = input.ReadInt32();
-                framesSinceProcess = input.ReadInt32();
-                score = input.ReadSingle();
-
-                for (int i = 0; i < 4; i++)
-                {
-                    var q = new Queue<bool>();
-                    results[i] = q;
-
-                    int c = input.ReadInt32();
-                    for (int j = 0; j < c; j++)
-                    {
-                        q.Enqueue(input.ReadBoolean());
-                    }
-                }
-            }
-        }
-        
+       
     }
 }
