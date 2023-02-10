@@ -108,6 +108,20 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentForest), "Build")]
+        static bool Patch_CItem_ContentForest_Build_Pre(CItem_ContentForest __instance, int2 coords)
+        {
+            return BuildPre(__instance, coords);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_Content), "Build")]
+        static void Patch_CItem_ContentForest_Build_Post(CItem_ContentForest __instance, int2 coords)
+        {
+            BuildPost(__instance, coords);
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.IsCopying))]
         static void Patch_SSceneHud_Selection_IsCopying(ref bool __result)

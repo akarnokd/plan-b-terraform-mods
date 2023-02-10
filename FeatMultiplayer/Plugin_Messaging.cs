@@ -13,8 +13,15 @@ namespace FeatMultiplayer
 {
     public partial class Plugin : BaseUnityPlugin
     {
-        static readonly Dictionary<string, MessageBase> messageRegistry = new Dictionary<string, MessageBase>();
+        /// <summary>
+        /// Registry for message decoders and receive actions.
+        /// </summary>
+        static readonly Dictionary<string, MessageBase> messageRegistry = new();
 
+        /// <summary>
+        /// Holds live update messages that arrive during the initial full sync, to be
+        /// replayed right after the client entered the game world.
+        /// </summary>
         static readonly Queue<MessageBase> deferredMessages = new();
 
         void InitMessageDispatcher()
@@ -42,6 +49,10 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageActionBuild>(ReceiveMessageActionBuild);
             AddMessageRegistry<MessageActionDestroy>(ReceiveMessageActionDestroy);
             AddMessageRegistry<MessageActionRenameLandmark>(ReceiveMessageActionRenameLandmark);
+
+            AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
+            AddMessageRegistry<MessageUpdateRecipeAt>(ReceiveMessageUpdateRecipeAt);
+            AddMessageRegistry<MessageUpdateTransportedAt>(ReceiveMessageUpdateTransportedAt);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()
@@ -53,7 +64,7 @@ namespace FeatMultiplayer
 
         static void DispatchMessageLoop()
         {
-            // process messages that were deferred during the ClientLoading phase
+            // process messages that were deferred during the ClientJoin phase
             if (multiplayerMode == MultiplayerMode.Client)
             {
                 while (deferredMessages.Count != 0)
@@ -66,7 +77,6 @@ namespace FeatMultiplayer
                 || multiplayerMode == MultiplayerMode.Client
                 || multiplayerMode == MultiplayerMode.ClientJoin) 
             {
-
                 try
                 {
                     if (receiverQueue.TryDequeue(out var receiver))
