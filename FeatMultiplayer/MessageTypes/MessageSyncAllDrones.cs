@@ -17,14 +17,14 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal int maxId;
-        internal readonly List<DroneSnapshot> drones = new();
+        internal readonly List<SnapshotDrone> drones = new();
 
         internal override void GetSnapshot()
         {
             maxId = CDrone.idMax;
             foreach (var drone in GDrones.drones)
             {
-                var ds = new DroneSnapshot();
+                var ds = new SnapshotDrone();
                 ds.GetSnapshot(drone);
                 drones.Add(ds);
             }
@@ -79,7 +79,7 @@ namespace FeatMultiplayer
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)
             {
-                var drone = new DroneSnapshot();
+                var drone = new SnapshotDrone();
                 drone.id = input.ReadInt32();
                 drone.depotCoords = new int2(input.ReadInt32(), input.ReadInt32());
                 drone.depotIndex = input.ReadInt32();
@@ -87,28 +87,5 @@ namespace FeatMultiplayer
             }
         }
 
-        internal class DroneSnapshot
-        {
-            internal int id;
-            internal int depotIndex;
-            internal int2 depotCoords;
-
-            internal void GetSnapshot(CDrone drone)
-            {
-                id = drone.id;
-                depotIndex = Haxx.cDroneDroneDepotIndex.Invoke(drone);
-                depotCoords = drone.depotCoords;
-            }
-
-            internal CDrone Create(SWorld sworld)
-            {
-                var depot = sworld.GetContent(depotCoords) as CItem_ContentDepot;
-                var result = new CDrone(depot, depotCoords, depotIndex);
-                result.id = id;
-                return result;
-            }
-        }
-        
-        
     }
 }

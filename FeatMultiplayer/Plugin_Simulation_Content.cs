@@ -375,5 +375,24 @@ namespace FeatMultiplayer
                 LogWarning("ReceiveMessageUpdateForest: wrong multiplayerMode: " + multiplayerMode);
             }
         }
+
+        static void ReceiveMessageUpdateItems(MessageUpdateItems msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageUpdateItems: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("ReceiveMessageUpdateItems: Handling " + msg.GetType());
+
+                msg.ApplySnapshot();
+            }
+            else
+            {
+                LogWarning("ReceiveMessageUpdateItems: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
     }
 }

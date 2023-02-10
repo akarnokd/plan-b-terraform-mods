@@ -59,11 +59,25 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateStacksAndContentDataAt>(ReceiveMessageUpdateStacksAndContentDataAt);
             AddMessageRegistry<MessageUpdatePlanetGasses>(ReceiveMessageUpdatePlanetGasses);
             AddMessageRegistry<MessageUpdateForest>(ReceiveMessageUpdateForest);
+            AddMessageRegistry<MessageUpdateCity>(ReceiveMessageUpdateCity);
+
+            AddMessageRegistry<MessageUpdateTime>(ReceiveMessageUpdateTime);
+            AddMessageRegistry<MessageUpdatePlanet>(ReceiveMessageUpdatePlanet);
+            AddMessageRegistry<MessageUpdateLines>(ReceiveMessageUpdateLines);
+            AddMessageRegistry<MessageUpdateDrones>(ReceiveMessageUpdateDrones);
+            AddMessageRegistry<MessageUpdateTransportStacks>(ReceiveMessageUpdateTransportStacks);
+            AddMessageRegistry<MessageUpdateItems>(ReceiveMessageUpdateItems);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()
         {
             var m = new T();
+
+            if (!m.GetType().Name.EndsWith(m.MessageCode()))
+            {
+                throw new InvalidOperationException("MessageCode (by convention) mismatch: " + m.GetType().Name + " vs *" + m.MessageCode());
+            }
+
             m.onReceive = m => handler((T)m);
             messageRegistry.Add(m.MessageCode(), m);
         }

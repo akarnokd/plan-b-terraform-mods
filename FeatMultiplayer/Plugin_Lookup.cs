@@ -40,5 +40,40 @@ namespace FeatMultiplayer
 
             return itemsDictionary;
         }
+
+        /// <summary>
+        /// Returns a dictionary of drone id to CDrone instances.
+        /// </summary>
+        /// <returns></returns>
+        internal static Dictionary<int, CDrone> GetDronesDictionary()
+        {
+            var result = new Dictionary<int, CDrone>();
+
+            foreach (var drone in GDrones.drones)
+            {
+                result.Add(drone.id, drone);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a dictionary of vehicle id to CVehicle instances.
+        /// </summary>
+        /// <returns></returns>
+        internal static Dictionary<int, CVehicle> GetVehiclesDictionary()
+        {
+            var result = new Dictionary<int, CVehicle>();
+
+            foreach (var line in GWays.lines)
+            {
+                foreach (var vehicle in line.vehicles)
+                {
+                    result.Add(vehicle.id, vehicle);
+                }
+            }
+
+            return result;
+        }
     }
 }

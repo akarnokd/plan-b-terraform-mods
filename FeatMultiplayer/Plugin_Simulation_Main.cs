@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using static LibCommon.GUITools;
@@ -51,6 +52,10 @@ namespace FeatMultiplayer
                 {
                     MultiplayerSMainUpdate_UpdateTime(__instance);
                     // TODO send new planet time
+
+                    var msgt = new MessageUpdateTime();
+                    msgt.GetSnapshot();
+                    SendAllClients(msgt);
                 }
                 MultiplayerSMainUpdate_ApplyTimeScale(__instance);
 
@@ -63,18 +68,54 @@ namespace FeatMultiplayer
                 // TODO the Update methods
                 if (!__instance.IsPausedInGame())
                 {
-                    SSingleton<SPlanet>.Inst.Update();
+                    if (isHost)
+                    {
+                        SSingleton<SPlanet>.Inst.Update();
+
+                        var msgp = new MessageUpdatePlanet();
+                        msgp.GetSnapshot();
+                        SendAllClients(msgp);
+                    }
+                    // FIXME GWater.supergridWater updates, too large for now
                     SSingleton<SRain>.Inst.Update();
-                    SSingleton<SWays>.Inst.Update();
-                    SSingleton<SWays_PF>.Inst.Update();
-                    SSingleton<SDrones>.Inst.Update();
-                    SSingleton<SCities>.Inst.Update();
+                    if (isHost)
+                    {
+                        // SWays.Update() can remove lines
+                        var before = new HashSet<int>(GWays.lines.Select(x => x?.id ?? 0));
+
+                        SSingleton<SWays>.Inst.Update();
+
+                        var msgw = new MessageUpdateLines();
+                        msgw.GetSnapshot(before);
+                        SendAllClients(msgw);
+
+                        // NOTE this Update() method is currently empty
+                        SSingleton<SWays_PF>.Inst.Update();
+
+                        SSingleton<SDrones>.Inst.Update();
+
+                        var msgd = new MessageUpdateDrones();
+                        msgd.GetSnapshot();
+                        SendAllClients(msgd);
+
+                        SSingleton<SCities>.Inst.Update();
+                    }
+                    // FIXME probably can suppress the full call, no need to check on individual Update01s
                     if (SMisc.CheckSimuUnitsTime(0.1f))
                     {
                         SSingleton<SItems>.Inst.Update01s_Constructions();
                     }
+                    // Currently, this performs a stack corruption check, let it be
                     SSingleton<SItems>.Inst.Update();
+                    // Currently, this updates the forrest info, let it be
                     SSingleton<SItems>.Inst.Update10s_Planet();
+
+                    if (isHost)
+                    {
+                        var msgi = new MessageUpdateItems();
+                        msgi.GetSnapshot();
+                        SendAllClients(msgi);
+                    }
                 }
                 if (!__instance.IsPausedInMenu())
                 {
@@ -135,10 +176,53 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SSave), nameof(SSave.Save))]
+        static bool Patch_SSave_Save()
+        {
+            return multiplayerMode != MultiplayerMode.Client;
+        }
+
         // ------------------------------------------------------------------------------
         // Message receviers
         // ------------------------------------------------------------------------------
 
+        static void ReceiveMessageUpdateTime(MessageUpdateTime msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageUpdateTime: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("ReceiveMessageUpdateTime: Handling " + msg.GetType());
 
+                msg.ApplySnapshot();
+            }
+            else
+            {
+                LogWarning("ReceiveMessageUpdateTime: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
+
+        static void ReceiveMessageUpdatePlanet(MessageUpdatePlanet msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageUpdatePlanet: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("ReceiveMessageUpdatePlanet: Handling " + msg.GetType());
+
+                msg.ApplySnapshot();
+            }
+            else
+            {
+                LogWarning("ReceiveMessageUpdatePlanet: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
     }
 }

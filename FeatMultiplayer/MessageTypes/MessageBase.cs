@@ -83,5 +83,51 @@ namespace FeatMultiplayer
                 reader.ReadSingle()
             );
         }
+
+        public static void Write(this BinaryWriter writer, in int2 vector)
+        {
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+        }
+
+        public static int2 ReadInt2(this BinaryReader reader)
+        {
+            return new int2(
+                reader.ReadInt32(),
+                reader.ReadInt32()
+            );
+        }
+
+        public static void Write(this BinaryWriter writer, in Quaternion q)
+        {
+            writer.Write(q.x);
+            writer.Write(q.y);
+            writer.Write(q.z);
+            writer.Write(q.w);
+        }
+
+        public static Quaternion ReadQuaternion(this BinaryReader reader)
+        {
+            return new Quaternion(
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            );
+        }
+
+        public static void Write(this BinaryWriter writer, in CTransform q)
+        {
+            writer.Write(q.pos);
+            writer.Write(q.rot);
+        }
+
+        public static CTransform ReadCTransform(this BinaryReader reader)
+        {
+            return new CTransform(
+                ReadVector3(reader),
+                ReadQuaternion(reader)
+            );
+        }
     }
 }

@@ -21,6 +21,14 @@ namespace FeatMultiplayer
         {
             Haxx.cDroneDroneDepotIndex = AccessTools.FieldRefAccess<CDrone, int>("droneDepotIndex");
 
+            Haxx.cDroneStartTransform = AccessTools.FieldRefAccess<CDrone, CTransform>("startTransform");
+
+            Haxx.cDroneEndTransform = AccessTools.FieldRefAccess<CDrone, CTransform>("endTransform");
+
+            Haxx.cDroneStartTime = AccessTools.FieldRefAccess<CDrone, double>("startTime");
+
+            Haxx.cDroneEndTime = AccessTools.FieldRefAccess<CDrone, double>("endTime");
+
             Haxx.sDronesAddDroneInGrid = AccessTools.Method(typeof(SDrones), "AddDroneInGrid", new Type[] { typeof(CDrone) });
 
             Haxx.cVehicleStopObjective = AccessTools.FieldRefAccess<CVehicle, int>("_stopObjective");
@@ -41,6 +49,14 @@ namespace FeatMultiplayer
     public class Haxx
     {
         internal static AccessTools.FieldRef<CDrone, int> cDroneDroneDepotIndex;
+
+        internal static AccessTools.FieldRef<CDrone, CTransform> cDroneStartTransform;
+
+        internal static AccessTools.FieldRef<CDrone, CTransform> cDroneEndTransform;
+
+        internal static AccessTools.FieldRef<CDrone, double> cDroneStartTime;
+
+        internal static AccessTools.FieldRef<CDrone, double> cDroneEndTime;
 
         internal static MethodInfo sDronesAddDroneInGrid;
 

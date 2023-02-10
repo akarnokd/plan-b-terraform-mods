@@ -23,11 +23,17 @@ namespace FeatMultiplayer
             SendAllClients(msg);
         }
 
+        /// <summary>
+        /// The vanilla calls this method to randomly create a city block,
+        /// which is not good in MP because it overwrites the city center
+        /// of the host in contentId[center].
+        /// </summary>
+        /// <returns></returns>
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(SCities), nameof(SCities.Update))]
-        static bool Patch_SCities_Update_Pre()
+        [HarmonyPatch(typeof(CItem_ContentCity), nameof(CItem_ContentCity.CreateCenter))]
+        static bool Patch_CItem_ContentCity_CreateCenter()
         {
-            return multiplayerMode != MultiplayerMode.Client;
+            return multiplayerMode != MultiplayerMode.ClientJoin;
         }
 
         [HarmonyPrefix]
