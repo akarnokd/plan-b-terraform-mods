@@ -156,7 +156,7 @@ namespace FeatMultiplayer
         static void Patch_CItem_ContentDepot_Build_Post(CItem_ContentDepot __instance, 
             int2 coords, ref BuildHasPriorStack __state)
         {
-            if (multiplayerMode == MultiplayerMode.Host)
+            if (!suppressBuildNotification && multiplayerMode == MultiplayerMode.Host)
             {
                 deferCopy = false;
 
@@ -173,8 +173,10 @@ namespace FeatMultiplayer
                 // reapply stack after the copy above might have destroyed it
                 if (__state.has)
                 {
-                    __instance.GetStack(coords, 0).item = __state.stack.item;
-                    __instance.GetStack(coords, 0).nb = __state.stack.nb;
+                    ref var st = ref __instance.GetStack(coords, 0);
+
+                    st.item = __state.stack.item;
+                    st.nb = __state.stack.nb;
 
                     var msgs = new MessageUpdateStackAt();
                     msgs.GetSnapshot(coords, 0);
@@ -292,12 +294,15 @@ namespace FeatMultiplayer
                 var citem = GItems.items.Find(v => v != null && v.id == msg.id);
                 if (citem is CItem_Content content)
                 {
+                    LogDebug("    " + content.codeName + " -> " + msg);
+
                     if (multiplayerMode == MultiplayerMode.Host)
                     {
                         if (content.nbOwned != 0)
                         {
                             // this essentially skips the custom copy logic
                             suppressRecipePickAndCopy = true;
+                            suppressBuildNotification = true;
                             try
                             {
                                 Haxx.cItemContentBuild.Invoke(content, new object[] { msg.coords, false });
@@ -305,7 +310,18 @@ namespace FeatMultiplayer
                             finally
                             {
                                 suppressRecipePickAndCopy = false;
+                                suppressBuildNotification = false;
                             }
+
+                            // allow the original sender to build and open recipe picker if needed
+                            msg.sender.Send(msg); 
+
+                            // everyone else, perform a no-copy no recipe-picking build
+                            var msg2 = new MessageActionBuild();
+                            msg2.id = msg.id;
+                            msg2.coords = msg.coords;
+                            SendAllClientsExcept(msg.sender, msg);
+
                             if (msg.copyMode)
                             {
                                 if (msg.copyFrom != int2.negative)
