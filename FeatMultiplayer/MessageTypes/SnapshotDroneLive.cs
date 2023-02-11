@@ -43,6 +43,8 @@ namespace FeatMultiplayer
             Haxx.cDroneEndTransform.Invoke(drone) = endTransform;
             Haxx.cDroneStartTime.Invoke(drone) = startTime;
             Haxx.cDroneEndTime.Invoke(drone) = endTime;
+
+            //Plugin.LogDebug("Drone " + id + ", State = " + state);
         }
 
         internal void Encode(BinaryWriter output)

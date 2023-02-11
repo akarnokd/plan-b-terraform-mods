@@ -186,6 +186,30 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch(typeof(SDrones), nameof(SDrones.OnDepotBuilt))]
+        static bool Patch_SDrones_OnDepotBuild_Pre(ref int __state)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                return false;
+            }
+            __state = GDrones.drones.Count;
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SDrones), nameof(SDrones.OnDepotBuilt))]
+        static void Patch_SDrones_OnDepotBuild_Post(ref int __state)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                var msg = new MessageUpdateDepotDrones();
+                msg.GetSnapshot(__state, GDrones.drones.Count);
+                SendAllClients(msg);
+            }
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), "Build")]
         static bool Patch_CItem_ContentExtractor_Build_Pre(CItem_ContentExtractor __instance, int2 coords)
         {
@@ -414,6 +438,25 @@ namespace FeatMultiplayer
                 {
                     LogWarning("ReceiveMessageActionCopy: Unknown item " + msg.codeName);
                 }
+            }
+        }
+
+        static void ReceiveMessageUpdateDepotDrones(MessageUpdateDepotDrones msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("MessageUpdateDepotDrones: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("MessageUpdateDepotDrones: Handling " + msg.GetType());
+
+                msg.ApplySnapshot();
+            }
+            else
+            {
+                LogWarning("MessageUpdateDepotDrones: wrong multiplayerMode: " + multiplayerMode);
             }
         }
     }

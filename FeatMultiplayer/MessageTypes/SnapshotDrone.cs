@@ -1,6 +1,8 @@
 ﻿// Copyright (c) David Karnok, 2023
 // Licensed under the Apache License, Version 2.0
 
+using System.IO;
+
 namespace FeatMultiplayer
 {
     internal class SnapshotDrone
@@ -22,6 +24,20 @@ namespace FeatMultiplayer
             var result = new CDrone(depot, depotCoords, depotIndex);
             result.id = id;
             return result;
+        }
+
+        internal void Encode(BinaryWriter output)
+        {
+            output.Write(id);
+            output.Write(depotCoords);
+            output.Write(depotIndex);
+        }
+
+        internal void Decode(BinaryReader input) 
+        {
+            id = input.ReadInt32();
+            depotCoords = new int2(input.ReadInt32(), input.ReadInt32());
+            depotIndex = input.ReadInt32();
         }
     }
 }

@@ -9,32 +9,27 @@ using System.Text;
 
 namespace FeatMultiplayer
 {
-    internal class MessageSyncAllDrones : MessageSync
+    internal class MessageUpdateDepotDrones : MessageBase
     {
-        const string messageCode = "SyncAllDrones";
+        const string messageCode = "UpdateDepotDrones";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal int maxId;
         internal readonly List<SnapshotDrone> drones = new();
 
-        internal override void GetSnapshot()
+        internal void GetSnapshot(int startIndex, int endIndex)
         {
-            maxId = CDrone.idMax;
-            foreach (var drone in GDrones.drones)
+            for (int i = startIndex; i < endIndex; i++)
             {
-                var ds = new SnapshotDrone();
-                ds.GetSnapshot(drone);
-                drones.Add(ds);
+                var snp = new SnapshotDrone();
+                snp.GetSnapshot(GDrones.drones[i]);
+                drones.Add(snp);
             }
         }
 
-        internal override void ApplySnapshot()
+        internal void ApplySnapshot()
         {
-            GDrones.modelsPool.Clear();
-            GDrones.drones.Clear();
-
             var sworld = SSingleton<SWorld>.Inst;
             var sdrones = SSingleton<SDrones>.Inst;
             var addDroneInGrid = AccessTools.MethodDelegate<Action<CDrone>>(Haxx.sDronesAddDroneInGrid, sdrones);
@@ -45,13 +40,10 @@ namespace FeatMultiplayer
                 GDrones.drones.Add(drone);
                 addDroneInGrid(drone);
             }
-            // set max here because the CDrone constructor we use increments
-            CDrone.idMax = maxId;
         }
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(maxId);
             output.Write(drones.Count);
             foreach (var drone in drones)
             {
@@ -59,27 +51,26 @@ namespace FeatMultiplayer
             }
         }
 
-        public override bool TryDecode(BinaryReader input, out MessageBase message)
-        {
-            var msg = new MessageSyncAllDrones();
-
-            msg.Decode(input);
-
-            message = msg;
-            return true;
-        }
-
         void Decode(BinaryReader input)
         {
-            maxId = input.ReadInt32();
-
             int c = input.ReadInt32();
+
             for (int i = 0; i < c; i++)
             {
                 var drone = new SnapshotDrone();
                 drone.Decode(input);
                 drones.Add(drone);
             }
+        }
+
+        public override bool TryDecode(BinaryReader input, out MessageBase message)
+        {
+            var msg = new MessageUpdateDepotDrones();
+
+            msg.Decode(input);
+
+            message = msg;
+            return true;
         }
 
     }

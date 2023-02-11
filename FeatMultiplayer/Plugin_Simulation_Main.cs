@@ -22,7 +22,14 @@ namespace FeatMultiplayer
             bool isHost = multiplayerMode == MultiplayerMode.Host;
             if (multiplayerMode == MultiplayerMode.Client || isHost)
             {
-                MultiplayerSMainUpdate(__instance, ref ____resourcesUnloadingWait, ref ____lastTimeInit, isHost);
+                try
+                {
+                    MultiplayerSMainUpdate(__instance, ref ____resourcesUnloadingWait, ref ____lastTimeInit, isHost);
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
                 return false;
             }
             return true;
@@ -100,8 +107,14 @@ namespace FeatMultiplayer
                     {
                         SSingleton<SItems>.Inst.Update01s_Constructions();
                     }
-                    // Currently, this performs a stack corruption check, let it be
-                    SSingleton<SItems>.Inst.Update();
+                    if (isHost)
+                    {
+                        // Currently, this performs a stack corruption check
+                        // Crashes on the client because the drone state is not complete
+                        // We don't sync the CDrone.TransferStep fields as they are not needed
+                        // on the client.
+                        SSingleton<SItems>.Inst.Update();
+                    }
                     // Currently, this updates the forrest info, let it be
                     SSingleton<SItems>.Inst.Update10s_Planet();
 

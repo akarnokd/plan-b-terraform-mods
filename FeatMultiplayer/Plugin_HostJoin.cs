@@ -43,7 +43,7 @@ namespace FeatMultiplayer
                 }
                 LogInfo("Terminating host listener");
                 stopHostAcceptor.Cancel();
-                LogInfo(Environment.StackTrace);
+                //LogInfo(Environment.StackTrace);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
