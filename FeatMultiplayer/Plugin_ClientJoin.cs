@@ -43,6 +43,26 @@ namespace FeatMultiplayer
             clientName = userName;
             clientPassword = password;
 
+            // reset sync message holders
+
+            syncAllFlags = null;
+            syncAllAltitude = null;
+            syncAllWater = null;
+            syncAllContentId = null;
+            syncAllContentData = null;
+            syncAllGroundId = null;
+            syncAllGroundData = null;
+
+            syncAllMain = null;
+            syncAllGame = null;
+            syncAllPlanet = null;
+            syncAllItems = null;
+            syncAllWaterInfo = null;
+            syncAllDrones = null;
+            syncAllWays = null;
+            syncAllCamera = null;
+
+
             multiplayerMode = MultiplayerMode.ClientJoin;
 
             sload.QuitGameAndUI();
