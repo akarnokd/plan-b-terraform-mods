@@ -1,0 +1,4 @@
+root = true
+
+[*.cs]
+file_header_template = Copyright (c) David Karnok, 2023\nLicensed under the Apache License, Version 2.0
