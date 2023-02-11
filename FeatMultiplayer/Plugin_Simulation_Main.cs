@@ -24,7 +24,7 @@ namespace FeatMultiplayer
             {
                 try
                 {
-                    MultiplayerSMainUpdate(__instance, ref ____resourcesUnloadingWait, ref ____lastTimeInit, isHost);
+                    MultiplayerSMainUpdate(__instance, ref ____resourcesUnloadingWait, isHost);
                 }
                 catch (Exception ex)
                 {
@@ -37,7 +37,6 @@ namespace FeatMultiplayer
 
         static void MultiplayerSMainUpdate(SMain __instance,
             ref float ____resourcesUnloadingWait,
-            ref float ____lastTimeInit,
             bool isHost)
         {
             if (GMain.initializationProgress != 100)
@@ -134,7 +133,7 @@ namespace FeatMultiplayer
             SSingleton<SSounds>.Inst.Update();
             SSingleton<SScenesManager>.Inst.LateUpdateAllScenes();
 
-            MultiplayerSMainUpdate_ReleaseResources(ref ____resourcesUnloadingWait, ref ____lastTimeInit);
+            MultiplayerSMainUpdate_ReleaseResources(ref ____resourcesUnloadingWait);
         }
 
         static void MultiplayerSMainUpdate_UpdateTime(SMain __instance)
@@ -169,8 +168,7 @@ namespace FeatMultiplayer
         }
 
         static void MultiplayerSMainUpdate_ReleaseResources(
-            ref float ____resourcesUnloadingWait,
-            ref float ____lastTimeInit)
+            ref float ____resourcesUnloadingWait)
         {
             ____resourcesUnloadingWait += Time.unscaledDeltaTime;
             if (____resourcesUnloadingWait > 60f)
