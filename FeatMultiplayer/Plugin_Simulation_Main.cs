@@ -47,12 +47,12 @@ namespace FeatMultiplayer
                 if (isHost)
                 {
                     MultiplayerSMainUpdate_UpdateTime(__instance);
+                    MultiplayerSMainUpdate_ApplyTimeScale(__instance);
 
                     var msgt = new MessageUpdateTime();
                     msgt.GetSnapshot();
                     SendAllClients(msgt);
                 }
-                MultiplayerSMainUpdate_ApplyTimeScale(__instance);
 
                 SSingleton<SGame>.Inst.Update();
                 SSingleton<SViewWorld>.Inst.Update();
