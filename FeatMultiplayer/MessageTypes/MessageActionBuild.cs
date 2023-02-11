@@ -15,7 +15,7 @@ namespace FeatMultiplayer
 
         internal int2 coords;
         internal byte id;
-        internal bool allowRecipePick;
+        internal bool copyMode;
         internal int2 copyFrom = int2.negative;
 
         public override void Encode(BinaryWriter output)
@@ -23,7 +23,7 @@ namespace FeatMultiplayer
             output.Write(coords.x);
             output.Write(coords.y);
             output.Write(id);
-            output.Write(allowRecipePick);
+            output.Write(copyMode);
             output.Write(copyFrom);
         }
 
@@ -31,7 +31,7 @@ namespace FeatMultiplayer
         {
             coords = new int2(input.ReadInt32(), input.ReadInt32());
             id = input.ReadByte();
-            allowRecipePick = input.ReadBoolean();
+            copyMode = input.ReadBoolean();
             copyFrom = input.ReadInt2();
         }
 
@@ -41,6 +41,19 @@ namespace FeatMultiplayer
             msg.Decode(input);
             message = msg;
             return true;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+
+            sb.Append(nameof(coords)).Append(" = (").Append(coords).Append("), ")
+                .Append(nameof(id)).Append(" = ").Append(id).Append(", ")
+                .Append(nameof(copyMode)).Append(" = ").Append(copyMode).Append(", ")
+                .Append(nameof(copyFrom)).Append(" = (").Append(copyFrom).Append(")")
+                ;
+
+            return sb.ToString();
         }
     }
 }
