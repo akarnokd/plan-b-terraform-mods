@@ -15,6 +15,7 @@ namespace FeatMultiplayer
 {
     public partial class Plugin : BaseUnityPlugin
     {
+        static bool suppressLineCreateItemPicking;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SWays), nameof(SWays.CreateLine))]
@@ -23,10 +24,12 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Client)
             {
                 var msg = new MessageActionFinishLine();
+                msg.pickCoords = GScene3D.selectionCoords;
                 msg.newLine.GetSnapshot(line);
                 msg.oldLineId = lineOld?.id ?? -1;
                 SendHost(msg);
 
+                suppressLineCreateItemPicking = true;
                 return false;
             }
 
@@ -62,8 +65,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_WayStop), nameof(CItem_WayStop.StartBuildMode))]
-        static bool Patch_CItem_WayStop_StartBuildMode_Post(int2 coordsOrigin, 
-            bool isReverse, CLine ____buildLine)
+        static bool Patch_CItem_WayStop_StartBuildMode_Post(CLine ____buildLine)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
@@ -73,6 +75,57 @@ namespace FeatMultiplayer
                 return false;
             }
             return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_WayStop), "Update_IfSelected")]
+        static void Patch_CItem_WayStop_Update_IfSelected()
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                suppressLineCreateItemPicking = false;
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SScenePopup), nameof(SScenePopup.ActivateAndShow))]
+        static bool Patch_SScenePopup_ActivateAndShow()
+        {
+            return !suppressLineCreateItemPicking;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SScenePopup), nameof(SScenePopup.ShowItemsPickUp))]
+        static bool Patch_SScenePopup_ShowItemsPickUp()
+        {
+            return !suppressLineCreateItemPicking;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SWays), nameof(SWays.RemoveLine))]
+        static bool Patch_SWays_RemoveLine_Pre(CLine line)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                var msg = new MessageActionRemoveLine();
+                msg.lineId = line.id;
+                SendHost(msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SWays), nameof(SWays.RemoveLine))]
+        static void PPatch_SWays_RemoveLine_Post(CLine line)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                var msg = new MessageActionRemoveLine();
+                msg.lineId = line.id;
+                SendAllClients(msg);
+            }
         }
 
         static void ReceiveMessageActionBeginLine(MessageActionBeginLine msg)
@@ -160,12 +213,13 @@ namespace FeatMultiplayer
 
                 var msgResponse = new MessageUpdateFinishLine();
                 msgResponse.pickItem = cline.itemTransported == null || oldLine == null;
+                msgResponse.pickCoords = msg.pickCoords;
+                msgResponse.oldLineId = msg.oldLineId;
                 msgResponse.line.GetSnapshot(cline);
                 msg.sender.Send(msgResponse);
 
                 var msgRest = new MessageUpdateLine();
                 msgRest.GetSnapshot(cline, true);
-
                 SendAllClientsExcept(msg.sender, msgRest);
             }
             else
@@ -186,6 +240,13 @@ namespace FeatMultiplayer
                 LogDebug("MessageUpdateFinishLine: Handling " + msg.GetType());
 
                 var itemLookup = GetItemsDictionary();
+                var lineLookup = GetLineDictionary();
+
+                if (lineLookup.TryGetValue(msg.oldLineId, out var oldLine))
+                {
+                    oldLine.UpdateStopDataOrginEnd(true, true);
+                    GWays.lines.Remove(oldLine);
+                }
 
                 var cline = new CLine(msg.line.stops[0].coords);
                 msg.line.ApplySnapshot(cline, itemLookup);
@@ -193,18 +254,74 @@ namespace FeatMultiplayer
                 cline.ComputePath_Positions(true);
                 cline.UpdateStopDataOrginEnd(true, false);
 
-                SSceneSingleton<SSceneHud_ItemsBars>.Inst.TryCancel(false);
-                SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
-
                 if (msg.pickItem)
                 {
                     SSceneSingleton<SScenePopup>.Inst.ActivateAndShow(false, true, SLoc.Get("Popup_ItemPicking"), null);
-                    SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(cline.stops[0].coords);
+                    SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(msg.pickCoords);
                 }
             }
             else
             {
                 LogWarning("MessageUpdateFinishLine: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
+
+        static void ReceiveMessageActionRemoveLine(MessageActionRemoveLine msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageActionRemoveLine: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("ReceiveMessageActionRemoveLine: Handling " + msg.GetType());
+
+                GWays.lines.RemoveAll(x =>
+                {
+                    if (x != null && x.id == msg.lineId)
+                    {
+                        CancelBuildLine(x);
+
+                        x.UpdateStopDataOrginEnd(true, true);
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            else if (multiplayerMode == MultiplayerMode.Host)
+            {
+                LogDebug("ReceiveMessageActionRemoveLine: Handling " + msg.GetType());
+
+                var lineLookup = GetLineDictionary();
+                if (lineLookup.TryGetValue(msg.lineId, out var line))
+                {
+                    CancelBuildLine(line);
+                    SSingleton<SWays>.Inst.RemoveLine(line);
+                }
+                else 
+                {
+                    LogWarning("ReceiveMessageActionRemoveLine: Unknown line " + msg.lineId);
+                }
+            }
+            else
+            {
+                LogWarning("ReceiveMessageActionRemoveLine: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
+
+        static void CancelBuildLine(CLine line)
+        {
+            foreach (var stop in line.stops)
+            {
+                var content = ContentAt(stop.coords);
+                if (content is CItem_WayStop wayStop)
+                {
+                    if (Haxx.cItemWayStopBuildLine.Invoke(wayStop) == line)
+                    {
+                        Haxx.cItemWayStopBuildLine.Invoke(wayStop) = null;
+                    }
+                }
             }
         }
     }

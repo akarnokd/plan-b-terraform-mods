@@ -74,6 +74,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateStartLine>(ReceiveMessageUpdateStartLine);
             AddMessageRegistry<MessageActionFinishLine>(ReceiveMessageActionFinishLine);
             AddMessageRegistry<MessageUpdateFinishLine>(ReceiveMessageUpdateFinishLine);
+            AddMessageRegistry<MessageActionRemoveLine>(ReceiveMessageActionRemoveLine);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()

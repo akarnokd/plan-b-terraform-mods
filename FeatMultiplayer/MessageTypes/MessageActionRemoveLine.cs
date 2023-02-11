@@ -7,34 +7,28 @@ using System.Threading.Tasks;
 
 namespace FeatMultiplayer
 {
-    internal class MessageActionFinishLine : MessageBase
+    internal class MessageActionRemoveLine : MessageBase
     {
-        const string messageCode = "ActionFinishLine";
+        const string messageCode = "ActionRemoveLine";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal readonly SnapshotLine newLine = new();
-        internal int oldLineId;
-        internal int2 pickCoords;
+        internal int lineId;
 
         public override void Encode(BinaryWriter output)
         {
-            newLine.Encode(output);
-            output.Write(oldLineId);
-            output.Write(pickCoords);
+            output.Write(lineId);
         }
 
         void Decode(BinaryReader input)
         {
-            newLine.Decode(input);
-            oldLineId = input.ReadInt32();
-            pickCoords = input.ReadInt2();
+            lineId = input.ReadInt32();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageActionFinishLine();
+            var msg = new MessageActionRemoveLine();
             msg.Decode(input);
             message = msg;
             return true;
