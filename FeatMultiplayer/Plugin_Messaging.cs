@@ -53,8 +53,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateTransportedAt>(ReceiveMessageUpdateTransportedAt);
 
             AddMessageRegistry<MessageUpdateContentData>(ReceiveMessageUpdateContentData);
-            AddMessageRegistry<MessageUpdateDatasAt>(ReceiveMessageUpdateGroundAndContentData);
-            AddMessageRegistry<MessageUpdateStacksAndContentDataAt>(ReceiveMessageUpdateStacksAndContentDataAt);
+            AddMessageRegistry<MessageUpdateDatasAt>(ReceiveMessageUpdateDatasAt);
             AddMessageRegistry<MessageUpdatePlanetGasses>(ReceiveMessageUpdatePlanetGasses);
             AddMessageRegistry<MessageUpdateForest>(ReceiveMessageUpdateForest);
             AddMessageRegistry<MessageUpdateCity>(ReceiveMessageUpdateCity);

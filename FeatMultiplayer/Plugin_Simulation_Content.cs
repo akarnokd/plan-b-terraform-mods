@@ -15,16 +15,9 @@ namespace FeatMultiplayer
 
         static readonly List<int2> worldTexturesToUpdate = new();
 
-        static void SendUpdateGroundAndContentData(int2 coords, bool updateBlocks)
-        {
-            var msg = new MessageUpdateDatasAt();
-            msg.GetSnapshot(coords, updateBlocks);
-            SendAllClients(msg);
-        }
-
         static void SendUpdateStacksAndContentData(int2 coords, bool updateBlocks)
         {
-            var msg = new MessageUpdateStacksAndContentDataAt();
+            var msg = new MessageUpdateDatasAt();
             msg.GetSnapshot(coords, updateBlocks);
             SendAllClients(msg);
         }
@@ -82,7 +75,7 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 suppressBlocksOnChange = false;
-                SendUpdateGroundAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
+                SendUpdateStacksAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
                 if (blocksOnChangeCalledWhileSuppressed)
                 {
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);
@@ -115,7 +108,7 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 suppressBlocksOnChange = false;
-                SendUpdateGroundAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
+                SendUpdateStacksAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
                 if (blocksOnChangeCalledWhileSuppressed)
                 {
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);
@@ -265,45 +258,9 @@ namespace FeatMultiplayer
             }
         }
 
-        static void ReceiveMessageUpdateGroundAndContentData(MessageUpdateDatasAt msg)
-        {
-            if (multiplayerMode == MultiplayerMode.ClientJoin)
-            {
-                LogDebug("ReceiveMessageUpdateGroundAndContentData: Deferring " + msg.GetType());
-                deferredMessages.Enqueue(msg);
-            }
-            else if (multiplayerMode == MultiplayerMode.Client)
-            {
-                LogDebug("ReceiveMessageUpdateGroundAndContentData: Handling " + msg.GetType());
-
-                msg.ApplySnapshot();
-
-                var coords = msg.coords;
-
-                var content = ContentAt(coords);
-                if (content is CItem_ContentExtractor)
-                {
-                    if (GHexes.groundData[coords.x, coords.y] == 0)
-                    {
-                        GItems.itemDirt.Create(coords, true);
-                        SSingleton<SViewWorld>.Inst.OnBuildItem_UpdateTxWorld(coords);
-                        SSingleton<SViewWorld>.Inst.OnAltitudeTxChange(coords);
-                    }
-                    if (msg.updateBlocks)
-                    {
-                        Haxx.SBlocks_OnChangeItem(coords, false, false, true);
-                    }
-                }
-            }
-            else
-            {
-                LogWarning("ReceiveMessageUpdateGroundAndContentData: wrong multiplayerMode: " + multiplayerMode);
-            }
-        }
-
         public static bool logDebugStacksAndContentMessages;
 
-        static void ReceiveMessageUpdateStacksAndContentDataAt(MessageUpdateStacksAndContentDataAt msg)
+        static void ReceiveMessageUpdateDatasAt(MessageUpdateDatasAt msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
@@ -321,6 +278,19 @@ namespace FeatMultiplayer
                 }
 
                 msg.ApplySnapshot();
+
+                var coords = msg.coords;
+
+                var content = ContentAt(coords);
+                if (content is CItem_ContentExtractor)
+                {
+                    if (GHexes.groundData[coords.x, coords.y] == 0)
+                    {
+                        GItems.itemDirt.Create(coords, true);
+                        SSingleton<SViewWorld>.Inst.OnBuildItem_UpdateTxWorld(coords);
+                        SSingleton<SViewWorld>.Inst.OnAltitudeTxChange(coords);
+                    }
+                }
 
                 if (msg.updateBlocks)
                 {
