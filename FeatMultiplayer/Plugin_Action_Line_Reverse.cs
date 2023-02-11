@@ -75,22 +75,30 @@ namespace FeatMultiplayer
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("MessageUpdateLine: Handling " + msg.GetType());
+                LogDebug("ReceiveMessageActionReverseLine: Handling " + msg.GetType());
 
                 for (int i = 1; i < GWays.lines.Count; i++)
                 {
-                    CLine line = GWays.lines[i];
-                    if (line.id == msg.line.id)
+                    CLine cline = GWays.lines[i];
+                    if (cline.id == msg.line.id)
                     {
-                        msg.ApplySnapshot(line);
+                        msg.ApplySnapshot(cline);
 
-                        break;
+                        cline.UpdateStopDataOrginEnd(true, false);
+                        cline.ComputePath_Positions(msg.computePath);
+
+                        return;
                     }
                 }
+
+                // create a new line
+                var line = new CLine(msg.line.stops[0].coords);
+                msg.ApplySnapshot(line);
+                GWays.lines.Add(line);
             }
             else
             {
-                LogWarning("MessageUpdateLine: wrong multiplayerMode: " + multiplayerMode);
+                LogWarning("ReceiveMessageActionReverseLine: wrong multiplayerMode: " + multiplayerMode);
             }
         }
     }

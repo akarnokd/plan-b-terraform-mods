@@ -76,6 +76,7 @@ namespace FeatMultiplayer
 
         internal void ApplySnapshot(CLine line, Dictionary<string, CItem> itemDictionary)
         {
+            line.id = id;
             if (itemDictionary.TryGetValue(itemStopOrigin, out var item))
             {
                 line.itemStopOrigin = item as CItem_WayStop;

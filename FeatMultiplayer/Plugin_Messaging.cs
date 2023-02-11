@@ -69,6 +69,11 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateDrones>(ReceiveMessageUpdateDrones);
             AddMessageRegistry<MessageUpdateTransportStacks>(ReceiveMessageUpdateTransportStacks);
             AddMessageRegistry<MessageUpdateItems>(ReceiveMessageUpdateItems);
+
+            AddMessageRegistry<MessageActionBeginLine>(ReceiveMessageActionBeginLine);
+            AddMessageRegistry<MessageUpdateStartLine>(ReceiveMessageUpdateStartLine);
+            AddMessageRegistry<MessageActionFinishLine>(ReceiveMessageActionFinishLine);
+            AddMessageRegistry<MessageUpdateFinishLine>(ReceiveMessageUpdateFinishLine);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()

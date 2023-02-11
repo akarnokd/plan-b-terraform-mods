@@ -7,49 +7,34 @@ using System.Threading.Tasks;
 
 namespace FeatMultiplayer
 {
-    internal class MessageUpdateLine : MessageBase
+    internal class MessageUpdateFinishLine : MessageBase
     {
-        const string messageCode = "UpdateLine";
+        const string messageCode = "UpdateFinishLine";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal bool computePath;
+        internal bool pickItem;
         internal readonly SnapshotLine line = new();
-
-        internal void GetSnapshot(CLine line, bool computePath)
-        {
-            this.computePath = computePath;
-            this.line.GetSnapshot(line);
-        }
-
-        internal void ApplySnapshot(CLine cline)
-        {
-            var itemLookup = Plugin.GetItemsDictionary();
-            line.ApplySnapshot(cline, itemLookup);
-        }
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(computePath);
+            output.Write(pickItem);
             line.Encode(output);
         }
 
         void Decode(BinaryReader input)
         {
-            computePath = input.ReadBoolean();
+            pickItem = input.ReadBoolean();
             line.Decode(input);
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageUpdateLine();
-
+            var msg = new MessageUpdateFinishLine();
             msg.Decode(input);
-
             message = msg;
             return true;
         }
-
     }
 }
