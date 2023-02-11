@@ -69,16 +69,25 @@ namespace FeatMultiplayer
         // Message receviers
         // ------------------------------------------------------------------------------
 
+        public static bool logDebugDroneMessages;
+        public static bool logDebugLineMessages;
+
         static void ReceiveMessageUpdateLines(MessageUpdateLines msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateLines: Deferring " + msg.GetType());
+                if (logDebugLineMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateLines: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateLines: Handling " + msg.GetType());
+                if (logDebugLineMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateLines: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
             }
@@ -92,12 +101,18 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateDrones: Deferring " + msg.GetType());
+                if (logDebugDroneMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateDrones: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateDrones: Handling " + msg.GetType());
+                if (logDebugDroneMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateDrones: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
             }

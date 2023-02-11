@@ -3,6 +3,7 @@
 
 using BepInEx;
 using HarmonyLib;
+using System;
 
 namespace FeatMultiplayer
 {
@@ -12,6 +13,8 @@ namespace FeatMultiplayer
 
         static bool suppressRecipePick;
 
+        static bool suppressCopyNotification;
+
         static bool BuildPre(CItem_Content __instance, int2 coords)
         {
             if (!suppressBuildNotification && multiplayerMode == MultiplayerMode.Client)
@@ -19,9 +22,11 @@ namespace FeatMultiplayer
                 var msg = new MessageActionBuild();
                 msg.coords = coords;
                 msg.id = __instance.id;
-                msg.allowRecipePick = true;
+                msg.copyFrom = Haxx.cItemContentFirstBuildCoords(__instance);
+                msg.allowRecipePick = msg.copyFrom == int2.negative;
                 SendHost(msg);
-                LogDebug("MessageActionBuild: Request at " + msg.coords.x + ", " + msg.coords.y + " of " + __instance.codeName);
+                LogDebug("MessageActionBuild: Request at " + msg.coords.x + ", " + msg.coords.y
+                    + " of " + __instance.codeName + " (copy from " + msg.copyFrom.x + ", " + msg.copyFrom.y + ")");
                 return false;
             }
             return true;
@@ -34,8 +39,12 @@ namespace FeatMultiplayer
                 var msg = new MessageActionBuild();
                 msg.coords = coords;
                 msg.id = __instance.id;
+                msg.copyFrom = Haxx.cItemContentFirstBuildCoords(__instance);
                 SendAllClients(msg);
-                LogDebug("MessageActionBuild: Command at " + msg.coords.x + ", " + msg.coords.y + " of " + __instance.codeName);
+                LogDebug("MessageActionBuild: Command at " + msg.coords.x + ", " + msg.coords.y 
+                    + " of " + __instance.codeName + " (copy from " + msg.copyFrom.x + ", " + msg.copyFrom.y + ")"
+                    //+ "\n" + Environment.StackTrace
+                );
             }
         }
 
@@ -126,6 +135,32 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_Content), "Copy")]
+        static void Patch_CItem_Content_Copy(CItem_Content __instance, int2 coordsFrom, int2 coordsTo)
+        {
+            LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ")");
+            if (!suppressCopyNotification)
+            {
+                if (multiplayerMode == MultiplayerMode.Host)
+                {
+                    var msg = new MessageActionCopy();
+                    msg.codeName = __instance.codeName;
+                    msg.fromCoords = coordsFrom;
+                    msg.toCoords = coordsTo;
+                    SendAllClients(msg);
+                }
+                else if (multiplayerMode == MultiplayerMode.Client)
+                {
+                    var msg = new MessageActionCopy();
+                    msg.codeName = __instance.codeName;
+                    msg.fromCoords = coordsFrom;
+                    msg.toCoords = coordsTo;
+                    SendHost(msg);
+                }
+            }
+        }
+
         static void ReceiveMessageActionBuild(MessageActionBuild msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
@@ -155,8 +190,29 @@ namespace FeatMultiplayer
 
                             try
                             {
-                                LogDebug("ReceiveMessageActionBuild: Building " + content.codeName + " at " + msg.coords.x + ", " + msg.coords.y);
-                                Haxx.cItemContentBuild.Invoke(content, new object[] { msg.coords, false });
+                                LogDebug("ReceiveMessageActionBuild: Building " + content.codeName
+                                    + " at " + msg.coords.x + ", " + msg.coords.y
+                                    + " (copy from " + msg.copyFrom.x + ", " + msg.copyFrom.y + ")"
+                                    );
+
+                                var saveFirst = Haxx.cItemContentFirstBuildCoords.Invoke(content);
+                                try
+                                {
+                                    Haxx.cItemContentFirstBuildCoords.Invoke(content) = msg.copyFrom;
+
+                                    Haxx.cItemContentBuild.Invoke(content, new object[] { msg.coords, false });
+
+                                    /*
+                                    if (msg.copyFrom != int2.negative)
+                                    {
+                                        Haxx.cItemContentCopy.Invoke(content, new object[] { msg.copyFrom, msg.coords });
+                                    }
+                                    */
+                                }
+                                finally
+                                {
+                                    Haxx.cItemContentFirstBuildCoords.Invoke(content) = saveFirst;
+                                }
                             }
                             finally
                             {
@@ -170,6 +226,7 @@ namespace FeatMultiplayer
                                 var msg2 = new MessageActionBuild();
                                 msg2.coords = msg.coords;
                                 msg2.id = msg.id;
+                                msg2.copyFrom = msg.copyFrom;
 
                                 SendAllClientsExcept(msg.sender, msg2);
                             }
@@ -187,6 +244,49 @@ namespace FeatMultiplayer
                 else
                 {
                     LogWarning("ReceiveMessageActionBuild: Could not find item with id " + msg.id);
+                }
+            }
+        }
+
+        static void ReceiveMessageActionCopy(MessageActionCopy msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageActionCopy: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else
+            {
+                LogDebug("ReceiveMessageActionCopy: Handling " + msg.GetType());
+
+                var itemLookup = GetItemsDictionary();
+
+                if (itemLookup.TryGetValue(msg.codeName, out var citem))
+                {
+                    if (citem is CItem_Content content)
+                    {
+                        suppressCopyNotification = true;
+                        try
+                        {
+                            Haxx.cItemContentCopy.Invoke(content, new object[] { msg.fromCoords, msg.toCoords });
+                        }
+                        finally
+                        {
+                            suppressCopyNotification = true;
+                        }
+                        if (multiplayerMode == MultiplayerMode.Host)
+                        {
+                            SendAllClientsExcept(msg.sender, msg);
+                        }
+                    }
+                    else
+                    {
+                        LogWarning("ReceiveMessageActionCopy: Item " + msg.codeName + " has the wrong type = " + citem.GetType());
+                    }
+                }
+                else
+                {
+                    LogWarning("ReceiveMessageActionCopy: Unknown item " + msg.codeName);
                 }
             }
         }

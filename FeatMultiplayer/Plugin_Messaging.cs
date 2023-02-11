@@ -46,6 +46,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageActionDestroy>(ReceiveMessageActionDestroy);
             AddMessageRegistry<MessageActionRenameLandmark>(ReceiveMessageActionRenameLandmark);
             AddMessageRegistry<MessageActionReverseLine>(ReceiveMessageActionReverseLine);
+            AddMessageRegistry<MessageActionCopy>(ReceiveMessageActionCopy);
 
             AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
             AddMessageRegistry<MessageUpdateRecipeAt>(ReceiveMessageUpdateRecipeAt);

@@ -301,16 +301,24 @@ namespace FeatMultiplayer
             }
         }
 
+        public static bool logDebugStacksAndContentMessages;
+
         static void ReceiveMessageUpdateStacksAndContentDataAt(MessageUpdateStacksAndContentDataAt msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateStacksAndContentDataAt: Deferring " + msg.GetType());
+                if (logDebugStacksAndContentMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateStacksAndContentDataAt: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateStacksAndContentDataAt: Handling " + msg.GetType());
+                if (logDebugStacksAndContentMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateStacksAndContentDataAt: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
 
@@ -371,16 +379,24 @@ namespace FeatMultiplayer
             }
         }
 
+        public static bool logDebugUpdateItemsMessage;
+
         static void ReceiveMessageUpdateItems(MessageUpdateItems msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateItems: Deferring " + msg.GetType());
+                if (logDebugUpdateItemsMessage)
+                {
+                    LogDebug("ReceiveMessageUpdateItems: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateItems: Handling " + msg.GetType());
+                if (logDebugUpdateItemsMessage)
+                {
+                    LogDebug("ReceiveMessageUpdateItems: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
             }

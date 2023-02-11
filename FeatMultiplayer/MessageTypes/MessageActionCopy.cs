@@ -6,38 +6,34 @@ using System.Text;
 
 namespace FeatMultiplayer
 {
-    internal class MessageActionBuild : MessageBase
+    internal class MessageActionCopy : MessageBase
     {
-        const string messageCode = "ActionBuild";
+        const string messageCode = "ActionCopy";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal int2 coords;
-        internal byte id;
-        internal bool allowRecipePick;
-        internal int2 copyFrom = int2.negative;
+        internal string codeName;
+        internal int2 fromCoords;
+        internal int2 toCoords;
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(coords.x);
-            output.Write(coords.y);
-            output.Write(id);
-            output.Write(allowRecipePick);
-            output.Write(copyFrom);
+            output.Write(codeName);
+            output.Write(fromCoords);
+            output.Write(toCoords);
         }
 
         void Decode(BinaryReader input)
         {
-            coords = new int2(input.ReadInt32(), input.ReadInt32());
-            id = input.ReadByte();
-            allowRecipePick = input.ReadBoolean();
-            copyFrom = input.ReadInt2();
+            codeName = input.ReadString();
+            fromCoords = input.ReadInt2();
+            toCoords = input.ReadInt2();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageActionBuild();
+            var msg = new MessageActionCopy();
             msg.Decode(input);
             message = msg;
             return true;

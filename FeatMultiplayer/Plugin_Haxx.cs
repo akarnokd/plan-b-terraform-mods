@@ -36,6 +36,8 @@ namespace FeatMultiplayer
 
             Haxx.cItemContentBuild = AccessTools.Method(typeof(CItem_Content), "Build", new[] { typeof(int2), typeof(bool) });
 
+            Haxx.cItemContentCopy = AccessTools.Method(typeof(CItem_Content), "Copy", new[] { typeof(int2), typeof(int2) });
+
             Haxx._sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
 
             Haxx.cItemWayStopBuildLine = AccessTools.FieldRefAccess<CItem_WayStop, CLine>("_buildLine");
@@ -68,6 +70,8 @@ namespace FeatMultiplayer
         internal static AccessTools.FieldRef<CItem_Content, int2> cItemContentFirstBuildCoords;
 
         internal static MethodInfo cItemContentBuild;
+
+        internal static MethodInfo cItemContentCopy;
 
         internal static MethodInfo _sBlocksOnChangeItem;
 

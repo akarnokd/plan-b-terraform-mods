@@ -113,16 +113,24 @@ namespace FeatMultiplayer
         // Message receviers
         // ------------------------------------------------------------------------------
 
+        public static bool logDebugCityMessages;
+
         static void ReceiveMessageUpdateCity(MessageUpdateCity msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateCity: Deferring " + msg.GetType());
+                if (logDebugCityMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateCity: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateCity: Handling " + msg.GetType());
+                if (logDebugCityMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateCity: Handling " + msg.GetType());
+                }
 
                 var city = GGame.cities.Find(v => v != null && v.cityId == msg.city.id);
 

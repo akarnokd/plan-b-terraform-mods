@@ -33,6 +33,8 @@ namespace FeatMultiplayer
 
         static readonly Dictionary<int, ClientSession> sessions = new();
 
+        public static bool logDebugNetworkMessages;
+
         /// <summary>
         /// Send a message to the host.
         /// </summary>
@@ -51,7 +53,8 @@ namespace FeatMultiplayer
         /// <param name="signal"></param>
         public static void SendAllClients(MessageBase message, bool signal = true)
         {
-            LogDebug("SendAllClients: " + message.GetType());
+            // No need for the log flood
+            // LogDebug("SendAllClients: " + message.GetType());
             foreach (var sess in sessions.Values)
             {
                 sess.Send(message, signal);
@@ -216,7 +219,10 @@ namespace FeatMultiplayer
                                 break;
                             }
 
-                            LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
+                            if (logDebugNetworkMessages)
+                            {
+                                LogDebug("SenderLoop for session " + session.id + " < " + session.clientName + " > send message " + msg.MessageCode());
+                            }
                             ClearMemoryStream(encodeBuffer, fullResetBuffer);
 
                             var code = msg.MessageCodeBytes();
@@ -235,20 +241,26 @@ namespace FeatMultiplayer
                             encodeWriter.Write(messageTotalLength);
                             encodeBuffer.Position = 0;
 
-                            LogDebug("    Message sizes: 4 + 1 + " + code.Length + " + " + msgLength + " ?= " + encodeBuffer.Length);
-
-                            StringBuilder sb = new();
-                            sb.Append("        ");
-                            for (int i = 0; i < 5 + code.Length; i++)
+                            if (logDebugNetworkMessages)
                             {
-                                sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                                LogDebug("    Message sizes: 4 + 1 + " + code.Length + " + " + msgLength + " ?= " + encodeBuffer.Length);
+                                StringBuilder sb = new();
+                                sb.Append("        ");
+                                for (int i = 0; i < 5 + code.Length; i++)
+                                {
+                                    sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                                }
+                                LogDebug(sb.ToString());
                             }
-                            LogDebug(sb.ToString());
+
 
                             encodeBuffer.WriteTo(stream);
                             stream.Flush();
 
-                            LogDebug("    Sent.");
+                            if (logDebugNetworkMessages)
+                            {
+                                LogDebug("    Sent.");
+                            }
                         }
                         else
                         {
@@ -298,20 +310,26 @@ namespace FeatMultiplayer
                             throw new IOException("ReceiverLoop expected 5 more bytes but got " + read);
                         }
 
-                        LogDebug("ReceiverLoop message incoming");
-
-                        StringBuilder sb = new();
-                        sb.Append("        ");
-                        for (int i = 0; i < 5; i++)
+                        if (logDebugNetworkMessages)
                         {
-                            sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                            LogDebug("ReceiverLoop message incoming");
+                            StringBuilder sb = new();
+                            sb.Append("        ");
+                            for (int i = 0; i < 5; i++)
+                            {
+                                sb.Append(string.Format("{0:000} ", encodeBuffer.GetBuffer()[i]));
+                            }
+                            LogDebug(sb.ToString());
                         }
-                        LogDebug(sb.ToString());
+
 
                         var totalLength = encodeReader.ReadInt32();
                         var messageCodeLen = encodeReader.ReadByte();
 
-                        LogDebug("    Message totalLength = " + totalLength + ", messageCodeLen = " + messageCodeLen);
+                        if (logDebugNetworkMessages)
+                        {
+                            LogDebug("    Message totalLength = " + totalLength + ", messageCodeLen = " + messageCodeLen);
+                        }
 
                         // make sure the buffer can hold the remaining of the message
                         if (encodeBuffer.Capacity < 5 + totalLength)
@@ -336,7 +354,10 @@ namespace FeatMultiplayer
                         var messageCode = Encoding.UTF8.GetString(encodeBuffer.GetBuffer(), 5, messageCodeLen);
                         encodeBuffer.Position = 5 + messageCodeLen;
 
-                        LogDebug("    Code: " + messageCode + " with length 4 + 1 + " + messageCodeLen + " + " + (totalLength - messageCodeLen));
+                        if (logDebugNetworkMessages)
+                        {
+                            LogDebug("    Code: " + messageCode + " with length 4 + 1 + " + messageCodeLen + " + " + (totalLength - messageCodeLen));
+                        }
 
                         // lookup an actual code decoder
                         if (messageRegistry.TryGetValue(messageCode, out var msg))
@@ -351,7 +372,10 @@ namespace FeatMultiplayer
                                     }
                                     else
                                     {
-                                        LogDebug("    Decode complete.");
+                                        if (logDebugNetworkMessages)
+                                        {
+                                            LogDebug("    Decode complete.");
+                                        }
                                         decoded.sender = session;
                                         decoded.onReceive = msg.onReceive;
                                         receiverQueue.Enqueue(decoded);

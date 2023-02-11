@@ -3,6 +3,7 @@
 
 using BepInEx;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -46,7 +47,6 @@ namespace FeatMultiplayer
                 if (isHost)
                 {
                     MultiplayerSMainUpdate_UpdateTime(__instance);
-                    // TODO send new planet time
 
                     var msgt = new MessageUpdateTime();
                     msgt.GetSnapshot();
@@ -182,16 +182,24 @@ namespace FeatMultiplayer
         // Message receviers
         // ------------------------------------------------------------------------------
 
+        public static bool logDebugMainMessages;
+
         static void ReceiveMessageUpdateTime(MessageUpdateTime msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateTime: Deferring " + msg.GetType());
+                if (logDebugMainMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateTime: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateTime: Handling " + msg.GetType());
+                if (logDebugMainMessages)
+                {
+                    LogDebug("ReceiveMessageUpdateTime: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
             }
@@ -205,13 +213,18 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdatePlanet: Deferring " + msg.GetType());
+                if (logDebugMainMessages)
+                {
+                    LogDebug("ReceiveMessageUpdatePlanet: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdatePlanet: Handling " + msg.GetType());
-
+                if (logDebugMainMessages)
+                {
+                    LogDebug("ReceiveMessageUpdatePlanet: Handling " + msg.GetType());
+                }
                 msg.ApplySnapshot();
             }
             else
