@@ -59,16 +59,14 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_WayStop), nameof(CItem_WayStop.StartBuildMode))]
-        static bool Patch_CItem_WayStop_StartBuildMode_Post(CLine ____buildLine)
+        static void Patch_CItem_WayStop_StartBuildMode_Post(CLine ____buildLine)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 var msg = new MessageUpdateLine();
                 msg.GetSnapshot(____buildLine, false);
                 SendAllClients(msg);
-                return false;
             }
-            return true;
         }
 
         [HarmonyPostfix]
