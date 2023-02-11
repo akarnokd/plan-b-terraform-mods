@@ -250,7 +250,7 @@ namespace FeatMultiplayer
         {
             if (deferCopy)
             {
-                LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ")");
+                LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ") deferred");
                 deferCopySource = coordsFrom;
                 deferCopyDestination = coordsTo;
                 return false;
@@ -398,7 +398,7 @@ namespace FeatMultiplayer
                         }
                         finally
                         {
-                            suppressCopyNotification = true;
+                            suppressCopyNotification = false;
                         }
                         if (multiplayerMode == MultiplayerMode.Host)
                         {
