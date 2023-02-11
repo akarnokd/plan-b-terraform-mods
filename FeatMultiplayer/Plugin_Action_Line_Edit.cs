@@ -118,7 +118,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SWays), nameof(SWays.RemoveLine))]
-        static void PPatch_SWays_RemoveLine_Post(CLine line)
+        static void Patch_SWays_RemoveLine_Post(CLine line)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
@@ -127,6 +127,76 @@ namespace FeatMultiplayer
                 SendAllClients(msg);
             }
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CLine), nameof(CLine.Inverse))]
+        static bool Patch_CLine_Inverse_Pre(CLine __instance)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                var msg = new MessageActionReverseLine();
+                msg.lineId = __instance.id;
+                SendHost(msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CLine), nameof(CLine.Inverse))]
+        static void Patch_CLine_Inverse_Post(CLine __instance)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                var msg = new MessageUpdateLine();
+                msg.GetSnapshot(__instance, false);
+                SendAllClients(msg);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SSceneHud_Selection), "OnClick_ModifiedValue")]
+        static bool Patch_SSceneHud_Selection_OnClick_ModifiedValue_Pre(int nb)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                var n = nb;
+                if (GInputs.shift.IsKey())
+                {
+                    n *= 10;
+                }
+                var msg = new MessageActionChangeVehicleCount();
+                msg.coords = GScene3D.selectionCoords;
+                msg.delta = n;
+                SendHost(msg);
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SSceneHud_Selection), "OnClick_ModifiedValue")]
+        static void Patch_SSceneHud_Selection_OnClick_ModifiedValue_Post(int nb)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                if (GScene3D.selectedItem is CItem_WayStop)
+                {
+                    CLine line = SSingleton<SWays>.Inst.GetLine(GScene3D.selectionCoords);
+                    if (line != null)
+                    {
+                        var msgResp = new MessageUpdateLine();
+                        msgResp.line.GetSnapshot(line);
+                        SendAllClients(msgResp);
+                    }
+                }
+            }
+        }
+
+        // ------------------------------------------------------------------------------
+        // Message receivers
+        // ------------------------------------------------------------------------------
 
         static void ReceiveMessageActionBeginLine(MessageActionBeginLine msg)
         {
@@ -322,6 +392,119 @@ namespace FeatMultiplayer
                         Haxx.cItemWayStopBuildLine.Invoke(wayStop) = null;
                     }
                 }
+            }
+        }
+
+        static void ReceiveMessageActionReverseLine(MessageActionReverseLine msg)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                LogDebug("ReceiveMessageActionReverseLine: Handling " + msg.GetType());
+
+                for (int i = 1; i < GWays.lines.Count; i++)
+                {
+                    CLine line = GWays.lines[i];
+                    if (line.id == msg.lineId)
+                    {
+                        line.Inverse();
+
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                LogWarning("ReceiveMessageActionReverseLine: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
+
+        static void ReceiveMessageUpdateLine(MessageUpdateLine msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageActionReverseLine: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                LogDebug("ReceiveMessageActionReverseLine: Handling " + msg.GetType());
+
+                for (int i = 1; i < GWays.lines.Count; i++)
+                {
+                    CLine cline = GWays.lines[i];
+                    if (cline.id == msg.line.id)
+                    {
+                        msg.ApplySnapshot(cline);
+
+                        cline.UpdateStopDataOrginEnd(true, false);
+                        cline.ComputePath_Positions(msg.computePath);
+
+                        return;
+                    }
+                }
+
+                // create a new line
+                var line = new CLine(msg.line.stops[0].coords);
+                msg.ApplySnapshot(line);
+                GWays.lines.Add(line);
+            }
+            else
+            {
+                LogWarning("ReceiveMessageActionReverseLine: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
+
+        static void ReceiveMessageActionChangeVehicleCount(MessageActionChangeVehicleCount msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                LogDebug("ReceiveMessageActionChangeVehicleCount: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Host)
+            {
+                LogDebug("ReceiveMessageActionChangeVehicleCount: Handling " + msg.GetType());
+
+                var content = ContentAt(msg.coords);
+                if (content is CItem_WayStop)
+                {
+                    CLine line = SSingleton<SWays>.Inst.GetLine(msg.coords);
+                    if (line != null)
+                    {
+                        int nb = msg.delta;
+                        if (nb > 0)
+                        {
+                            nb = GGame.debugAllUnlocked ? nb : Mathf.Min(nb, line.ItemVehicle.nbOwned);
+                        }
+                        else if (nb < 0)
+                        {
+                            nb = Mathf.Min(nb, line.vehicles.Count);
+                        }
+                        line.ChangeNbVehicles(nb);
+
+                        var msgResp = new MessageUpdateLine();
+                        msgResp.line.GetSnapshot(line);
+                        SendAllClients(msgResp);
+
+                        if (GScene3D.selectionCoords == msg.coords)
+                        {
+                            SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
+                        }
+
+                    }
+                    else
+                    {
+                        LogWarning("ReceiveMessageActionChangeVehicleCount: No line at " + msg.coords.x + ", " + msg.coords.y);
+                    }
+                }
+                else
+                {
+                    LogWarning("ReceiveMessageActionChangeVehicleCount: CItem_WayStop " + msg.coords.x + ", " + msg.coords.y);
+                }
+            }
+            else
+            {
+                LogWarning("ReceiveMessageActionChangeVehicleCount: wrong multiplayerMode: " + multiplayerMode);
             }
         }
     }
