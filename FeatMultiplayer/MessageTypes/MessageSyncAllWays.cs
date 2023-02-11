@@ -1,13 +1,9 @@
-﻿using HarmonyLib;
-using MonoMod.Utils;
-using System;
-using System.Collections;
+﻿// Copyright (c) David Karnok, 2023
+// Licensed under the Apache License, Version 2.0
+
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static FeatMultiplayer.MessageSyncAllItems;
 
 namespace FeatMultiplayer
 {

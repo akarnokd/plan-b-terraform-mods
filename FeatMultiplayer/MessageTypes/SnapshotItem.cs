@@ -1,4 +1,7 @@
-﻿namespace FeatMultiplayer
+﻿// Copyright (c) David Karnok, 2023
+// Licensed under the Apache License, Version 2.0
+
+namespace FeatMultiplayer
 {
     internal class SnapshotItem
     {

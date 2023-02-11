@@ -1,14 +1,11 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+﻿// Copyright (c) David Karnok, 2023
+// Licensed under the Apache License, Version 2.0
+
+using BepInEx;
 using HarmonyLib;
-using LibCommon;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
-using UnityEngine;
-using static LibCommon.GUITools;
 
 namespace FeatMultiplayer
 {

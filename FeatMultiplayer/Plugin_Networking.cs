@@ -1,9 +1,7 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
-using HarmonyLib;
-using LibCommon;
-using Mono.Cecil.Cil;
+﻿// Copyright (c) David Karnok, 2023
+// Licensed under the Apache License, Version 2.0
+
+using BepInEx;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -1,9 +1,9 @@
-﻿using HarmonyLib;
+﻿// Copyright (c) David Karnok, 2023
+// Licensed under the Apache License, Version 2.0
+
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml.Linq;
-using UnityEngine;
 
 namespace LibCommon
 {
