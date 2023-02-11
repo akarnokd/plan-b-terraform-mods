@@ -94,11 +94,7 @@ namespace FeatMultiplayer
                         // NOTE this Update() method is currently empty
                         SSingleton<SWays_PF>.Inst.Update();
 
-                        SSingleton<SDrones>.Inst.Update();
-
-                        var msgd = new MessageUpdateDrones();
-                        msgd.GetSnapshot();
-                        SendAllClients(msgd);
+                        MultiplayerSMainUpdate_DronesUpdate();
 
                         SSingleton<SCities>.Inst.Update();
                     }
@@ -182,6 +178,26 @@ namespace FeatMultiplayer
                 ____resourcesUnloadingWait = 0f;
                 Resources.UnloadUnusedAssets();
             }
+        }
+
+        static void MultiplayerSMainUpdate_DronesUpdate()
+        {
+            HashSet<int> dronesBefore = new();
+            foreach (var drone in GDrones.drones)
+            {
+                dronesBefore.Add(drone.id);
+            }
+
+            SSingleton<SDrones>.Inst.Update();
+
+            foreach (var drone in GDrones.drones)
+            {
+                dronesBefore.Remove(drone.id);
+            }
+
+            var msgd = new MessageUpdateDrones();
+            msgd.GetSnapshot(dronesBefore);
+            SendAllClients(msgd);
         }
 
         [HarmonyPrefix]

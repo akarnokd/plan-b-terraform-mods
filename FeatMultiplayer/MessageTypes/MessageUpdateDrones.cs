@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FeatMultiplayer
 {
-    internal class MessageUpdateDrones : MessageSync
+    internal class MessageUpdateDrones : MessageBase
     {
         const string messageCode = "UpdateDrones";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
@@ -15,9 +15,11 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal readonly List<SnapshotDroneLive> drones = new();
+        internal HashSet<int> removedIds;
 
-        internal override void GetSnapshot()
+        internal void GetSnapshot(HashSet<int> removedIds)
         {
+            this.removedIds = removedIds;
             foreach (var drone in GDrones.drones)
             {
                 var snp = new SnapshotDroneLive();
@@ -26,10 +28,25 @@ namespace FeatMultiplayer
             }
         }
 
-        internal override void ApplySnapshot()
+        internal void ApplySnapshot()
         {
-            var droneLookup = Plugin.GetDronesDictionary();
             var itemLookup = Plugin.GetItemsDictionary();
+
+            var droneLookup = new Dictionary<int, CDrone>();
+
+            List<CDrone> allDrones = GDrones.drones;
+            for (int i = allDrones.Count - 1; i >= 0; i--)
+            {
+                var drone = GDrones.drones[i];
+                if (removedIds.Contains(drone.id))
+                {
+                    allDrones.RemoveAt(i);
+                }
+                else
+                {
+                    droneLookup.Add(drone.id, drone);
+                }
+            }
 
             foreach (var drone in drones)
             {
@@ -47,6 +64,11 @@ namespace FeatMultiplayer
             {
                 drone.Encode(output);
             }
+            output.Write(removedIds.Count);
+            foreach (var id in removedIds)
+            {
+                output.Write(id);
+            }
         }
 
         void Decode(BinaryReader input)
@@ -58,6 +80,13 @@ namespace FeatMultiplayer
                 var drone = new SnapshotDroneLive();
                 drone.Decode(input);
                 drones.Add(drone);
+            }
+
+            c = input.ReadInt32();
+            removedIds = new();
+            for (int i = 0; i < c; i++)
+            {
+                removedIds.Add(input.ReadInt32());
             }
         }
 

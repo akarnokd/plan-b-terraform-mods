@@ -65,6 +65,13 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CDrone), nameof(CDrone.OnBuildingStackItemChanged))]
+        static bool Patch_CDrone_OnBuildingStackItemChanged()
+        {
+            return multiplayerMode != MultiplayerMode.Client;
+        }
+
         // ------------------------------------------------------------------------------
         // Message receviers
         // ------------------------------------------------------------------------------
