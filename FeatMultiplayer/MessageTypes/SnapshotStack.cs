@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace FeatMultiplayer
 {
@@ -38,6 +39,17 @@ namespace FeatMultiplayer
             codeName = input.ReadString();
             count = input.ReadInt32();
             booked = input.ReadInt32();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb
+                .Append(nameof(codeName)).Append(" = ").Append(codeName).Append(", ")
+                .Append(nameof(count)).Append(" = ").Append(count).Append(", ")
+                .Append(nameof(booked)).Append(" = ").Append(booked)
+                ;
+            return sb.ToString();
         }
     }
 }

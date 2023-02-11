@@ -3,6 +3,7 @@
 
 using BepInEx;
 using HarmonyLib;
+using static SSceneUIOverlay;
 
 namespace FeatMultiplayer
 {
@@ -28,6 +29,7 @@ namespace FeatMultiplayer
                     }
                     else
                     {
+                        LogDebug("MessageUpdateStackAt: " + msg);
                         SendAllClients(msg);
                     }
                 }

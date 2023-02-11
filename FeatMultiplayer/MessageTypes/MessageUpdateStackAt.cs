@@ -15,14 +15,13 @@ namespace FeatMultiplayer
 
         internal int2 coords;
         internal int index;
-        internal SnapshotStack stack;
+        internal readonly SnapshotStack stack = new();
 
         public void GetSnapshot(int2 coords, int index)
         {
             this.coords = coords;
             this.index = index;
             var gstacks = GHexes.stacks[coords.x, coords.y];
-            var stack = new SnapshotStack();
             stack.GetSnapshot(in gstacks.stacks[index]);
         }
 
@@ -30,7 +29,6 @@ namespace FeatMultiplayer
         {
             this.coords = coords;
             this.index = index;
-            var stack = new SnapshotStack();
             stack.codeName = item?.codeName ?? "";
             stack.count = count;
             stack.booked = booked;
@@ -70,8 +68,18 @@ namespace FeatMultiplayer
         {
             coords = new int2(input.ReadInt32(), input.ReadInt32());
             index = input.ReadInt32();
-            stack = new SnapshotStack();
             stack.Decode(input);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb
+                .Append(nameof(coords)).Append(" = ").Append(coords).Append(", ")
+                .Append(nameof(index)).Append(" = ").Append(index).Append(", ")
+                .Append(nameof(stack)).Append(" = ").Append(stack)
+            ;
+            return sb.ToString();
         }
     }
 }

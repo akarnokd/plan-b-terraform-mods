@@ -27,7 +27,7 @@ namespace FeatMultiplayer
                 msg.coords = coords;
                 msg.id = __instance.id;
                 SendHost(msg);
-                LogDebug("MessageActionBuild: Request " + __instance.codeName + " ~ " + msg);
+                LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
                 return false;
             }
             return true;
@@ -41,7 +41,7 @@ namespace FeatMultiplayer
                 msg.coords = coords;
                 msg.id = __instance.id;
                 SendAllClients(msg);
-                LogDebug("MessageActionBuild: Command " + __instance.codeName + " ~ " + msg);
+                LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
             }
         }
 
@@ -67,7 +67,7 @@ namespace FeatMultiplayer
                     msg.copyFrom = ____firstBuildCoords;
                     SendHost(msg);
 
-                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " ~ " + msg);
+                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
                     return false;
                 }
                 else if (multiplayerMode == MultiplayerMode.Host)
@@ -94,7 +94,7 @@ namespace FeatMultiplayer
                     msg.coords = coords;
                     msg.id = __instance.id;
                     SendAllClients(msg);
-                    LogDebug("MessageActionBuild: Command " + __instance.codeName + " ~ " + msg);
+                    LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
 
                     if (deferCopySource != int2.negative)
                     {
@@ -129,7 +129,7 @@ namespace FeatMultiplayer
                         && ContentAt(coords) is not CItem_ContentDepot;
                     msg.copyFrom = ____firstBuildCoords;
                     SendHost(msg);
-                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " ~ " + msg);
+                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
 
                     return false;
                 }
@@ -164,7 +164,7 @@ namespace FeatMultiplayer
                 msg.coords = coords;
                 msg.id = __instance.id;
                 SendAllClients(msg);
-                LogDebug("MessageActionBuild: Command " + __instance.codeName + " ~ " + msg);
+                LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
 
                 if (deferCopySource != int2.negative)
                 {

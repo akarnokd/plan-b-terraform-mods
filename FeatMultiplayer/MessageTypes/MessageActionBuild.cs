@@ -47,10 +47,10 @@ namespace FeatMultiplayer
         {
             StringBuilder sb = new();
 
-            sb.Append(nameof(coords)).Append(" = (").Append(coords).Append("), ")
+            sb.Append(nameof(coords)).Append(" = ").Append(coords).Append(", ")
                 .Append(nameof(id)).Append(" = ").Append(id).Append(", ")
                 .Append(nameof(copyMode)).Append(" = ").Append(copyMode).Append(", ")
-                .Append(nameof(copyFrom)).Append(" = (").Append(copyFrom).Append(")")
+                .Append(nameof(copyFrom)).Append(" = ").Append(copyFrom)
                 ;
 
             return sb.ToString();
