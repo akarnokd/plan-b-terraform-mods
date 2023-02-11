@@ -21,6 +21,20 @@ namespace FeatMultiplayer
 
         static readonly List<int2> worldTexturesToUpdate = new();
 
+        static void SendUpdateGroundAndContentData(int2 coords, bool updateBlocks)
+        {
+            var msg = new MessageUpdateDatasAt();
+            msg.GetSnapshot(coords, updateBlocks);
+            SendAllClients(msg);
+        }
+
+        static void SendUpdateStacksAndContentData(int2 coords, bool updateBlocks)
+        {
+            var msg = new MessageUpdateStacksAndContentDataAt();
+            msg.GetSnapshot(coords, updateBlocks);
+            SendAllClients(msg);
+        }
+
         /// <summary>
         /// Add the ability to suppress such OnChangeItem events so they don't
         /// trigger further messages down the line.
@@ -48,19 +62,6 @@ namespace FeatMultiplayer
             return !suppressBlocksOnChange;
         }
 
-        static void SendUpdateGroundAndContentData(int2 coords, bool updateBlocks)
-        {
-            var msg = new MessageUpdateDatasAt();
-            msg.GetSnapshot(coords, updateBlocks);
-            SendAllClients(msg);
-        }
-
-        static void SendUpdateStacksAndContentData(int2 coords, bool updateBlocks)
-        {
-            var msg = new MessageUpdateStacksAndContentDataAt();
-            msg.GetSnapshot(coords, updateBlocks);
-            SendAllClients(msg);
-        }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update01s))]
