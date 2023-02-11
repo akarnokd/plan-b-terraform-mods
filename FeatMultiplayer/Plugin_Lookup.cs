@@ -59,8 +59,10 @@ namespace FeatMultiplayer
         {
             var result = new Dictionary<int, CVehicle>();
 
-            foreach (var line in GWays.lines)
+            for (int i = 1; i < GWays.lines.Count; i++)
             {
+                CLine line = GWays.lines[i];
+
                 foreach (var vehicle in line.vehicles)
                 {
                     result.Add(vehicle.id, vehicle);

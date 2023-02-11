@@ -122,16 +122,24 @@ namespace FeatMultiplayer
             }
         }
 
+        public static bool logDebugTransportStacks;
+
         static void ReceiveMessageUpdateTransportStacks(MessageUpdateTransportStacks msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateTransportStacks: Deferring " + msg.GetType());
+                if (logDebugTransportStacks)
+                {
+                    LogDebug("ReceiveMessageUpdateTransportStacks: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateTransportStacks: Handling " + msg.GetType());
+                if (logDebugTransportStacks)
+                {
+                    LogDebug("ReceiveMessageUpdateTransportStacks: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
             }
