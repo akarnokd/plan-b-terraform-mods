@@ -4,6 +4,7 @@
 using BepInEx;
 using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace FeatMultiplayer
 {
@@ -225,6 +226,44 @@ namespace FeatMultiplayer
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);
                 }
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update_IfVisible))]
+        static bool Patch_CItem_ContentExtractor_Update_IfVisible(
+            CItem_ContentExtractor __instance,
+            in int2 coords, List<Transform> modelsTrs)
+        {
+            // prevent jittering due to having the arm position as a dataArmAngle
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                Transform child = modelsTrs[0].GetChild(0);
+                
+                int value = __instance.dataArmAngle.GetValue(coords);
+                var targetAngle = 360f * value / 63f;
+                var currentAngle = child.localEulerAngles.y;
+                var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, Time.deltaTime * __instance.animArmSpeed);
+                newAngle = SMisc.Mod(newAngle, 360f);
+                child.localEulerAngles = new Vector3(0f, newAngle, 0f);
+
+                /*
+                float num = (float)(360 * value) / 63f;
+                child.localEulerAngles = new Vector3(0f, num, 0f);
+                */
+
+                if (GHexes.water[coords.x, coords.y] < GItems.waterLevelStopBuildings 
+                    && SSingleton<SWorld>.Inst.GetGround(coords) is CItem_GroundMineral 
+                    && GHexes.groundData[coords.x, coords.y] > 0 
+                    && __instance.GetStack(coords, 0).nb < __instance.GetStack(coords, 0).nbMax)
+                {
+                    child.GetChild(0).Rotate(Vector3.right, -Time.deltaTime * __instance.animSpeedWheel, Space.Self);
+                    CSoundLooped sound = __instance.sound;
+                    sound?.Play(GHexes.Pos(coords), 1f, 1);
+                }
+
+                return false;
+            }
+            return true;
         }
 
         // ------------------------------------------------------------------------------
