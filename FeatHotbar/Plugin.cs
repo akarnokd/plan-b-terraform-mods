@@ -442,6 +442,8 @@ namespace FeatHotbar
 
                     i++;
                 }
+
+                hotbarSelectionPanelBackground2.AddComponent<GraphicRaycaster>();
             }
 
             if (IsKeyDown(KeyCode.Escape))
@@ -706,7 +708,7 @@ namespace FeatHotbar
             if (Within(rectBg2, button.GetComponent<RectTransform>(), mp))
             {
                 img.color = DEFAULT_BOX_COLOR_HOVER;
-                if (Input.GetKeyDown(KeyCode.Mouse0))
+                if (Input.GetKeyUp(KeyCode.Mouse0))
                 {
                     onPress();
                 }
@@ -797,6 +799,7 @@ namespace FeatHotbar
             {
                 { "FeatHotbar.Switch.Tooltip", "Switch between subpanels" },
                 { "FeatHotbar.Button.Empty", "Empty slot" },
+                { "FeatHotbar.Button.Build", "Build {0}" },
                 { "FeatHotbar.Button.Tooltip", "<i>[Left Mouse]</i> Build\n<i>[Right Mouse]</i> Select building type\n<i>[Middle Mouse]</i> Clear slot" },
                 { "FeatHotbar.Select", " <b>Select</b> " },
                 { "FeatHotbar.NoBuildings", "<b>No buildings available.</b>" },

@@ -84,6 +84,7 @@ namespace UILiveGUIScaler
                     scalingPercent = Mathf.Clamp(scalingPercent, minScale.Value, maxScale.Value);
                     var scale = scalingPercent / 100f;
                     setUiScaling.Invoke(SSingleton<SScenesManager>.Inst, new object[] { scale });
+                    //PlayerPrefs.SetFloat("OPTION_uiScaling", scale);
 
                     if (scalingText != null)
                     {
