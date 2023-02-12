@@ -336,6 +336,7 @@ namespace FeatHotbar
                             if (Input.GetKeyDown(KeyCode.Mouse2))
                             {
                                 hotbarPanelSlotAssignments[i, j] = null;
+                                PersistHotbar();
                             }
                             if (Input.GetKeyDown(KeyCode.Mouse0) && !isEmpty)
                             {
