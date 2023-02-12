@@ -15,7 +15,7 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal readonly List<SnapshotLine> lines = new();
-        internal readonly List<int> linesRemoved = new();
+        internal HashSet<int> linesRemoved;
 
         internal void GetSnapshot(HashSet<int> linesBefore)
         {
@@ -29,7 +29,7 @@ namespace FeatMultiplayer
                 linesBefore.Remove(line.id);
             }
 
-            linesRemoved.AddRange(linesBefore);
+            linesRemoved = linesBefore;
         }
 
         internal void ApplySnapshot()
@@ -77,6 +77,7 @@ namespace FeatMultiplayer
                 snp.Decode(input);
                 lines.Add(snp);
             }
+            linesRemoved = new();
             c = input.ReadInt32();
             for (int i = 0; i < c; i++)
             {

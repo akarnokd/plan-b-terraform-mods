@@ -66,8 +66,9 @@ namespace FeatMultiplayer
                 SSingleton<SViewOverlay>.Inst.Update();
                 SSingleton<SWater>.Inst.Update();
 
+                bool paused = isHost && __instance.IsPausedInGame();
                 // TODO the Update methods
-                if (!__instance.IsPausedInGame())
+                if (!paused)
                 {
                     if (isHost)
                     {
@@ -204,6 +205,7 @@ namespace FeatMultiplayer
         {
             return multiplayerMode != MultiplayerMode.Client;
         }
+
 
         // ------------------------------------------------------------------------------
         // Message receviers
