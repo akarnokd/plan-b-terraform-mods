@@ -49,6 +49,13 @@ namespace FeatMultiplayer
             {
                 hostSession.Send(MessageDisconnect.Instance);
             }
+            CleanupOnQuit();
+        }
+
+        static void CleanupOnQuit()
+        {
+            extractorMainAngles.Clear();
+            extractorBucketAngles.Clear();
         }
 
         void OnApplicationQuit()

@@ -62,7 +62,6 @@ namespace FeatMultiplayer
             syncAllWays = null;
             syncAllCamera = null;
 
-
             multiplayerMode = MultiplayerMode.ClientJoin;
 
             sload.QuitGameAndUI();

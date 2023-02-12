@@ -228,6 +228,9 @@ namespace FeatMultiplayer
             }
         }
 
+        static readonly Dictionary<int2, float> extractorMainAngles = new();
+        static readonly Dictionary<int2, float> extractorBucketAngles = new();
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update_IfVisible))]
         static bool Patch_CItem_ContentExtractor_Update_IfVisible(
@@ -239,25 +242,43 @@ namespace FeatMultiplayer
             {
                 Transform child = modelsTrs[0].GetChild(0);
 
-                var currentAngle = child.localEulerAngles.y;
+                int targetValue = __instance.dataArmAngle.GetValue(coords);
+                var targetAngle = 360f * targetValue / 63f;
 
-                int value = __instance.dataArmAngle.GetValue(coords);
-                var targetAngle = 360f * value / 63f;
+                // get the current angle or set it to the target angle the first time
+                if (!extractorMainAngles.TryGetValue(coords, out var currentAngle))
+                {
+                    currentAngle = targetAngle;
+                    extractorMainAngles[coords] = targetAngle;
+                }
+
                 var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, Time.deltaTime * __instance.animArmSpeed);
                 newAngle = SMisc.Mod(newAngle, 360f);
                 child.localEulerAngles = new Vector3(0f, newAngle, 0f);
-                /*
-                child.localEulerAngles = new Vector3(0f, targetAngle, 0f);
-                */
+                extractorMainAngles[coords] = newAngle;
+
+                var bucket = child.GetChild(0);
+                extractorBucketAngles.TryGetValue(coords, out var currentBucketAngle);
 
                 if (GHexes.water[coords.x, coords.y] < GItems.waterLevelStopBuildings 
                     && SSingleton<SWorld>.Inst.GetGround(coords) is CItem_GroundMineral 
                     && GHexes.groundData[coords.x, coords.y] > 0 
                     && __instance.GetStack(coords, 0).nb < __instance.GetStack(coords, 0).nbMax)
                 {
-                    child.GetChild(0).Rotate(Vector3.right, -Time.deltaTime * __instance.animSpeedWheel, Space.Self);
+                    // remember the bucket's rotation angle too.
+
+                    var newBucketAngle = currentBucketAngle - Time.deltaTime * __instance.animSpeedWheel;
+                    bucket.localEulerAngles = new Vector3(newBucketAngle, 0, 0);
+                    extractorBucketAngles[coords] = newBucketAngle;
+
+                    // bucket.Rotate(Vector3.right, -Time.deltaTime * __instance.animSpeedWheel, Space.Self);
                     CSoundLooped sound = __instance.sound;
                     sound?.Play(GHexes.Pos(coords), 1f, 1);
+                }
+                else
+                {
+                    // just restore the last angle when it was moving
+                    bucket.localEulerAngles = new Vector3(currentBucketAngle, 0, 0);
                 }
 
                 return false;

@@ -77,6 +77,12 @@ namespace FeatMultiplayer
                         LogDebug("ReceiveMessageActionDestroy: Destroying " + content.codeName + " at " + msg.coords.x + ", " + msg.coords.y);
                         content.Destroy(msg.coords);
                         content.nbOwned++;
+
+                        if (content is CItem_ContentExtractor)
+                        {
+                            extractorMainAngles.Remove(msg.coords);
+                            extractorBucketAngles.Remove(msg.coords);
+                        }
                     }
                     finally
                     {
