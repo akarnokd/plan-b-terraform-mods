@@ -1,6 +1,7 @@
 ﻿// Copyright (c) David Karnok, 2023
 // Licensed under the Apache License, Version 2.0
 
+using System;
 using System.IO;
 
 namespace FeatMultiplayer
@@ -20,7 +21,12 @@ namespace FeatMultiplayer
 
         internal CDrone Create(SWorld sworld)
         {
-            var depot = sworld.GetContent(depotCoords) as CItem_ContentDepot;
+            CItem_Content content = sworld.GetContent(depotCoords);
+            var depot = content as CItem_ContentDepot;
+            if (depot == null)
+            {
+                throw new InvalidOperationException("Depot error: " + (content != null ? content.GetType() : "null") + " at " + depotCoords);
+            }
             var result = new CDrone(depot, depotCoords, depotIndex);
             result.id = id;
             return result;

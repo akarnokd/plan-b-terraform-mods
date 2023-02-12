@@ -19,6 +19,8 @@ namespace FeatMultiplayer
         static int2 deferCopySource;
         static int2 deferCopyDestination;
 
+        static MessageUpdateDepotDrones deferredDepotDrones;
+
         static bool BuildPre(CItem_Content __instance, int2 coords)
         {
             if (!suppressBuildNotification && multiplayerMode == MultiplayerMode.Client)
@@ -182,6 +184,15 @@ namespace FeatMultiplayer
                     msgs.GetSnapshot(coords, 0);
                     SendAllClients(msgs);
                 }
+
+                // make sure the drones created come after the client has seen the build command
+                var dd = deferredDepotDrones;
+                deferredDepotDrones = null;
+
+                if (dd != null)
+                {
+                    SendAllClients(dd);
+                }
             }
         }
 
@@ -205,7 +216,7 @@ namespace FeatMultiplayer
             {
                 var msg = new MessageUpdateDepotDrones();
                 msg.GetSnapshot(__state, GDrones.drones.Count);
-                SendAllClients(msg);
+                deferredDepotDrones = msg;
             }
         }
 
@@ -390,6 +401,15 @@ namespace FeatMultiplayer
                             msg2.overrideId = msg.overrideId;
                             SendAllClientsExcept(msg.sender, msg);
 
+                            // make sure the drones created come after the client has seen the build command
+                            var dd = deferredDepotDrones;
+                            deferredDepotDrones = null;
+
+                            if (dd != null)
+                            {
+                                SendAllClients(dd);
+                            }
+
                             if (msg.copyMode)
                             {
                                 if (msg.copyFrom != int2.negative)
@@ -397,6 +417,8 @@ namespace FeatMultiplayer
                                     Haxx.cItemContentCopy.Invoke(content, new object[] { msg.copyFrom, msg.coords });
                                 }
                             }
+
+
                         }
                         else
                         {

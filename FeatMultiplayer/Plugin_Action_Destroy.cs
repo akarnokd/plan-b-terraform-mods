@@ -40,6 +40,24 @@ namespace FeatMultiplayer
             }
         }
 
+        // we need to override because the vanilla nulls out the stock field and causes NRE.
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentStock), "Destroy")]
+        static bool Patch_CItem_ContentStock_Destroy_Pre(CItem_ContentStock __instance, int2 coords)
+        {
+            if (!suppressDestroyNotification && multiplayerMode == MultiplayerMode.Client)
+            {
+                var msg = new MessageActionDestroy();
+                msg.coords = coords;
+                SendHost(msg);
+                LogDebug("MessageActionDestroy: Request at " + msg.coords.x + ", " + msg.coords.y);
+
+                __instance.nbOwned--; // the caller in SScene3D.OnUpdate always increments
+                return false;
+            }
+            return true;
+        }
+
         static void ReceiveMessageActionDestroy(MessageActionDestroy msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
