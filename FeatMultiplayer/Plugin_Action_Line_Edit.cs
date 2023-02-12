@@ -414,12 +414,12 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageActionReverseLine: Deferring " + msg.GetType());
+                LogDebug("ReceiveMessageUpdateLine: Deferring " + msg.GetType());
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageActionReverseLine: Handling " + msg.GetType());
+                LogDebug("ReceiveMessageUpdateLine: Handling " + msg.GetType());
 
                 for (int i = 1; i < GWays.lines.Count; i++)
                 {
@@ -442,7 +442,7 @@ namespace FeatMultiplayer
             }
             else
             {
-                LogWarning("ReceiveMessageActionReverseLine: wrong multiplayerMode: " + multiplayerMode);
+                LogWarning("ReceiveMessageUpdateLine: wrong multiplayerMode: " + multiplayerMode);
             }
         }
 

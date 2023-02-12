@@ -17,14 +17,15 @@ namespace FeatMultiplayer
         internal byte id;
         internal bool copyMode;
         internal int2 copyFrom = int2.negative;
+        internal byte overrideId;
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(coords.x);
-            output.Write(coords.y);
+            output.Write(coords);
             output.Write(id);
             output.Write(copyMode);
             output.Write(copyFrom);
+            output.Write(overrideId);
         }
 
         void Decode(BinaryReader input)
@@ -33,6 +34,7 @@ namespace FeatMultiplayer
             id = input.ReadByte();
             copyMode = input.ReadBoolean();
             copyFrom = input.ReadInt2();
+            overrideId = input.ReadByte();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)

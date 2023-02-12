@@ -305,6 +305,46 @@ namespace FeatMultiplayer
             return true;
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_Way), "Build")]
+        static bool Patch_CItem_Way_Build_Pre(CItem_Way __instance, int2 coords)
+        {
+            if (!suppressBuildNotification)
+            {
+                if (multiplayerMode == MultiplayerMode.Client)
+                {
+                    var msg = new MessageActionBuild();
+                    msg.id = __instance.id;
+                    msg.coords = coords;
+                    SendHost(msg);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_Way), "Build")]
+        static void Patch_CItem_Way_Build_Post(CItem_Way __instance, in int2 coords)
+        {
+            if (!suppressBuildNotification)
+            {
+                if (multiplayerMode == MultiplayerMode.Host)
+                {
+                    var msg = new MessageActionBuild();
+                    msg.id = __instance.id;
+                    msg.coords = coords;
+                    msg.overrideId = GHexes.contentId[coords.x, coords.y];
+                    SendAllClients(msg);
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Message receivers
+        // -----------------------------------------------------------------------
+
+
         static void ReceiveMessageActionBuild(MessageActionBuild msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
@@ -337,6 +377,9 @@ namespace FeatMultiplayer
                                 suppressBuildNotification = false;
                             }
 
+                            // CWays can change what's actually built
+                            msg.overrideId = GHexes.contentId[msg.coords.x, msg.coords.y];
+
                             // allow the original sender to build and open recipe picker if needed
                             msg.sender.Send(msg); 
 
@@ -344,6 +387,7 @@ namespace FeatMultiplayer
                             var msg2 = new MessageActionBuild();
                             msg2.id = msg.id;
                             msg2.coords = msg.coords;
+                            msg2.overrideId = msg.overrideId;
                             SendAllClientsExcept(msg.sender, msg);
 
                             if (msg.copyMode)
@@ -382,6 +426,13 @@ namespace FeatMultiplayer
                                 {
                                     // don't perform the copy, a separate message will arrive
                                 }
+                            }
+                            if (content is CItem_Way)
+                            {
+                                GHexes.contentId[msg.coords.x, msg.coords.y] = msg.overrideId;
+                                SSingleton<SViewWorld>.Inst.OnBuildItem_UpdateTxWorld(msg.coords);
+                                Haxx.SBlocks_OnChangeItem(msg.coords, true, false, false);
+                                SSingleton<SItems>.Inst.OnChangeContent(content, msg.coords, EModification.replaced);
                             }
                         }
                         finally
