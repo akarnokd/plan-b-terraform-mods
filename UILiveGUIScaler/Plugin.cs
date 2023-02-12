@@ -80,8 +80,9 @@ namespace UILiveGUIScaler
 
                 if (changeScale)
                 {
+                    scalingPercent = (scalingPercent / 5) * 5;
+                    scalingPercent = Mathf.Clamp(scalingPercent, minScale.Value, maxScale.Value);
                     var scale = scalingPercent / 100f;
-                    scale = Mathf.Clamp(scale, minScale.Value / 100f, maxScale.Value / 100f);
                     setUiScaling.Invoke(SSingleton<SScenesManager>.Inst, new object[] { scale });
 
                     if (scalingText != null)
