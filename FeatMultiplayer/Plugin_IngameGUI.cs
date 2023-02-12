@@ -7,6 +7,7 @@ using LibCommon;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using static LibCommon.GUITools;
 
@@ -35,36 +36,7 @@ namespace FeatMultiplayer
             {
                 bool isHost = multiplayerMode == MultiplayerMode.Host;
                 bool isClient = multiplayerMode == MultiplayerMode.Client;
-                if (isHost || isClient)
-                {
-                    if (toolbarTopButton == null)
-                    {
-                        toolbarTopButton = new ToolbarTopButton();
-                        toolbarTopButton.Create("FeatMultiplayer_NetworkButton", NetworkButtonOnClick);
-                        toolbarTopButton.SetIcon(iconMP);
-                    }
-                    if (isHost)
-                    {
-                        toolbarTopButton.SetTooltip(
-                            SLoc.Get("FeatMultiplayer.NetworkButton.Host.Title"),
-                            SLoc.Get("FeatMultiplayer.NetworkButton.Host.Desc", sessions.Count)
-                        );
-                    }
-                    else
-                    {
-                        toolbarTopButton.SetTooltip(
-                            SLoc.Get("FeatMultiplayer.NetworkButton.Client.Title"),
-                            SLoc.Get("FeatMultiplayer.NetworkButton.Client.Desc")
-                        );
-                    }
-                    toolbarTopButton.SetVisible(true);
-
-                    toolbarTopButton.Update(networkButtonLeft.Value, networkButtonSize.Value, autoScale.Value);
-                }
-                else
-                {
-                    toolbarTopButton.SetVisible(false);
-                }
+                UpdateIngameGUI_NetworkButton(isHost, isClient);
             }
             else
             {
@@ -78,6 +50,40 @@ namespace FeatMultiplayer
         static void Patch_SSceneHud_OnDeactivate_IngameGUI()
         {
             toolbarTopButton?.SetVisible(false);
+        }
+
+        static void UpdateIngameGUI_NetworkButton(bool isHost, bool isClient)
+        {
+            if (isHost || isClient)
+            {
+                if (toolbarTopButton == null)
+                {
+                    toolbarTopButton = new ToolbarTopButton();
+                    toolbarTopButton.Create("FeatMultiplayer_NetworkButton", NetworkButtonOnClick);
+                    toolbarTopButton.SetIcon(iconMP);
+                }
+                if (isHost)
+                {
+                    toolbarTopButton.SetTooltip(
+                        SLoc.Get("FeatMultiplayer.NetworkButton.Host.Title"),
+                        SLoc.Get("FeatMultiplayer.NetworkButton.Host.Desc", sessions.Count)
+                    );
+                }
+                else
+                {
+                    toolbarTopButton.SetTooltip(
+                        SLoc.Get("FeatMultiplayer.NetworkButton.Client.Title"),
+                        SLoc.Get("FeatMultiplayer.NetworkButton.Client.Desc")
+                    );
+                }
+                toolbarTopButton.SetVisible(true);
+
+                toolbarTopButton.Update(networkButtonLeft.Value, networkButtonSize.Value, autoScale.Value);
+            }
+            else
+            {
+                toolbarTopButton.SetVisible(false);
+            }
         }
 
         static void NetworkButtonOnClick()

@@ -7,14 +7,19 @@ using LibCommon;
 
 namespace FeatMultiplayer
 {
+    /// <summary>
+    /// The Multiplayer Mod.
+    /// </summary>
     [BepInPlugin("akarnokd.planbterraformmods.featmultiplayer", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
     public partial class Plugin : BaseUnityPlugin
     {
-
+        /// <summary>
+        /// Access to the single instance of this plugin.
+        /// </summary>
         internal static Plugin thePlugin;
 
-        private void Awake()
+        void Awake()
         {
             Logger.LogInfo($"Plugin is loading!");
 
