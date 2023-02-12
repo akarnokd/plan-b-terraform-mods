@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static LibCommon.GUITools;
 using static LibCommon.GUIScalingSupport;
+using System.Diagnostics.Eventing.Reader;
 
 namespace LibCommon
 {
@@ -67,6 +68,16 @@ namespace LibCommon
             buttonBackground2 = null;
             buttonIcon = null;
             onClick = null;
+        }
+
+        public bool IsAvailable()
+        {
+            return buttonCanvas != null;
+        }
+
+        public RectTransform GetRectTransform()
+        {
+            return buttonBackground2?.GetComponent<RectTransform>();
         }
 
         public void SetIcon(Sprite icon)

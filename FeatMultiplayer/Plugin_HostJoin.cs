@@ -16,16 +16,23 @@ namespace FeatMultiplayer
         [HarmonyPatch(typeof(SSceneHud), "OnActivate")]
         static void Patch_SSceneHud_OnActivate()
         {
-            if (multiplayerMode == MultiplayerMode.MainMenu && hostMode.Value)
+            if (hostMode.Value)
             {
-                LogInfo("Entering multiplayer host mode");
-                multiplayerMode = MultiplayerMode.Host;
+                if (multiplayerMode == MultiplayerMode.MainMenu)
+                {
+                    LogInfo("Entering Multiplayer Host mode");
+                    multiplayerMode = MultiplayerMode.Host;
 
-                StartServer();
+                    StartServer();
+                }
             }
             else
             {
-                multiplayerMode = MultiplayerMode.SinglePlayer;
+                if (multiplayerMode == MultiplayerMode.MainMenu)
+                {
+                    LogInfo("Entering SinglePlayer mode");
+                    multiplayerMode = MultiplayerMode.SinglePlayer;
+                }
             }
         }
 

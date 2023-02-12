@@ -56,7 +56,7 @@ namespace FeatMultiplayer
         {
             if (isHost || isClient)
             {
-                if (toolbarTopButton == null)
+                if (toolbarTopButton == null || !toolbarTopButton.IsAvailable())
                 {
                     toolbarTopButton = new ToolbarTopButton();
                     toolbarTopButton.Create("FeatMultiplayer_NetworkButton", NetworkButtonOnClick);
