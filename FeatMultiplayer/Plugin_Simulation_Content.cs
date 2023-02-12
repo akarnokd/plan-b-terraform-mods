@@ -238,17 +238,16 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Client)
             {
                 Transform child = modelsTrs[0].GetChild(0);
-                
+
+                var currentAngle = child.localEulerAngles.y;
+
                 int value = __instance.dataArmAngle.GetValue(coords);
                 var targetAngle = 360f * value / 63f;
-                var currentAngle = child.localEulerAngles.y;
                 var newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, Time.deltaTime * __instance.animArmSpeed);
                 newAngle = SMisc.Mod(newAngle, 360f);
                 child.localEulerAngles = new Vector3(0f, newAngle, 0f);
-
                 /*
-                float num = (float)(360 * value) / 63f;
-                child.localEulerAngles = new Vector3(0f, num, 0f);
+                child.localEulerAngles = new Vector3(0f, targetAngle, 0f);
                 */
 
                 if (GHexes.water[coords.x, coords.y] < GItems.waterLevelStopBuildings 
