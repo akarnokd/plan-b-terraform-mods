@@ -440,7 +440,15 @@ namespace FeatMultiplayer
                                 if (msg.copyFrom == int2.negative)
                                 {
                                     SSceneSingleton<SScenePopup>.Inst.ActivateAndShow(false, true, SLoc.Get("Popup_RecipePicking"), null);
-                                    SSceneSingleton<SScenePopup>.Inst.Show_Factory_RecipePick(msg.coords);
+
+                                    if (content is CItem_ContentDepot)
+                                    {
+                                        SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(msg.coords);
+                                    }
+                                    else
+                                    {
+                                        SSceneSingleton<SScenePopup>.Inst.Show_Factory_RecipePick(msg.coords);
+                                    }
 
                                     Haxx.cItemContentFirstBuildCoords(content) = msg.coords;
                                 }
