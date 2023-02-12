@@ -82,7 +82,7 @@ namespace FeatMultiplayer
             }
             else
             {
-                toolbarTopButton.SetVisible(false);
+                toolbarTopButton?.SetVisible(false);
             }
         }
 
