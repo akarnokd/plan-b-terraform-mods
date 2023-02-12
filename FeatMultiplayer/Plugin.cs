@@ -23,6 +23,7 @@ namespace FeatMultiplayer
             InitConfig();
             InitHaxx();
             InitLogging();
+            InitIngameGUI();
             InitMessageDispatcher();
 
             var h = Harmony.CreateAndPatchAll(typeof(Plugin));

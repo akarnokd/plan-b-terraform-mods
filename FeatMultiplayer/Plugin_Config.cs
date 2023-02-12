@@ -34,6 +34,11 @@ namespace FeatMultiplayer
         
         static readonly Dictionary<string, string> clientUsers = new();
 
+        static ConfigEntry<int> networkButtonLeft;
+        static ConfigEntry<int> networkButtonSize;
+
+        static ConfigEntry<bool> autoScale;
+
         void InitConfig()
         {
             modEnabled = Cfg("General", "Enabled", true, "Is the mod enabled?");
@@ -58,6 +63,10 @@ namespace FeatMultiplayer
 
             ParseUsers(hostUserAndPasswords.Value, hostUsers);
             ParseUsers(clientUserAndPasswords.Value, clientUsers);
+
+            networkButtonLeft = Cfg("GUI", "NetworkButtonLeft", 250, "Position of the network button on the top-left");
+            networkButtonSize = Cfg("GUI", "NetworkButtonSize", 50, "Size of the network button");
+            autoScale = Cfg("GUI", "AutoScale", true, "Automatically scale the GUIs?");
         }
 
         private ConfigEntry<T> Cfg<T>(string group, string name, T value, string desc)

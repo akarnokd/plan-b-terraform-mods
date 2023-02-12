@@ -11,6 +11,7 @@
   <Import Project="$(SolutionDir)\solution_private.targets" />
   <ItemGroup>
     <Compile Include="..\LibCommon\GUITools.cs" Link="GUITools.cs" />
+    <Compile Include="..\LibCommon\ToolbarTopButton.cs" Link="ToolbarTopButton.cs" />
     <Compile Include="..\LibCommon\Translation.cs" Link="Translation.cs" />
   </ItemGroup>
 
@@ -52,14 +53,17 @@
 	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
 	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(Destination1)" />
-	  
-	  <!-- Don't release yet 
+    <Copy SourceFiles="$(SourceDir)IconMP.png" DestinationFolder="$(Destination1)" />
+
+    <!-- Don't release yet 
 	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(TargetDir)\$(AssemblyName)\akarnokd - $(Description)" />
 	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(ForZip)" />
+    <Copy SourceFiles="$(SourceDir)IconMP.png" DestinationFolder="$(ForZip)" />
 	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
 	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(ForZipAll)" />
+    <Copy SourceFiles="$(SourceDir)IconMP.png" DestinationFolder="$(ForZipAll)" />
 	  
 	  <ZipDirectory SourceDirectory="$(TargetDir)\$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip" Overwrite="true" />
 	  

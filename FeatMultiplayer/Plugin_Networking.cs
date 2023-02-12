@@ -189,6 +189,10 @@ namespace FeatMultiplayer
             }
             catch (Exception ex)
             {
+                var msg = new MessageLoginResponse();
+                msg.reason = "Error_ConnectionRefused";
+                receiverQueue.Enqueue(msg);
+
                 if (!stopNetwork.IsCancellationRequested)
                 {
                     LogError(ex);
