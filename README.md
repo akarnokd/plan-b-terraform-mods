@@ -77,10 +77,11 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 ### Features
 
-- [Add City Names](#add-city-names) - customize the selection of city names the game will use to generate the map.
-- [City Population Label](#city-population-label) - display the population number underneath the city label in the main view and/or minimap.
+- [Add City Names](#add-city-names) - Customize the selection of city names the game will use to generate the map.
+- [City Population Label](#city-population-label) - Display the population number underneath the city label in the main view and/or minimap.
+- [Depot Priority](#depot-priority) - Set priorities on depots so containers will be force-transferred towards higher priority depots.
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
-- [Go to Exhausted Extractors](#go-to-exhausted-extractors) - shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
+- [Go to Exhausted Extractors](#go-to-exhausted-extractors) - Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [Hotbar](#hotbar) - Adds a bar at the bottom of the screen with 3 subpanels and 9 slots each for quickly selecting a building to be built.
 - [More Cities](#more-cities) - Generate more cities for a new game.
 - [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
@@ -1004,5 +1005,23 @@ Loadout2 = railway,railstop,,,,,,,
 # Default value: 
 Loadout3 = ,,,,,,,,
 
+```
+</details>
+
+## Depot Priority
+
+Set priorities on depots so containers will be force-transferred towards higher priority depots.
+
+Select a depot and see the small panel on the bottom-left of the screen. The up and down buttons can adjust the priority. You can have any priority number, only the relative numbers between depots in each other's reach matter.
+
+:warning: Depots with priority and without priority do not interact with each other. This avoid bouncing containers between them.
+
+Use the <kbd>Middle mouse</kbd> on the panel to reset the priority.
+
+#### Configuration
+
+<details><summary><code>akarnokd.planbterraformmods.featdepotpriority</code></summary>
+
+```
 ```
 </details>
