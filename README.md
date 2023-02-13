@@ -1023,5 +1023,36 @@ Use the <kbd>Middle mouse</kbd> on the panel to reset the priority.
 <details><summary><code>akarnokd.planbterraformmods.featdepotpriority</code></summary>
 
 ```
+[General]
+
+## Is the mod enabled?
+# Setting type: Boolean
+# Default value: true
+Enabled = true
+
+## The panel size (width and height)
+# Setting type: Int32
+# Default value: 75
+PanelSize = 75
+
+## The panel position from the bottom of the screen
+# Setting type: Int32
+# Default value: 35
+PanelBottom = 35
+
+## The panel position from the left of the screen
+# Setting type: Int32
+# Default value: 150
+PanelLeft = 150
+
+## Scale the position and size of the button with the UI scale of the game?
+# Setting type: Boolean
+# Default value: true
+AutoScale = true
+
+## The font scaling percent when zooming in on a priority depot.
+# Setting type: Int32
+# Default value: 15
+OverlayFontScale = 15
 ```
 </details>
