@@ -5,6 +5,7 @@ using HarmonyLib;
 using LibCommon;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -56,7 +57,7 @@ namespace FeatDepotPriority
             panelBottom = Config.Bind("General", "PanelBottom", 35, "The panel position from the bottom of the screen");
             panelLeft = Config.Bind("General", "PanelLeft", 150, "The panel position from the left of the screen"); // we allow overlap with disable building for now
             autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
-            overlayFontScale = Config.Bind("General", "OverlayFontScale", 25, "The font scaling percent when zooming in on a priority depot.");
+            overlayFontScale = Config.Bind("General", "OverlayFontScale", 15, "The font scaling percent when zooming in on a priority depot.");
 
             var h = Harmony.CreateAndPatchAll(typeof(Plugin));
             GUIScalingSupport.TryEnable(h);
@@ -255,9 +256,10 @@ namespace FeatDepotPriority
 
                     var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
 
-                    float scaler = Vector2.Distance(posCanvas, posCanvasNeighbor) * overlayFontScale.Value / 100f;
+                    var diff = Vector2.Distance(posCanvas, posCanvasNeighbor);
+                    float scaler = diff * overlayFontScale.Value / 100f;
 
-                    rect.localPosition = new Vector2(posCanvas.x, posCanvas.y);
+                    rect.localPosition = new Vector2(posCanvas.x, posCanvas.y - diff / 2 + scaler);
 
                     icon.GetComponentInChildren<Text>().text = SLoc.Get("FeatDepotPriority.Overlay", kv.Value);
 
@@ -470,6 +472,7 @@ namespace FeatDepotPriority
                 logger.LogError("Unexpected priority transfer");
             }
         }
+        */
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CDrone), "ChangeState_Taking")]
@@ -478,13 +481,12 @@ namespace FeatDepotPriority
         {
             if (priorityTransfer)
             {
-                logger.LogDebug("ChangeState_Taking: Restoring stack amount: " + ___takeFrom.Stack.nb + " <- " + takeFromAmountSave);
+                //logger.LogDebug("ChangeState_Taking: Restoring stack amount: " + ___takeFrom.Stack.nb + " <- " + takeFromAmountSave);
                 priorityTransfer = false;
                 ___takeFrom.Stack.nb = takeFromAmountSave;
                 takeFromAmountSave = 0;
             }
         }
-        */
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_Content), "Destroy")]
