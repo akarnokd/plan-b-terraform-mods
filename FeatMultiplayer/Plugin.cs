@@ -11,7 +11,10 @@ namespace FeatMultiplayer
     /// The Multiplayer Mod.
     /// </summary>
     [BepInPlugin("akarnokd.planbterraformmods.featmultiplayer", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    // Make sure translations load first
     [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
+    // Make sure the mod loads first to patch CDrone::ChangeState_Taking first
+    [BepInDependency("akarnokd.planbterraformmods.featdepotpriority", BepInDependency.DependencyFlags.SoftDependency)]
     public partial class Plugin : BaseUnityPlugin
     {
         /// <summary>
