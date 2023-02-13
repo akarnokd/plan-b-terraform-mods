@@ -1,14 +1,10 @@
 ﻿// Copyright (c) David Karnok, 2023
 // Licensed under the Apache License, Version 2.0
 
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static LibCommon.GUITools;
-using static LibCommon.GUIScalingSupport;
-using System.Diagnostics.Eventing.Reader;
 
 namespace LibCommon
 {

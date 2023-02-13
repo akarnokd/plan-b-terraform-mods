@@ -3,7 +3,6 @@
 
 using BepInEx;
 using HarmonyLib;
-using System;
 
 namespace FeatMultiplayer
 {

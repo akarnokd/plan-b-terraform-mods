@@ -3,7 +3,6 @@
 
 using BepInEx;
 using HarmonyLib;
-using static SSceneUIOverlay;
 
 namespace FeatMultiplayer
 {
