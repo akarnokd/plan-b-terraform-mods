@@ -16,6 +16,7 @@ namespace FeatMultiplayer
 
         internal double simuPlanetTime;
         internal double simuUnitsTime;
+        internal double simuUnitsTime_LastFrame;
         internal float timePlayed;
         internal float timeScale;
 
@@ -23,6 +24,7 @@ namespace FeatMultiplayer
         {
             simuPlanetTime = GMain.simuPlanetTime;
             simuUnitsTime = GMain.simuUnitsTime;
+            simuUnitsTime_LastFrame = GMain.simuUnitsTime_LastFrame;
             timePlayed = GMain.timePlayed;
             timeScale = Time.timeScale;
         }
@@ -30,10 +32,9 @@ namespace FeatMultiplayer
         internal override void ApplySnapshot()
         {
             GMain.simuPlanetTime = simuPlanetTime;
-            GMain.simuPlanetTime_LastFrame = simuPlanetTime;
 
             GMain.simuUnitsTime = simuUnitsTime;
-            GMain.simuUnitsTime_LastFrame = simuUnitsTime;
+            GMain.simuUnitsTime_LastFrame = simuUnitsTime_LastFrame;
 
             GMain.timePlayed = timePlayed;
 
@@ -44,6 +45,7 @@ namespace FeatMultiplayer
         {
             output.Write(simuPlanetTime);
             output.Write(simuUnitsTime);
+            output.Write(simuUnitsTime_LastFrame);
             output.Write(timePlayed);
             output.Write(timeScale);
         }
@@ -62,6 +64,7 @@ namespace FeatMultiplayer
         {
             simuPlanetTime = input.ReadDouble();
             simuUnitsTime = input.ReadDouble();
+            simuUnitsTime_LastFrame = input.ReadDouble();
             timePlayed = input.ReadSingle();
             timeScale = input.ReadSingle();
         }

@@ -124,12 +124,38 @@ namespace FeatMultiplayer
                     {
                         ___recipeIndex = i;
                         ___recipe = ___itemInOut.recipes[i];
+                        //LogDebug("City " + ___city.name + "Setting recipe to " + ___recipe.codeName);
                     }
                 }
                 // but don't do the rest of the updates
                 return false;
             }
             return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentCity), nameof(CItem_ContentCity.FillSelectionUI))]
+        static void Patch_CItem_ContentCity_FillSelectionUI(int2 coords, CItemData ___dataCityID)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                CCity ccity = GGame.cities[___dataCityID.GetValue(coords)];
+                if (ccity != null)
+                {
+                    // make sure the cities have their recipes selected.
+                    CCityInOutData inOutData = ccity.GetInOutData(false);
+                    if (inOutData.recipe == null)
+                    {
+                        inOutData.Update01s();
+                    }
+
+                    CCityInOutData inOutData2 = ccity.GetInOutData(true);
+                    if (inOutData2.recipe == null)
+                    {
+                        inOutData2.Update01s();
+                    }
+                }
+            }
         }
 
         // ------------------------------------------------------------------------------

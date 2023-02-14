@@ -290,16 +290,23 @@ namespace FeatMultiplayer
         // Message receviers
         // ------------------------------------------------------------------------------
 
+        public static bool logDebugUpdateContentData;
         static void ReceiveMessageUpdateContentData(MessageUpdateContentData msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                LogDebug("ReceiveMessageUpdateContentData: Deferring " + msg.GetType());
+                if (logDebugUpdateContentData)
+                {
+                    LogDebug("ReceiveMessageUpdateContentData: Deferring " + msg.GetType());
+                }
                 deferredMessages.Enqueue(msg);
             }
             else if (multiplayerMode == MultiplayerMode.Client)
             {
-                LogDebug("ReceiveMessageUpdateContentData: Handling " + msg.GetType());
+                if (logDebugUpdateContentData)
+                {
+                    LogDebug("ReceiveMessageUpdateContentData: Handling " + msg.GetType());
+                }
 
                 msg.ApplySnapshot();
 
