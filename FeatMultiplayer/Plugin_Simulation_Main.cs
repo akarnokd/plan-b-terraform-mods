@@ -96,8 +96,9 @@ namespace FeatMultiplayer
 
                         MultiplayerSMainUpdate_DronesUpdate();
 
-                        SSingleton<SCities>.Inst.Update();
                     }
+                    // Recipe changes needed on the client, the rest are individually supressed
+                    SSingleton<SCities>.Inst.Update();
                     // FIXME probably can suppress the full call, no need to check on individual Update01s
                     if (SMisc.CheckSimuUnitsTime(0.1f))
                     {

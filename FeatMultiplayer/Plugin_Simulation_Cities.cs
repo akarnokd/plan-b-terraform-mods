@@ -24,14 +24,20 @@ namespace FeatMultiplayer
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update01s))]
-        static void Patch_CCity_Update01s_Pre(CCity __instance, out HashSet<int2> __state)
+        static bool Patch_CCity_Update01s_Pre(CCity __instance, 
+            CCityInOutData ___inData,
+            CCityInOutData ___outData,
+            out HashSet<int2> __state)
         {
-            if (multiplayerMode != MultiplayerMode.Host)
+            if (multiplayerMode == MultiplayerMode.Client)
             {
                 __state = null;
-                return;
+                ___inData.Update01s();
+                ___outData.Update01s();
+                return false;
             }
             __state = new(__instance.hexes);
+            return true;
         }
 
         [HarmonyPostfix]
@@ -101,6 +107,29 @@ namespace FeatMultiplayer
                 msg.GetSnapshot(coords);
                 SendAllClients(msg);
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CCityInOutData), nameof(CCityInOutData.Update01s))]
+        static bool Patch_CCityInOutData_Update01s_Pre(
+            CItem_ContentCityInOut ___itemInOut,
+            CCity ___city, ref int ___recipeIndex, ref CRecipe ___recipe)
+        {
+            if (multiplayerMode == MultiplayerMode.Client)
+            {
+                // make sure the in/out is updated with the current recipe
+                for (int i = 0; i < ___itemInOut.recipes.Length; i++)
+                {
+                    if (___city.population >= ___itemInOut.recipes[i].cityPop)
+                    {
+                        ___recipeIndex = i;
+                        ___recipe = ___itemInOut.recipes[i];
+                    }
+                }
+                // but don't do the rest of the updates
+                return false;
+            }
+            return true;
         }
 
         // ------------------------------------------------------------------------------

@@ -306,7 +306,7 @@ namespace FeatMultiplayer
                 var content = ContentAt(msg.coords);
                 if (content is CItem_ContentCityInOut inout)
                 {
-                    CCityInOutData inOutData = inout.GetInOutData(msg.coords, true);
+                    CCityInOutData inOutData = inout.GetInOutData(msg.coords, false);
                     int num = inOutData?.recipeIndex ?? 0;
                     inout.ChangeRecipeIFN(msg.coords, num);
                 }
