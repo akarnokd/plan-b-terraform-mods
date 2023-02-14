@@ -55,8 +55,6 @@
 	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(Destination1)" />
     <Copy SourceFiles="$(SourceDir)IconMP.png" DestinationFolder="$(Destination1)" />
 
-    <!-- Don't release yet 
-	  
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(ForZip)" />
 	  <Copy SourceFiles="$(TargetDir)Open.NAT.dll" DestinationFolder="$(ForZip)" />
     <Copy SourceFiles="$(SourceDir)IconMP.png" DestinationFolder="$(ForZip)" />
@@ -67,7 +65,6 @@
 	  
 	  <ZipDirectory SourceDirectory="$(TargetDir)\$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip" Overwrite="true" />
 	  
-	  -->
   </Target>
 
 </Project>

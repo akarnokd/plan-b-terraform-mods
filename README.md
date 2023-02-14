@@ -83,9 +83,10 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
 - [Go to Exhausted Extractors](#go-to-exhausted-extractors) - Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [Hotbar](#hotbar) - Adds a bar at the bottom of the screen with 3 subpanels and 9 slots each for quickly selecting a building to be built.
+- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
 - [More Cities](#more-cities) - Generate more cities for a new game.
 - [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
-- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
 - [Live GUI Scaler](#live-gui-scaler) - Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
 - [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
