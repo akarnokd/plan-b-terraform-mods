@@ -9,14 +9,6 @@ namespace FeatMultiplayer
 {
     public partial class Plugin : BaseUnityPlugin
     {
-
-        static void SendUpdateContentData(int2 coords)
-        {
-            var msg = new MessageUpdateContentData();
-            msg.GetSnapshot(coords);
-            SendAllClients(msg);
-        }
-
         /// <summary>
         /// The vanilla calls this method to randomly create a city block,
         /// which is not good in MP because it overwrites the city center
@@ -105,7 +97,9 @@ namespace FeatMultiplayer
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
-                SendUpdateContentData(coords);
+                var msg = new MessageUpdateContentData();
+                msg.GetSnapshot(coords);
+                SendAllClients(msg);
             }
         }
 

@@ -149,6 +149,14 @@ namespace FeatMultiplayer
                 }
 
                 msg.ApplySnapshot();
+
+                /*
+                var content = ContentAt(msg.giveTo.coords);
+                if (content is CItem_ContentCityInOut)
+                {
+                    LogDebug("ReceiveMessageUpdateTransportStacks\r\n    " + msg.giveTo);
+                }
+                */
             }
             else
             {

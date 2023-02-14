@@ -301,6 +301,8 @@ namespace FeatMultiplayer
             {
                 LogDebug("ReceiveMessageUpdateContentData: Handling " + msg.GetType());
 
+                msg.ApplySnapshot();
+
                 var content = ContentAt(msg.coords);
                 if (content is CItem_ContentCityInOut inout)
                 {
@@ -308,8 +310,6 @@ namespace FeatMultiplayer
                     int num = inOutData?.recipeIndex ?? 0;
                     inout.ChangeRecipeIFN(msg.coords, num);
                 }
-
-                msg.ApplySnapshot();
             }
             else
             {

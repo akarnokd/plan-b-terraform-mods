@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace FeatMultiplayer
 {
@@ -52,6 +53,18 @@ namespace FeatMultiplayer
             stackId = input.ReadInt32();
             vehicleId = input.ReadInt32();
             stack.Decode(input);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb
+                .Append(nameof(coords)).Append(" = ").Append(coords).Append(", ")
+                .Append(nameof(stackId)).Append(" = ").Append(stackId).Append(", ")
+                .Append(nameof(vehicleId)).Append(" = ").Append(vehicleId).Append(", ")
+                .Append(nameof(stack)).Append(" = ").Append(stack)
+                ;
+            return sb.ToString();
         }
     }
 }
