@@ -32,10 +32,6 @@ namespace FeatMultiplayer
         public void ApplySnapshot(CCity city)
         {
             this.city.ApplySnapshot(city);
-            foreach (var h in updatedHexes)
-            {
-                h.ApplySnapshot();
-            }
         }
 
         public override void Encode(BinaryWriter output)

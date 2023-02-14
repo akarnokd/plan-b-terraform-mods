@@ -219,8 +219,17 @@ namespace FeatMultiplayer
                     foreach (var hex in msg.updatedHexes)
                     {
                         var coords = hex.coords;
-                        Haxx.SBlocks_OnChangeItem(coords, true, false, false);
-                        sViewWorld.OnBuildItem_UpdateTxWorld(coords);
+
+                        var prevId = GHexes.contentId[coords.x, coords.y];
+                        var prevContent = GHexes.contentData[coords.x, coords.y];
+
+                        hex.ApplySnapshot();
+
+                        if (hex.contentId != prevId || hex.contentData != prevContent)
+                        {
+                            Haxx.SBlocks_OnChangeItem(coords, true, false, false);
+                            sViewWorld.OnBuildItem_UpdateTxWorld(coords);
+                        }
                     }
                 }
                 else
