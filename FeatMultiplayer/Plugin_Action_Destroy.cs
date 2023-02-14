@@ -83,6 +83,12 @@ namespace FeatMultiplayer
                             extractorMainAngles.Remove(msg.coords);
                             extractorBucketAngles.Remove(msg.coords);
                         }
+
+                        if (GScene3D.selectionCoords == msg.coords)
+                        {
+                            GScene3D.selectionCoords = int2.negative;
+                            GScene3D.selectedItem = null;
+                        }
                     }
                     finally
                     {
