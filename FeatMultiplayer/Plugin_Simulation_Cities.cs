@@ -233,5 +233,32 @@ namespace FeatMultiplayer
                 LogWarning("ReceiveMessageUpdateCity: wrong multiplayerMode: " + multiplayerMode);
             }
         }
+
+        public static bool logDebugStacksAt;
+
+        static void ReceiveMessageUpdateStacksAt(MessageUpdateStacksAt msg)
+        {
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
+            {
+                if (logDebugStacksAt)
+                {
+                    LogDebug("ReceiveMessageUpdateStacksAt: Deferring " + msg.GetType());
+                }
+                deferredMessages.Enqueue(msg);
+            }
+            else if (multiplayerMode == MultiplayerMode.Client)
+            {
+                if (logDebugStacksAt)
+                {
+                    LogDebug("ReceiveMessageUpdateStacksAt: Handling " + msg.GetType());
+                }
+
+                msg.ApplySnapshot();
+            }
+            else
+            {
+                LogWarning("ReceiveMessageUpdateCity: wrong multiplayerMode: " + multiplayerMode);
+            }
+        }
     }
 }

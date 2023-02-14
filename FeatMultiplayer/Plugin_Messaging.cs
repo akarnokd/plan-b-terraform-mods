@@ -50,6 +50,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateDepotDrones>(ReceiveMessageUpdateDepotDrones);
 
             AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
+            AddMessageRegistry<MessageUpdateStacksAt>(ReceiveMessageUpdateStacksAt);
             AddMessageRegistry<MessageUpdateRecipeAt>(ReceiveMessageUpdateRecipeAt);
             AddMessageRegistry<MessageUpdateTransportedAt>(ReceiveMessageUpdateTransportedAt);
 
