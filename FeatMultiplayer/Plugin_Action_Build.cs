@@ -310,7 +310,12 @@ namespace FeatMultiplayer
                     msg.fromCoords = coordsFrom;
                     msg.toCoords = coordsTo;
                     SendHost(msg);
+                    return false;
                 }
+            } 
+            else
+            {
+                LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ") while suppressed notifications");
             }
             return true;
         }
@@ -506,7 +511,7 @@ namespace FeatMultiplayer
                         }
                         if (multiplayerMode == MultiplayerMode.Host)
                         {
-                            SendAllClientsExcept(msg.sender, msg);
+                            SendAllClients(msg);
                         }
                     }
                     else
