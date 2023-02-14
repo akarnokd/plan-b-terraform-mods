@@ -15,6 +15,7 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal double simuPlanetTime;
+        internal double simuPlanetTime_LastFrame;
         internal double simuUnitsTime;
         internal double simuUnitsTime_LastFrame;
         internal float timePlayed;
@@ -23,6 +24,7 @@ namespace FeatMultiplayer
         internal override void GetSnapshot()
         {
             simuPlanetTime = GMain.simuPlanetTime;
+            simuPlanetTime_LastFrame = GMain.simuPlanetTime_LastFrame;
             simuUnitsTime = GMain.simuUnitsTime;
             simuUnitsTime_LastFrame = GMain.simuUnitsTime_LastFrame;
             timePlayed = GMain.timePlayed;
@@ -32,9 +34,11 @@ namespace FeatMultiplayer
         internal override void ApplySnapshot()
         {
             GMain.simuPlanetTime = simuPlanetTime;
-
+            GMain.simuPlanetTime_LastFrame = simuPlanetTime_LastFrame;
+           
             GMain.simuUnitsTime = simuUnitsTime;
             GMain.simuUnitsTime_LastFrame = simuUnitsTime_LastFrame;
+            //GMain.simuUnitsTime_LastFrame = simuUnitsTime;
 
             GMain.timePlayed = timePlayed;
 
@@ -44,10 +48,21 @@ namespace FeatMultiplayer
         public override void Encode(BinaryWriter output)
         {
             output.Write(simuPlanetTime);
+            output.Write(simuPlanetTime_LastFrame);
             output.Write(simuUnitsTime);
             output.Write(simuUnitsTime_LastFrame);
             output.Write(timePlayed);
             output.Write(timeScale);
+        }
+
+        void Decode(BinaryReader input)
+        {
+            simuPlanetTime = input.ReadDouble();
+            simuPlanetTime_LastFrame = input.ReadDouble();
+            simuUnitsTime = input.ReadDouble();
+            simuUnitsTime_LastFrame = input.ReadDouble();
+            timePlayed = input.ReadSingle();
+            timeScale = input.ReadSingle();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
@@ -60,13 +75,6 @@ namespace FeatMultiplayer
             return true;
         }
 
-        void Decode(BinaryReader input)
-        {
-            simuPlanetTime = input.ReadDouble();
-            simuUnitsTime = input.ReadDouble();
-            simuUnitsTime_LastFrame = input.ReadDouble();
-            timePlayed = input.ReadSingle();
-            timeScale = input.ReadSingle();
-        }
+        
     }
 }
