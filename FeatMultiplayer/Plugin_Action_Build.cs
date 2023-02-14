@@ -61,7 +61,7 @@ namespace FeatMultiplayer
                     msg.id = __instance.id;
 
                     // capture if copying of configuration is needed
-                    msg.copyMode = __instance.recipes.Length != 0
+                    msg.copyMode = __instance.recipes.Length > 1
                         && !SSceneSingleton<SSceneHud_Selection>.Inst.IsCopying()
                         && !(__instance is CItem_ContentCityInOut); 
 
