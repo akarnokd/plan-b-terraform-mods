@@ -75,6 +75,12 @@ namespace FeatMultiplayer
                     try
                     {
                         LogDebug("ReceiveMessageActionDestroy: Destroying " + content.codeName + " at " + msg.coords.x + ", " + msg.coords.y);
+                        if (GScene3D.selectionCoords == msg.coords)
+                        {
+                            GScene3D.selectionCoords = int2.negative;
+                            GScene3D.selectedItem = null;
+                        }
+
                         content.Destroy(msg.coords);
                         content.nbOwned++;
 
@@ -82,12 +88,6 @@ namespace FeatMultiplayer
                         {
                             extractorMainAngles.Remove(msg.coords);
                             extractorBucketAngles.Remove(msg.coords);
-                        }
-
-                        if (GScene3D.selectionCoords == msg.coords)
-                        {
-                            GScene3D.selectionCoords = int2.negative;
-                            GScene3D.selectedItem = null;
                         }
                     }
                     finally
