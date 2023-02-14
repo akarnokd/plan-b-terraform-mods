@@ -4,6 +4,7 @@
 using BepInEx;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace FeatMultiplayer
 {
@@ -22,27 +23,33 @@ namespace FeatMultiplayer
             return multiplayerMode != MultiplayerMode.ClientJoin;
         }
 
+        static readonly HashSet<int2> cityHexChanges = new();
+        static readonly HashSet<int2> cityInOutChanges = new();
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update01s))]
         static bool Patch_CCity_Update01s_Pre(CCity __instance, 
             CCityInOutData ___inData,
-            CCityInOutData ___outData,
-            out HashSet<int2> __state)
+            CCityInOutData ___outData)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
-                __state = null;
                 ___inData.Update01s();
                 ___outData.Update01s();
                 return false;
             }
-            __state = new(__instance.hexes);
+            cityInOutChanges.Clear();
+            cityHexChanges.Clear();
+            foreach (var h in __instance.hexes)
+            {
+                cityHexChanges.Add(h);
+            }
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update01s))]
-        static void Patch_CCity_Update01s_Post(CCity __instance, ref HashSet<int2> __state) 
+        static void Patch_CCity_Update01s_Post(CCity __instance) 
         { 
             if (multiplayerMode != MultiplayerMode.Host)
             {
@@ -50,28 +57,38 @@ namespace FeatMultiplayer
             }
             foreach (var h in __instance.hexes)
             {
-                __state.Add(h);
+                cityHexChanges.Add(h);
             }
             var msg = new MessageUpdateCity();
-            msg.GetSnapshot(__instance, __state);
+            msg.GetSnapshot(__instance, cityHexChanges);
             SendAllClients(msg);
+
+            foreach (var h in cityInOutChanges)
+            {
+                var msgs = new MessageUpdateStacksAt();
+                msgs.GetSnapshot(h);
+                SendAllClients(msgs);
+            }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update1s))]
-        static void Patch_CCity_Update1s_Pre(CCity __instance, out HashSet<int2> __state)
+        static void Patch_CCity_Update1s_Pre(CCity __instance)
         {
             if (multiplayerMode != MultiplayerMode.Host)
             {
-                __state = null;
                 return;
             }
-            __state = new(__instance.hexes);
+            cityHexChanges.Clear();
+            foreach (var h in __instance.hexes)
+            {
+                cityHexChanges.Add(h);
+            }
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update1s))]
-        static void Patch_CCity_Update1s_Post(CCity __instance, ref HashSet<int2> __state)
+        static void Patch_CCity_Update1s_Post(CCity __instance)
         {
             if (multiplayerMode != MultiplayerMode.Host)
             {
@@ -79,10 +96,10 @@ namespace FeatMultiplayer
             }
             foreach (var h in __instance.hexes)
             {
-                __state.Add(h);
+                cityHexChanges.Add(h);
             }
             var msg = new MessageUpdateCity();
-            msg.GetSnapshot(__instance, __state);
+            msg.GetSnapshot(__instance, cityHexChanges);
             SendAllClients(msg);
         }
 
@@ -113,7 +130,8 @@ namespace FeatMultiplayer
         [HarmonyPatch(typeof(CCityInOutData), nameof(CCityInOutData.Update01s))]
         static bool Patch_CCityInOutData_Update01s_Pre(
             CItem_ContentCityInOut ___itemInOut,
-            CCity ___city, ref int ___recipeIndex, ref CRecipe ___recipe)
+            CCity ___city, ref int ___recipeIndex, 
+            ref CRecipe ___recipe)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -158,6 +176,15 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CItem_ContentCityInOut), nameof(CItem_ContentCityInOut.ProcessCityRecipeIFP))]
+        static void Patch_CItem_ContentCityInOut_ProcessCityRecipeIFP(int2 coords)
+        {
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                cityInOutChanges.Add(coords);
+            }
+        }
         // ------------------------------------------------------------------------------
         // Message receviers
         // ------------------------------------------------------------------------------
