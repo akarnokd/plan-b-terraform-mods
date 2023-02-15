@@ -119,6 +119,8 @@ namespace FeatMultiplayer
                 yield break;
             }
 
+            LogDebug("Login Response " + loginResponse.reason);
+
             loginResponse = null;
 
             yield return sload.LoadingStep(5f, new Action(SSingleton<SWorld_Generation>.Inst.InitGlobalData), 0);
@@ -128,8 +130,16 @@ namespace FeatMultiplayer
             yield return sload.LoadingStep(16f, new Action(SMain.Inst.Reset), 0);
             yield return sload.LoadingStep(17f, new Action(SSingleton<SDrones>.Inst.Reset_DroneGrid), 0);
 
+            /*
+            for (int i = 0; i < 60; i++)
+            {
+                LogDebug(i + " FlagsDebug: Check " + FlagsToStr((uint)GHexes.flags[1270, 406]));
+                yield return null;
+            }
+            */
+
             // ------------------------------------------------------------------------------------
-            // TODO: the various loading steps
+            // The various loading steps
             // ------------------------------------------------------------------------------------
 
             yield return sload.LoadingStep(20f, "Waiting for GHexes.flags", 0);
@@ -162,44 +172,44 @@ namespace FeatMultiplayer
 
             yield return sload.LoadingStep(34f, "Computing Hexes Altitude Data", 0);
 
-            yield return SSingleton<SWorld_Generation>.Inst.Compute_HexesAltitudeData(true, 50);
+            yield return SSingleton<SWorld_Generation>.Inst.Compute_HexesAltitudeData(true, 36);
 
-            yield return sload.LoadingStep(36f, "Waiting for SMain data", 0);
+            yield return sload.LoadingStep(44f, "Waiting for SMain data", 0);
 
             yield return WaitForField(() => syncAllMain, () => syncAllMain = null);
 
-            yield return sload.LoadingStep(38f, "Waiting for SGame data", 0);
+            yield return sload.LoadingStep(46f, "Waiting for SGame data", 0);
 
             yield return WaitForField(() => syncAllGame, () => syncAllGame = null);
 
             // Just indicates if the tutorial panel is open or not.
             // yield return sload.LoadingStep(40f, "Waiting for SSceneDialog data", 0);
 
-            yield return sload.LoadingStep(42f, "Waiting for SPlanet data", 0);
+            yield return sload.LoadingStep(48f, "Waiting for SPlanet data", 0);
 
             yield return WaitForField(() => syncAllPlanet, () => syncAllPlanet = null);
 
-            yield return sload.LoadingStep(44f, "Waiting for SItems data", 0);
+            yield return sload.LoadingStep(50f, "Waiting for SItems data", 0);
 
             yield return WaitForField(() => syncAllItems, () => syncAllItems = null);
 
-            yield return sload.LoadingStep(46f, "Counting trees", 0);
+            yield return sload.LoadingStep(52f, "Counting trees", 0);
 
             CountForestHexes();
 
-            yield return sload.LoadingStep(46f, "Waiting for SWater data", 0);
+            yield return sload.LoadingStep(54f, "Waiting for SWater data", 0);
 
             yield return WaitForField(() => syncAllWaterInfo, () => syncAllWaterInfo = null);
 
-            yield return sload.LoadingStep(50f, "Waiting for SDrones data", 0);
+            yield return sload.LoadingStep(56f, "Waiting for SDrones data", 0);
 
             yield return WaitForField(() => syncAllDrones, () => syncAllDrones = null);
 
-            yield return sload.LoadingStep(52f, "Waiting for SWays data", 0);
+            yield return sload.LoadingStep(58f, "Waiting for SWays data", 0);
 
             yield return WaitForField(() => syncAllWays, () => syncAllWays = null);
 
-            yield return sload.LoadingStep(54f, "Waiting for SCamera data", 0);
+            yield return sload.LoadingStep(60f, "Waiting for SCamera data", 0);
 
             yield return WaitForField(() => syncAllCamera, () => syncAllCamera = null);
 
@@ -208,13 +218,21 @@ namespace FeatMultiplayer
             // remake the terrain
 
             yield return sload.LoadingStep(70f, new Action(SSingleton<SBlocks>.Inst.GenerateData), 0);
+
             yield return sload.LoadingStep(72f, new Action(SSingleton<SPlanet>.Inst.ComputeTemperaturesInitial), 0);
+
             yield return sload.LoadingStep(74f, new Action(SSingleton<SRain>.Inst.Generate), 0);
+
             SSingleton<SCamera>.Inst.Reset(true);
+
             yield return sload.LoadingStep(82f, new Action(SSingleton<SViewWorld>.Inst.GenerateMeshes), 0);
+
             yield return sload.LoadingStep(84f, new Action(SSingleton<SViewBlocks>.Inst.GenerateMeshes), 0);
+
             yield return sload.LoadingStep(85f, new Action(SSingleton<SViewOverlay>.Inst.GenerateMeshes), 0);
+
             yield return sload.LoadingStep(86f, new Action(SSingleton<SWater>.Inst.GenerateMesh), 0);
+
             yield return sload.LoadingStep(90f, "Loading finalization", 0);
 
             yield return sload.LoadingStep(100f, "Loading complete", 0);
@@ -247,11 +265,20 @@ namespace FeatMultiplayer
                 var v = getter();
                 if (v != null)
                 {
+                    /*
+                    if (UnityEngine.Random.RandomRangeInt(0, 2) == 1)
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    */
                     try
                     {
                         try
                         {
+                            LogDebug(typeof(T) + ".ApplySnapshot() begin");
+                            // LogDebug(" FlagsDebug: Check " + FlagsToStr((uint)GHexes.flags[1270, 406]));
                             v.ApplySnapshot();
+                            // LogDebug(" FlagsDebug: Check " + FlagsToStr((uint)GHexes.flags[1270, 406]));
                         }
                         finally
                         {
@@ -260,11 +287,12 @@ namespace FeatMultiplayer
                     } 
                     catch (Exception ex)
                     {
-                        LogError((typeof(T) + ".ApplySnapshot() crashed\r\n" + ex));
+                        LogError(typeof(T) + ".ApplySnapshot() crashed\r\n" + ex);
                         throw ex;
                     }
                     yield break;
                 }
+                // LogDebug(" FlagsDebug: Check yield " + FlagsToStr((uint)GHexes.flags[1270, 406]));
                 yield return new WaitForSeconds(0.1f);
             }
         }

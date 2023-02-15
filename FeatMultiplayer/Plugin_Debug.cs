@@ -4,6 +4,7 @@
 using BepInEx;
 using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -20,45 +21,58 @@ namespace FeatMultiplayer
         {
             if (modEnabled.Value)
             {
-                if (Input.GetKeyDown(KeyCode.KeypadDivide))
+                DebugHex();
+
+                /*
+                if (multiplayerMode == MultiplayerMode.Client || multiplayerMode == MultiplayerMode.ClientJoin)
                 {
-                    debugHexToggle = !debugHexToggle;
+                    LogDebug("FlagsDebug: " + FlagsToStr((uint)GHexes.flags[1270, 406]));
                 }
-                var coords = GScene3D.mouseoverCoords;
-                if (Input.GetKeyDown(KeyCode.Mouse0) && debugHexToggle)
+                */
+            }
+        }
+
+
+        static void DebugHex()
+        {
+            if (Input.GetKeyDown(KeyCode.KeypadDivide))
+            {
+                debugHexToggle = !debugHexToggle;
+            }
+            var coords = GScene3D.mouseoverCoords;
+            if (Input.GetKeyDown(KeyCode.Mouse0) && debugHexToggle)
+            {
+                LogDebug("Hex info @ " + coords);
+                var flags = (int)GHexes.flags[coords.x, coords.y];
+                LogDebug("    Flags: " + string.Format("{0:X4} = ", (uint)flags) + FlagsToStr((uint)flags));
+                var groundId = GHexes.groundId[coords.x, coords.y];
+                LogDebug("    Ground: id = " + groundId);
+                var groundData = GHexes.groundData[coords.x, coords.y];
+                LogDebug("          data = " + string.Format("{0} (0x{0:X4})", groundData));
+                var contentId = GHexes.contentId[coords.x, coords.y];
+                var contentAt = ContentAt(coords);
+                LogDebug("    Content: id = " + contentId + ", type = " + (contentAt != null ? contentAt.codeName : "null"));
+                var contentData = GHexes.contentData[coords.x, coords.y];
+                LogDebug("           data = " + string.Format("{0} (0x{0:X4})", contentData));
+                var stacks = GHexes.stacks[coords.x, coords.y];
+                if (stacks != null && stacks.stacks != null)
                 {
-                    LogDebug("Hex info @ " + coords);
-                    var flags = (int)GHexes.flags[coords.x, coords.y];
-                    LogDebug("    Flags: " + string.Format("{0:X4} = ", (uint)flags) + FlagsToStr((uint)flags));
-                    var groundId = GHexes.groundId[coords.x, coords.y];
-                    LogDebug("    Ground: id = " + groundId);
-                    var groundData = GHexes.groundData[coords.x, coords.y];
-                    LogDebug("          data = " + string.Format("{0} (0x{0:X4})", groundData));
-                    var contentId = GHexes.contentId[coords.x, coords.y];
-                    var contentAt = ContentAt(coords);
-                    LogDebug("    Content: id = " + contentId + ", type = " + (contentAt != null ? contentAt.codeName : "null"));
-                    var contentData = GHexes.contentData[coords.x, coords.y];
-                    LogDebug("           data = " + string.Format("{0} (0x{0:X4})", contentData));
-                    var stacks = GHexes.stacks[coords.x, coords.y];
-                    if (stacks != null && stacks.stacks != null)
+                    LogDebug("         stacks = " + stacks.stacks.Length);
+                    for (int i = 0; i < stacks.stacks.Length; i++)
                     {
-                        LogDebug("         stacks = " + stacks.stacks.Length);
-                        for (int i = 0; i < stacks.stacks.Length; i++)
-                        {
-                            var stack = stacks.stacks[i];
-                            LogDebug("                [" + i + "] : nb = " + stack.nb + ", nbMax = " + stack.nbMax + ", nbBooked = " 
-                                + stack.nbBooked + ", item = " + (stack.item?.codeName ?? "null") + ", demand = " + stack.demand);
-                        }
+                        var stack = stacks.stacks[i];
+                        LogDebug("                [" + i + "] : nb = " + stack.nb + ", nbMax = " + stack.nbMax + ", nbBooked = "
+                            + stack.nbBooked + ", item = " + (stack.item?.codeName ?? "null") + ", demand = " + stack.demand);
                     }
-                    else
-                    {
-                        LogDebug("         stacks = none");
-                    }
+                }
+                else
+                {
+                    LogDebug("         stacks = none");
                 }
             }
         }
 
-        static string FlagsToStr(uint flag)
+        internal static string FlagsToStr(uint flag)
         {
             List<string> list = new();
             Array arr = typeof(GHexes.Flag).GetEnumValues();
@@ -72,6 +86,48 @@ namespace FeatMultiplayer
                 }
             }
             return string.Join(", ", list);
+        }
+
+        // Intercept the enumerators
+        internal static IEnumerator InterceptEnumerator(IEnumerator en)
+        {
+            for (; ; )
+            {
+                bool has;
+
+                try
+                {
+                    has = en.MoveNext();
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    throw ex;
+                }
+                if (has)
+                {
+                    object v;
+
+                    try
+                    {
+                        v = en.Current;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(ex);
+                        throw ex;
+                    }
+                    if (v is IEnumerator en2)
+                    {
+                        yield return InterceptEnumerator(en2);
+                    }
+                    yield return v;
+                }
+                else
+                {
+                    yield break;
+                }
+            }
         }
     }
 }

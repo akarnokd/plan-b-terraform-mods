@@ -156,6 +156,7 @@ namespace FeatMultiplayer
                         string u = mainMenuClientNames[j];
                         string p = clientUsers[u];
 
+                        // thePlugin.StartCoroutine(InterceptEnumerator(ClientJoin(u, p)));
                         thePlugin.StartCoroutine(ClientJoin(u, p));
                         break;
                     }
