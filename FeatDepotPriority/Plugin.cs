@@ -516,7 +516,14 @@ namespace FeatDepotPriority
                 if (priorityDictionary.TryGetValue(copyCoordsFrom, out var p))
                 {
                     copyIncrements++;
-                    priorityDictionary[coordsTo] = p + copyIncrements;
+                    var newp = p + copyIncrements;
+                    // make sure we skip over priority zero as those are regular depots
+                    if (newp == 0)
+                    {
+                        copyIncrements++;
+                        newp++;
+                    }
+                    priorityDictionary[coordsTo] = newp;
                     SaveState();
                 }
             }
