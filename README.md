@@ -75,7 +75,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 # Current Mods
 
-Latest Downloads: <a href='https://github.com/akarnokd/plan-b-terraform-mods/releases/latest'><img src='https://img.shields.io/github/v/release/akarnokd/plan-b-terraform-mods' alt='Latest GitHub Latest Release Version'/></a>.
+:information_source: Latest Downloads: <a href='https://github.com/akarnokd/plan-b-terraform-mods/releases/latest'><img src='https://img.shields.io/github/v/release/akarnokd/plan-b-terraform-mods' alt='Latest GitHub Latest Release Version'/></a>
 
 ### Features
 
