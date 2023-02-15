@@ -229,6 +229,9 @@ namespace FeatDepotPriority
         {
             if (panelOverlay != null)
             {
+                var zoomDist = GCamera.zoomDistances[GCamera.zoomLevelTarget];
+                panelOverlay.SetActive(zoomDist < 100f);
+
                 foreach (var kv in priorityDictionary)
                 {
                     var coords = kv.Key;
@@ -494,6 +497,40 @@ namespace FeatDepotPriority
         {
             priorityDictionary.Remove(coords);
             SaveState();
+        }
+
+        static int2 copyCoordsFrom = int2.negative;
+        static int copyIncrements;
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_Content), "Copy")]
+        static void CItem_Content_Copy_Pre(CItem_Content __instance, int2 coordsFrom, int2 coordsTo)
+        {
+            if (__instance is CItem_ContentDepot)
+            {
+                if (copyCoordsFrom == int2.negative)
+                {
+                    copyCoordsFrom = coordsFrom;
+                }
+
+                if (priorityDictionary.TryGetValue(copyCoordsFrom, out var p))
+                {
+                    copyIncrements++;
+                    priorityDictionary[coordsTo] = p + copyIncrements;
+                    SaveState();
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.ToggleCopy))]
+        static void SSceneHud_Selection_ToggleCopy(bool state)
+        {
+            if (!state)
+            {
+                copyCoordsFrom = int2.negative;
+                copyIncrements = 0;
+            }
         }
 
         [HarmonyPostfix]
