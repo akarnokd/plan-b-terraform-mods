@@ -419,7 +419,7 @@ namespace FeatDepotPriority
                                             ourStack0.nb = targetStack.nb + 2;
 
                                             found = true;
-                                            logger.LogInfo("CDrone_SearchStacks: us -> them");
+                                            // logger.LogInfo("CDrone_SearchStacks: us -> them");
                                             break;
                                         }
                                         else
@@ -445,7 +445,7 @@ namespace FeatDepotPriority
                                             targetStack.nb = ourStack0.nb + 2;
 
                                             found = true;
-                                            logger.LogInfo("CDrone_SearchStacks: us <- them");
+                                            // logger.LogInfo("CDrone_SearchStacks: us <- them");
                                             break;
                                         }
                                     }
