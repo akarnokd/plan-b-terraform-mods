@@ -36,19 +36,15 @@ namespace FeatMultiplayer
         internal override void ApplySnapshot()
         {
             var s = GWorld.size;
+            var x = s.x;
             var y = s.y;
             var dst = GHexes.flags;
-
-            var row = 0;
-            var col = 0;
-            for (int a = 0; a < data.Length; a++)
+            var k = 0;
+            for (int i = 0; i < x; i++)
             {
-                dst[row, col] = (GHexes.Flag)data[a];
-
-                if (++col == y)
+                for (int j = 0; j < y; j++)
                 {
-                    row++;
-                    col = 0;
+                    dst[i, j] = (GHexes.Flag)data[k++];
                 }
             }
         }
@@ -57,13 +53,32 @@ namespace FeatMultiplayer
         public override void Encode(BinaryWriter output)
         {
             RLE.Encode(data, output);
+            /*
+            output.Write(data.Length);
+            foreach (var d in data)
+            {
+                output.Write(d);
+            }
+            */
+        }
+
+        void Decode(BinaryReader input)
+        {
+            RLE.Decode(input, ref data);
+            /*
+            int c = input.ReadInt32();
+            data = new int[c];
+            for (int i = 0; i < c; i++)
+            {
+                data[i] = input.ReadInt32();
+            }
+            */
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
             var msg = new MessageSyncAllFlags();
-
-            RLE.Decode(input, ref msg.data);
+            msg.Decode(input);
             message = msg;
             return true;
         }

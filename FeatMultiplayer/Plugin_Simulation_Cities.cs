@@ -263,6 +263,7 @@ namespace FeatMultiplayer
                 }
 
                 msg.ApplySnapshot();
+                Haxx.SBlocks_OnChangeItem(msg.coords, false, false, true);
             }
             else
             {
