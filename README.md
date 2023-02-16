@@ -91,8 +91,9 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
 - [Live GUI Scaler](#live-gui-scaler) - Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
-- [Production Limiter](#production-limiter) - limit the production items that go into the global storage.
-- [Production Statistics](#production-statistics) - show the production and consumption speed of items
+- [Production Limiter](#production-limiter) - Limit the production items that go into the global storage.
+- [Production Statistics](#production-statistics) - Show the production and consumption speed of items.
+- [VSync Limit Framerate](#vsync-limit-framerate) - Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate.
 
 ### Cheats
 
@@ -1017,6 +1018,8 @@ Set priorities on depots so containers will be force-transferred towards higher 
 
 Select a depot and see the small panel on the bottom-left of the screen. The up and down buttons can adjust the priority. You can have any priority number, only the relative numbers between depots in each other's reach matter.
 
+When copying a depot with priority, newly built depots will get an increasing priority number, allowing a more convenient way to setup forwarding chains.
+
 :warning: Depots with priority and without priority do not interact with each other. This avoid bouncing containers between them.
 
 Use the <kbd>Middle mouse</kbd> on the panel to reset the priority.
@@ -1057,5 +1060,20 @@ AutoScale = true
 # Setting type: Int32
 # Default value: 15
 OverlayFontScale = 15
+```
+</details>
+
+## VSync Limit Framerate
+
+Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate. Set the divider in the config file.
+
+:information_source: By default, when VSync is turned on in an unity game, the engine will try to render everything at the system's default framerate. I.e., If you have a 60Hz monitor, then 60 FPS. If you have a 144Hz monitor, then 144FPS. Unfortunately, this can tax the system unnecessarily. In addition, trying to limit the framerate doesn't work when VSync is on (Unity limitation). The only option to have the game run at lower framerate and also not get screen tearing is to set a "higher number" VSync mode in the engine. This means that VSync = 2 will halve the framerate, VSync = 3 will third and VSync = 4 will quarter. Higher values are not supported.
+
+#### Configuration
+
+<details><summary><code>akarnokd.planbterraformmods.uivsynclimitframerate</code></summary>
+
+```
+
 ```
 </details>
