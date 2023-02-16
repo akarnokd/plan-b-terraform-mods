@@ -1067,7 +1067,7 @@ OverlayFontScale = 15
 
 Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate. Set the divider in the config file.
 
-:information_source: By default, when VSync is turned on in an unity game, the engine will try to render everything at the system's default framerate. I.e., If you have a 60Hz monitor, then 60 FPS. If you have a 144Hz monitor, then 144FPS. Unfortunately, this can tax the system unnecessarily. In addition, trying to limit the framerate doesn't work when VSync is on (Unity limitation). The only option to have the game run at lower framerate and also not get screen tearing is to set a "higher number" VSync mode in the engine. This means that VSync = 2 will halve the framerate, VSync = 3 will third and VSync = 4 will quarter. Higher values are not supported.
+:information_source: By default, when VSync is turned on in an Unity game, the engine will try to render everything at the system's default framerate. I.e., If you have a 60Hz monitor, then 60 FPS. If you have a 144Hz monitor, then 144FPS. Unfortunately, this can tax the system unnecessarily. In addition, trying to limit the framerate directly to a value doesn't work when VSync is on (Unity limitation). The only option to have the game run at lower framerate and also not get screen tearing is to set a "higher number" VSync mode in the engine. This means that VSync = 2 will halve the framerate, VSync = 3 will third and VSync = 4 will quarter. Higher values are not supported.
 
 #### Configuration
 
