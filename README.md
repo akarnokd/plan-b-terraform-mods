@@ -1074,6 +1074,11 @@ Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's 
 <details><summary><code>akarnokd.planbterraformmods.uivsynclimitframerate</code></summary>
 
 ```
+[General]
 
+## Divide the framerate by this amount when VSync is enabled
+# Setting type: Int32
+# Default value: 1
+FramerateDivider = 1
 ```
 </details>
