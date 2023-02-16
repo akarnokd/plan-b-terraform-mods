@@ -126,7 +126,7 @@ namespace FeatProductionStats
         [HarmonyPatch(typeof(SSceneHud), "OnDeactivate")]
         static void SSceneHud_OnDeactivate()
         {
-            statsPanel?.SetActive(false);
+            Destroy(statsPanel);
             statsRowsCache.Clear();
         }
 
