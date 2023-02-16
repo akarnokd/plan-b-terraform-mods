@@ -515,13 +515,25 @@ namespace FeatDepotPriority
 
                 if (priorityDictionary.TryGetValue(copyCoordsFrom, out var p))
                 {
-                    copyIncrements++;
+                    int delta = 0;
+
+                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    {
+                        delta = 1;
+                    }
+                    else
+                    if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                    {
+                        delta = -1;
+                    }
+
+                    copyIncrements += delta;
                     var newp = p + copyIncrements;
                     // make sure we skip over priority zero as those are regular depots
                     if (newp == 0)
                     {
-                        copyIncrements++;
-                        newp++;
+                        copyIncrements += delta;
+                        newp += delta;
                     }
                     priorityDictionary[coordsTo] = newp;
                     SaveState();

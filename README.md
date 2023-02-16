@@ -1018,7 +1018,7 @@ Set priorities on depots so containers will be force-transferred towards higher 
 
 Select a depot and see the small panel on the bottom-left of the screen. The up and down buttons can adjust the priority. You can have any priority number, only the relative numbers between depots in each other's reach matter.
 
-When copying a depot with priority, newly built depots will get an increasing priority number, allowing a more convenient way to setup forwarding chains.
+When copying a depot with priority, newly built depots will copy the priority number (not holding any keys), give ever increasing number while holding <kbd>Shift</kbd> or ever decreasing number with <kbd>Ctrl</kbd>. This should allow building long priority chains forwards or backwards.
 
 :warning: Depots with priority and without priority do not interact with each other. This avoid bouncing containers between them.
 
