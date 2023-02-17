@@ -129,6 +129,13 @@ namespace FeatProductionStats
             Destroy(statsPanel);
             statsRowsCache.Clear();
         }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SLoad), nameof(SLoad.QuitGameAndUI))]
+        static void Patch_SLoad_QuitGameAndUI()
+        {
+            productionSamples.Clear();
+            consumptionSamples.Clear();
+        }
 
         static void UpdateButton()
         {
