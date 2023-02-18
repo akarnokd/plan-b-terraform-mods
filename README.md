@@ -1,4 +1,4 @@
-# plan-b-terraform-mods
+﻿# plan-b-terraform-mods
 Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.steampowered.com/app/1894430/Plan_B_Terraform/)
 
 ## Version <a href='https://github.com/akarnokd/plan-b-terraform-mods/releases'><img src='https://img.shields.io/github/v/release/akarnokd/plan-b-terraform-mods' alt='Latest GitHub Release Version'/></a>
@@ -85,7 +85,6 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
 - [Go to Exhausted Extractors](#go-to-exhausted-extractors) - Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [Hotbar](#hotbar) - Adds a bar at the bottom of the screen with 3 subpanels and 9 slots each for quickly selecting a building to be built.
-- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar ford�t�s).
 - [More Cities](#more-cities) - Generate more cities for a new game.
 - [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
 - [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
@@ -94,6 +93,11 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Production Limiter](#production-limiter) - Limit the production items that go into the global storage.
 - [Production Statistics](#production-statistics) - Show the production and consumption speed of items.
 - [VSync Limit Framerate](#vsync-limit-framerate) - Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate.
+
+### Translations
+
+- [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
+- [Traditional Chinese Translation](#traditional-chinese-translation) - Traditional Chinese Translation (繁體中文).
 
 ### Cheats
 
@@ -436,11 +440,21 @@ Names = Budapest,Vienna,Bucharest,Bratislava,Ljubljana,Prague,Zagreb,Belgrade,Wa
 
 Adds the **Hungarian (Magyar)** language option and translated labels to the game.
 
-Magyar ford�t�s. Az **Options (Be�ll�t�sok)** men�ben lehet kiv�lasztani a j�t�k nyelv�t.
+Magyar fordítás. Az **Options (Beállítások)** menüben lehet kiválasztani a játék nyelvét.
 
 #### Configuration
 
 Not relevant for end users; contains an option to dump languages to see the diffs between versions.
+
+## Traditional Chinese Translation
+
+Adds the **Chinese Traditional (繁體中文)** language option and translated labels to the game.
+
+為遊戲添加 **Chinese Traditional (繁體中文)** 語言選項和翻譯標籤。
+
+#### Configuration
+
+None.
 
 ## More Cities
 
