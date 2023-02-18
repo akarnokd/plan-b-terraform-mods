@@ -1020,6 +1020,8 @@ Select a depot and see the small panel on the bottom-left of the screen. The up 
 
 When copying a depot with priority, newly built depots will copy the priority number (not holding any keys), give ever increasing number while holding <kbd>Shift</kbd> or ever decreasing number with <kbd>Ctrl</kbd>. This should allow building long priority chains forwards or backwards.
 
+Press <kbd>P</kbd> (configurable) to show and hide the priority numbers in the world overlay.
+
 :warning: Depots with priority and without priority do not interact with each other. This avoid bouncing containers between them.
 
 Use the <kbd>Middle mouse</kbd> on the panel to reset the priority.

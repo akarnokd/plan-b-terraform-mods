@@ -25,6 +25,8 @@ namespace FeatDepotPriority
         static ConfigEntry<int> panelLeft;
         static ConfigEntry<bool> autoScale;
         static ConfigEntry<int> overlayFontScale;
+        static ConfigEntry<bool> overlayVisible;
+        static ConfigEntry<KeyCode> toggleOverlay;
 
         static readonly Dictionary<int2, int> priorityDictionary = new();
 
@@ -58,6 +60,8 @@ namespace FeatDepotPriority
             panelLeft = Config.Bind("General", "PanelLeft", 150, "The panel position from the left of the screen"); // we allow overlap with disable building for now
             autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
             overlayFontScale = Config.Bind("General", "OverlayFontScale", 15, "The font scaling percent when zooming in on a priority depot.");
+            overlayVisible = Config.Bind("General", "OverlayVisible", true, "Is the overlay with the priority numbers visible?");
+            toggleOverlay = Config.Bind("General", "ToggleOverlay", KeyCode.P, "Toggle the priority numbers overlay?");
 
             var h = Harmony.CreateAndPatchAll(typeof(Plugin));
             GUIScalingSupport.TryEnable(h);
@@ -230,7 +234,7 @@ namespace FeatDepotPriority
             if (panelOverlay != null)
             {
                 var zoomDist = GCamera.zoomDistances[GCamera.zoomLevelTarget];
-                panelOverlay.SetActive(zoomDist < 100f);
+                panelOverlay.SetActive(zoomDist < 100f && overlayVisible.Value);
 
                 foreach (var kv in priorityDictionary)
                 {
@@ -276,6 +280,11 @@ namespace FeatDepotPriority
                         Destroy(overlayIcons[coords]);
                         overlayIcons.Remove(coords);
                     }
+                }
+
+                if (Input.GetKeyDown(toggleOverlay.Value))
+                {
+                    overlayVisible.Value = !overlayVisible.Value;
                 }
             }
         }
