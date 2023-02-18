@@ -450,7 +450,11 @@ Not relevant for end users; contains an option to dump languages to see the diff
 
 Adds the **Chinese Traditional (繁體中文)** language option and translated labels to the game.
 
+Translation kindly provided by **johnruby (Discord)**
+
 為遊戲添加 **Chinese Traditional (繁體中文)** 語言選項和翻譯標籤。
+
+翻譯由 **johnruby (Discord) 友情提供**
 
 #### Configuration
 
