@@ -54,6 +54,7 @@ namespace FeatLuaModManager
             UserData.RegisterType(typeof(CItem), InteropAccessMode.Default, null);
 
             _script.Globals["AddCItem"] = new Func<DynValue, object>(AddCItem);
+            _script.Globals["GetCItem"] = new Func<string, object>(GetCItem);
         }
 
         static void RunLua()
@@ -122,6 +123,24 @@ namespace FeatLuaModManager
             cluaEntity.codeListName = @string;
 
             GItems.items.Add(cluaEntity);
+
+            return cluaEntity;
+        }
+
+        static object GetCItem(string codeName)
+        {
+            return GItems.items.Find(v => v != null && v.codeName == codeName);
+        }
+
+        static object AddCLevel(DynValue luaTable)
+        {
+            string @string = _script.Globals.Pairs.First((TablePair x) => x.Value.Equals(luaTable)).Key.String;
+
+            CLevel cluaEntity = (CLevel)luaTable.ToObject();
+            cluaEntity.id = (byte)GItems.items.Count;
+            cluaEntity.codeListName = @string;
+
+            GGame.levels.Add(cluaEntity);
 
             return cluaEntity;
         }
