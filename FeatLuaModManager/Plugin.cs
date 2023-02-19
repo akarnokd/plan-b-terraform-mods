@@ -82,6 +82,7 @@ namespace FeatLuaModManager
 
                         var repl = new ReplInterpreterScriptLoader();
                         repl.ModulePaths = new string[] { dir + "/?.lua" };
+                        repl.IgnoreLuaPathGlobal = true;
                         _script.Options.ScriptLoader = repl;
 
                         string mainFile = Path.Combine(dir, "main.lua");
