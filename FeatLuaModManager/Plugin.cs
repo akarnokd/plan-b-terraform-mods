@@ -46,6 +46,18 @@ namespace FeatLuaModManager
             _script = ____script;
 
             SetupFunctions();
+            RunLua();
+        }
+
+        static void SetupFunctions()
+        {
+            UserData.RegisterType(typeof(CItem), InteropAccessMode.Default, null);
+
+            _script.Globals["AddCItem"] = new Func<DynValue, object>(AddCItem);
+        }
+
+        static void RunLua()
+        {
             var previousScriptLoader = _script.Options.ScriptLoader;
             try
             {
@@ -70,13 +82,13 @@ namespace FeatLuaModManager
 
                         var repl = new ReplInterpreterScriptLoader();
                         repl.ModulePaths = new string[] { dir + "/?.lua" };
-                        ____script.Options.ScriptLoader = repl;
+                        _script.Options.ScriptLoader = repl;
 
                         string mainFile = Path.Combine(dir, "main.lua");
                         logger.LogInfo("      Executing " + Path.GetFileName(mainFile));
                         try
                         {
-                            ____script.DoFile(mainFile);
+                            _script.DoFile(mainFile);
                             logger.LogInfo("      Success " + Path.GetFileName(mainFile));
                         }
                         catch (ScriptRuntimeException ex)
@@ -98,13 +110,6 @@ namespace FeatLuaModManager
             {
                 _script.Options.ScriptLoader = previousScriptLoader;
             }
-        }
-
-        static void SetupFunctions()
-        {
-            UserData.RegisterType(typeof(CItem), InteropAccessMode.Default, null);
-
-            _script.Globals["AddCItem"] = new Func<DynValue, object>(AddCItem);
         }
 
         static object AddCItem(DynValue luaTable)
