@@ -15,10 +15,10 @@ namespace LibCommon
     /// </summary>
     public static class GUITools
     {
-        public static readonly Color DEFAULT_PANEL_BORDER_COLOR = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
-        public static readonly Color DEFAULT_PANEL_COLOR = new Color(231f / 255, 227f / 255, 243f / 255, 1f);
-        public static readonly Color DEFAULT_BOX_COLOR = new Color(121f / 255, 125f / 255, 245f / 255, 1f);
-        public static readonly Color DEFAULT_BOX_COLOR_HOVER = new Color(161f / 255, 165f / 255, 245f / 255, 1f);
+        public static readonly Color DEFAULT_PANEL_BORDER_COLOR = new(121f / 255, 125f / 255, 245f / 255, 1f);
+        public static readonly Color DEFAULT_PANEL_COLOR = new(231f / 255, 227f / 255, 243f / 255, 1f);
+        public static readonly Color DEFAULT_BOX_COLOR = new(121f / 255, 125f / 255, 245f / 255, 1f);
+        public static readonly Color DEFAULT_BOX_COLOR_HOVER = new(161f / 255, 165f / 255, 245f / 255, 1f);
 
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace LibCommon
         /// <returns></returns>
         public static Texture2D LoadPNG(string filename)
         {
-            Texture2D tex = new Texture2D(100, 200);
+            Texture2D tex = new(100, 200);
             tex.LoadImage(File.ReadAllBytes(filename));
 
             return tex;
@@ -202,6 +202,34 @@ namespace LibCommon
             var rect = go.GetComponent<RectTransform>();
             var txt = go.GetComponent<Text>();
             rect.sizeDelta = new Vector2(txt.preferredWidth, txt.preferredHeight);
+        }
+
+        /// <summary>
+        /// Calculates the visible width of a hex cell based on the given coordinates.
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="onScreenPos"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static void HexScreenPositionAndSize(int2 coords, out Vector3 onScreenPos, out float scale)
+        {
+            var pos3D = GHexes.Pos(coords);
+
+            onScreenPos = Camera.main.WorldToScreenPoint(pos3D);
+
+            Vector3 pos3DNeighbor;
+            if (coords.y > 0)
+            {
+                pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x, y = coords.y - 1 });
+            }
+            else
+            {
+                pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x, y = coords.y + 1 });
+            }
+
+            var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
+
+            scale = Vector2.Distance(onScreenPos, posCanvasNeighbor);
         }
     }
 

@@ -137,10 +137,11 @@ namespace FeatDisableBuilding
                 {
                     Destroy(disablePanel);
                     disablePanel = null;
-                    disablePanelOverlay = null;
                     disableBackground = null;
                     disableBackground2 = null;
                     disableIcon = null;
+                    Destroy(disablePanelOverlay);
+                    disablePanelOverlay = null;
                 }
             }
         }
@@ -151,6 +152,8 @@ namespace FeatDisableBuilding
             {
                 Destroy(disablePanel);
                 disablePanel = null;
+                Destroy(disablePanelOverlay);
+                disablePanelOverlay = null;
             }
             if (disablePanel == null)
             {
@@ -160,7 +163,9 @@ namespace FeatDisableBuilding
                 canvas.sortingOrder = 50;
 
                 disablePanelOverlay = new GameObject("FeatDisableBuilding_Overlay");
-                disablePanelOverlay.transform.SetParent(disablePanel.transform);
+                canvas = disablePanelOverlay.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 20;
 
                 disableBackground2 = new GameObject("FeatDisableBuilding_BackgroundBorder");
                 disableBackground2.transform.SetParent(disablePanel.transform);
@@ -251,26 +256,10 @@ namespace FeatDisableBuilding
 
                         overlayIcons[coords] = icon;
                     }
+                    HexScreenPositionAndSize(coords, out var posCanvas, out var scaler);
+                    posCanvas -= new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
                     var rect = icon.GetComponent<RectTransform>();
-
-                    var pos3D = GHexes.Pos(coords);
-
-                    var posCanvas = Camera.main.WorldToScreenPoint(pos3D);
-
-                    var pos3DNeighbor = pos3D;
-                    if (coords.x > 0)
-                    {
-                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x - 1, y = coords.y });
-                    }
-                    else
-                    {
-                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x + 1, y = coords.y });
-                    }
-
-                    var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
-
-                    float scaler = Vector2.Distance(posCanvas, posCanvasNeighbor);
-
                     rect.localPosition = new Vector2(posCanvas.x, posCanvas.y);
                     rect.sizeDelta = new Vector2(scaler, scaler);
                 }

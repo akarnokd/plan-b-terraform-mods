@@ -95,6 +95,8 @@ namespace FeatDepotPriority
                 {
                     Destroy(panelCanvas);
                     panelCanvas = null;
+                    Destroy(panelOverlay);
+                    panelOverlay = null;
                 }
             }
         }
@@ -105,6 +107,8 @@ namespace FeatDepotPriority
             {
                 Destroy(panelCanvas);
                 panelCanvas = null;
+                Destroy(panelOverlay); 
+                panelOverlay = null;
             }
             if (panelCanvas == null)
             {
@@ -114,7 +118,10 @@ namespace FeatDepotPriority
                 canvas.sortingOrder = 50;
 
                 panelOverlay = new GameObject("FeatDepotPriority_Overlay");
-                panelOverlay.transform.SetParent(panelCanvas.transform);
+                // panelOverlay.transform.SetParent(panelCanvas.transform);
+                canvas = panelOverlay.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 20;
 
                 panelBorder = new GameObject("FeatDepotPriority_PanelBorder");
                 panelBorder.transform.SetParent(panelCanvas.transform);
@@ -245,32 +252,25 @@ namespace FeatDepotPriority
 
                         overlayIcons[coords] = icon;
                     }
-                    var rect = icon.GetComponent<RectTransform>();
 
-                    var pos3D = GHexes.Pos(coords);
+                    HexScreenPositionAndSize(coords, out var posCanvas, out var diff);
+                    posCanvas -= new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
-                    var posCanvas = Camera.main.WorldToScreenPoint(pos3D);
-
-                    var pos3DNeighbor = pos3D;
-                    if (coords.x > 0)
-                    {
-                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x - 1, y = coords.y });
-                    }
-                    else
-                    {
-                        pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x + 1, y = coords.y });
-                    }
-
-                    var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
-
-                    var diff = Vector2.Distance(posCanvas, posCanvasNeighbor);
                     float scaler = diff * overlayFontScale.Value / 100f;
 
-                    rect.localPosition = new Vector2(posCanvas.x, posCanvas.y - diff / 2 + scaler);
+                    if (scaler >= 3)
+                    {
+                        var rect = icon.GetComponent<RectTransform>();
+                        rect.localPosition = new Vector2(posCanvas.x, posCanvas.y - diff / 2 + scaler);
+                        icon.GetComponentInChildren<Text>().text = SLoc.Get("FeatDepotPriority.Overlay", kv.Value);
 
-                    icon.GetComponentInChildren<Text>().text = SLoc.Get("FeatDepotPriority.Overlay", kv.Value);
-
-                    ResizeBox(icon, scaler);
+                        ResizeBox(icon, scaler);
+                        icon.SetActive(true);
+                    } 
+                    else
+                    {
+                        icon.SetActive(false);
+                    }
                 }
 
                 foreach (var coords in new List<int2>(overlayIcons.Keys))
