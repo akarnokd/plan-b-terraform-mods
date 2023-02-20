@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.IO;
 using HarmonyLib;
+using Unity.Collections;
 
 namespace LibCommon
 {
@@ -217,19 +218,25 @@ namespace LibCommon
 
             onScreenPos = Camera.main.WorldToScreenPoint(pos3D);
 
-            Vector3 pos3DNeighbor;
-            if (coords.y > 0)
-            {
-                pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x, y = coords.y - 1 });
-            }
-            else
-            {
-                pos3DNeighbor = GHexes.Pos(new int2 { x = coords.x, y = coords.y + 1 });
-            }
+            var neis = new Vector3[7];
+            var n = SSingleton<SWorld>.Inst.GetNeighborsPos(coords, neis, true);
 
-            var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
+            scale = 0;
 
-            scale = Vector2.Distance(onScreenPos, posCanvasNeighbor);
+            for (var i = 0; i < n; i++)
+            {
+                Vector3 pos3DNeighbor = neis[i];
+                var posCanvasNeighbor = Camera.main.WorldToScreenPoint(pos3DNeighbor);
+
+                if (i == 0)
+                {
+                    scale = Vector2.Distance(onScreenPos, posCanvasNeighbor);
+                }
+                else
+                {
+                    scale = Math.Min(scale, Vector2.Distance(onScreenPos, posCanvasNeighbor));
+                }
+            }
         }
     }
 
