@@ -286,6 +286,14 @@ namespace FeatMultiplayer
             return true;
         }
 
+        // Hotfix for an odd model corruption issue
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update_IfVisible))]
+        static bool Patch_CItem_ContentFactory_Update_IfVisible_Pre(List<Transform> modelsTrs)
+        {
+            return modelsTrs != null && modelsTrs.Count != 0;
+        }
+
         // ------------------------------------------------------------------------------
         // Message receviers
         // ------------------------------------------------------------------------------
