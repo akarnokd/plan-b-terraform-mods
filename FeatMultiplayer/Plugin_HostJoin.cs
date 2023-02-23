@@ -23,6 +23,8 @@ namespace FeatMultiplayer
                     multiplayerMode = MultiplayerMode.Host;
 
                     StartServer();
+
+                    messageTelemetry.Start();
                 }
             }
             else

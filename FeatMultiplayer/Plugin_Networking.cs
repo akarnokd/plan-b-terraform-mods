@@ -572,9 +572,9 @@ namespace FeatMultiplayer
 
                     sb.AppendLine()
                     .Append("    =====").AppendLine()
-                    .Append("    Total").Append(" x ").Append(sumMsgs)
-                    .Append(" ~~~~ ").Append(string.Format("{0:#,##0}", sumBytes))
-                    .Append(" bytes :::: ").Append(string.Format("{0:#,##0.00} kB/s", ((double)sumBytes) * 1000 / n / 1024));
+                    .Append("    ").Append("Total".PadRight(pad)).Append(" x ").AppendFormat("{0,8}", sumMsgs)
+                    .Append(" ~~~~ ").Append(string.Format("{0:#,##0}", sumBytes).PadLeft(12))
+                    .Append(" bytes :::: ").Append(string.Format("{0:#,##0.00} kB/s", ((double)sumBytes) * 1000 / n / 1024).PadLeft(16));
 
                     messages.Clear();
                     bytes.Clear();
