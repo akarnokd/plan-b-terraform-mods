@@ -25,6 +25,7 @@ namespace FeatMultiplayer
                     StartServer();
 
                     messageTelemetry.Start();
+                    mainTelemetry.Start();
                 }
             }
             else

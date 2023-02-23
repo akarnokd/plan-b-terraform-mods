@@ -256,6 +256,7 @@ namespace FeatMultiplayer
             multiplayerMode = MultiplayerMode.Client;
 
             messageTelemetry.Start();
+            mainTelemetry.Start();
 
             yield return new WaitForSeconds(0.1f);
         }

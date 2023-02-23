@@ -13,6 +13,8 @@ namespace FeatMultiplayer
     public partial class Plugin : BaseUnityPlugin
     {
 
+        static readonly MessageTelemetry mainTelemetry = new("Main");
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SMain), nameof(SMain.Update))]
         static bool Patch_SMain_Update(SMain __instance, 
@@ -50,6 +52,7 @@ namespace FeatMultiplayer
 
             if (GGame.isPlaying)
             {
+                mainTelemetry.GetAndReset();
                 if (isHost)
                 {
                     MultiplayerSMainUpdate_UpdateTime(__instance);
@@ -61,10 +64,15 @@ namespace FeatMultiplayer
                 }
 
                 SSingleton<SGame>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SGame.Update");
                 SSingleton<SViewWorld>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SViewWorld.Update");
                 SSingleton<SViewBlocks>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SViewBlocks.Update");
                 SSingleton<SViewOverlay>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SViewOverlay.Update");
                 SSingleton<SWater>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SWater.Update");
 
                 bool paused = isHost && __instance.IsPausedInGame();
                 // TODO the Update methods
@@ -73,17 +81,20 @@ namespace FeatMultiplayer
                     if (isHost)
                     {
                         SSingleton<SPlanet>.Inst.Update();
+                        mainTelemetry.AddTelemetryCheckpoint("SPlanet.Update");
 
                         SyncPlanetAllClients();
                     }
                     // FIXME GWater.supergridWater updates, too large for now
                     SSingleton<SRain>.Inst.Update();
+                    mainTelemetry.AddTelemetryCheckpoint("SRain.Update");
                     if (isHost)
                     {
                         // SWays.Update() can remove lines
                         var before = new HashSet<int>(GWays.lines.Select(x => x?.id ?? 0));
 
                         SSingleton<SWays>.Inst.Update();
+                        mainTelemetry.AddTelemetryCheckpoint("SWays.Update");
 
                         var msgw = new MessageUpdateLines();
                         msgw.GetSnapshot(before);
@@ -91,16 +102,20 @@ namespace FeatMultiplayer
 
                         // NOTE this Update() method is currently empty
                         SSingleton<SWays_PF>.Inst.Update();
+                        mainTelemetry.AddTelemetryCheckpoint("SWays_PF.Update");
 
                         MultiplayerSMainUpdate_DronesUpdate();
+                        mainTelemetry.AddTelemetryCheckpoint("Drones.Update");
 
                     }
                     // Recipe changes needed on the client, the rest are individually supressed
                     SSingleton<SCities>.Inst.Update();
+                    mainTelemetry.AddTelemetryCheckpoint("SCities.Update");
                     // FIXME probably can suppress the full call, no need to check on individual Update01s
                     if (SMisc.CheckSimuUnitsTime(0.1f))
                     {
                         SSingleton<SItems>.Inst.Update01s_Constructions();
+                        mainTelemetry.AddTelemetryCheckpoint("SItems.Update01s_Constructions");
                     }
                     if (isHost)
                     {
@@ -109,9 +124,11 @@ namespace FeatMultiplayer
                         // We don't sync the CDrone.TransferStep fields as they are not needed
                         // on the client.
                         SSingleton<SItems>.Inst.Update();
+                        mainTelemetry.AddTelemetryCheckpoint("SItems.Update");
                     }
                     // Currently, this updates the forrest info, let it be
                     SSingleton<SItems>.Inst.Update10s_Planet();
+                    mainTelemetry.AddTelemetryCheckpoint("SItems.Update10s_Planet");
 
                     if (isHost)
                     {
@@ -123,11 +140,16 @@ namespace FeatMultiplayer
                 if (!__instance.IsPausedInMenu())
                 {
                     SSingleton<SMouse>.Inst.Update();
+                    mainTelemetry.AddTelemetryCheckpoint("SMouse.Update");
                 }
                 SSingleton<SWays>.Inst.Draw();
+                mainTelemetry.AddTelemetryCheckpoint("SWays.Draw");
                 SSingleton<SDrones>.Inst.Draw();
+                mainTelemetry.AddTelemetryCheckpoint("SDrones.Draw");
                 SSingleton<SCamera>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SCamera.Update");
 
+                mainTelemetry.AddTelemetry("Main");
             }
             SSingleton<SMusics>.Inst.Update();
             SSingleton<SSounds>.Inst.Update();
@@ -187,7 +209,7 @@ namespace FeatMultiplayer
             }
 
             SSingleton<SDrones>.Inst.Update();
-
+            
             foreach (var drone in GDrones.drones)
             {
                 dronesBefore.Remove(drone.id);

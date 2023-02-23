@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using UnityEngine.UIElements;
 
 namespace FeatMultiplayer
 {
@@ -148,6 +149,8 @@ namespace FeatMultiplayer
 
         internal Stopwatch timer = new();
 
+        internal long lastCheckpoint;
+
         internal MessageTelemetry(string name)
         {
             this.name = name;
@@ -162,59 +165,73 @@ namespace FeatMultiplayer
         {
             long v = timer.ElapsedTicks;
             timer.Restart();
+            lastCheckpoint = 0L;
             return v;
+        }
+
+        internal void AddTelemetry(string message, long length)
+        {
+            if (!isEnabled)
+            {
+                return;
+            }
+            
+            counts.TryGetValue(message, out var c);
+            counts[message] = c + 1;
+            timesInTicks.TryGetValue(message, out var t);
+            timesInTicks[message] = t + length;
+
+            var n = stopWatch.ElapsedMilliseconds;
+            if (n >= logTelemetry)
+            {
+                StringBuilder sb = new();
+                sb.Append("Telemetry < ").Append(name).Append(" >");
+
+                long sumCounts = 0;
+                long sumTicks = 0;
+
+                var pad = counts.Keys.Select(k => k.Length).Max();
+
+                foreach (var k in counts.Keys)
+                {
+                    var bs = counts[k];
+                    var ticks = timesInTicks[k];
+
+                    sumCounts += bs;
+                    sumTicks += ticks;
+
+                    sb.AppendLine()
+                        .Append("    ").Append(k.PadRight(pad)).Append(" x ").AppendFormat("{0,8}", bs)
+                        .Append(" ~~~~ ").Append(string.Format("{0:#,##0.000} ms", ticks / 10000d).PadLeft(16))
+                        .Append(" :::: ").Append(string.Format("{0:#,##0.000} ms / msg", ticks / 10000d / bs).PadLeft(16));
+                }
+
+                sb.AppendLine()
+                .Append("    =====").AppendLine()
+                        .Append("    ").Append("Total".PadRight(pad)).Append(" x ").AppendFormat("{0,8}", sumCounts)
+                        .Append(" ~~~~ ").Append(string.Format("{0:#,##0.000} ms", sumTicks / 10000d).PadLeft(16))
+                        .Append(" :::: ").Append(string.Format("{0:#,##0.000} ms / msg", sumTicks / 10000d / sumCounts).PadLeft(16));
+
+                counts.Clear();
+                timesInTicks.Clear();
+
+                Plugin.LogDebug(sb.ToString());
+
+                stopWatch.Restart();
+            }
         }
 
         internal void AddTelemetry(string message)
         {
-            if (isEnabled)
-            {
-                long length = GetAndReset();
+            AddTelemetry(message, GetAndReset());
+        }
 
-                counts.TryGetValue(message, out var c);
-                counts[message] = c + 1;
-                timesInTicks.TryGetValue(message, out var t);
-                timesInTicks[message] = t + length;
-
-                var n = stopWatch.ElapsedMilliseconds;
-                if (n >= logTelemetry)
-                {
-                    StringBuilder sb = new();
-                    sb.Append("Telemetry < ").Append(name).Append(" >");
-
-                    long sumCounts = 0;
-                    long sumTicks = 0;
-
-                    var pad = counts.Keys.Select(k => k.Length).Max();
-
-                    foreach (var k in counts.Keys)
-                    {
-                        var bs = counts[k];
-                        var ticks = timesInTicks[k];
-
-                        sumCounts += bs;
-                        sumTicks += ticks;
-
-                        sb.AppendLine()
-                            .Append("    ").Append(k.PadRight(pad)).Append(" x ").AppendFormat("{0,8}", bs)
-                            .Append(" ~~~~ ").Append(string.Format("{0:#,##0.000} ms", ticks / 10000d).PadLeft(16))
-                            .Append(" :::: ").Append(string.Format("{0:#,##0.000} ms / msg", ticks / 10000d / bs).PadLeft(16));
-                    }
-
-                    sb.AppendLine()
-                    .Append("    =====").AppendLine()
-                            .Append("    ").Append("Total".PadRight(pad)).Append(" x ").AppendFormat("{0,8}", sumCounts)
-                            .Append(" ~~~~ ").Append(string.Format("{0:#,##0.000} ms", sumTicks / 10000d).PadLeft(16))
-                            .Append(" :::: ").Append(string.Format("{0:#,##0.000} ms / msg", sumTicks / 10000d / sumCounts).PadLeft(16));
-
-                    counts.Clear();
-                    timesInTicks.Clear();
-
-                    Plugin.LogDebug(sb.ToString());
-
-                    stopWatch.Restart();
-                }
-            }
+        internal void AddTelemetryCheckpoint(string message)
+        {
+            var cp = lastCheckpoint;
+            var curr = timer.ElapsedTicks;
+            lastCheckpoint = curr;
+            AddTelemetry(message, curr - cp);
         }
     }
 }
