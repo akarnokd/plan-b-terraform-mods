@@ -3,10 +3,11 @@
 
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
 
 namespace FeatMultiplayer
 {
-    internal class MessageUpdatePlanet : MessageSync
+    internal class MessageUpdatePlanet : MessageBase
     {
         const string messageCode = "UpdatePlanet";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
@@ -30,14 +31,35 @@ namespace FeatMultiplayer
             return true;
         }
 
-        internal override void GetSnapshot()
+        internal void GetSnapshot(int fromIndex)
         {
-            snapshot.GetSnapshot();
+            snapshot.name = GPlanet.name;
+            snapshot.sf6ContainerCount = GPlanet.sf6_NbContainersInAtm;
+            snapshot.nf3ContainerCount = GPlanet.nf3_NbContainersInAtm;
+
+            for (int i = fromIndex; i < GPlanet.dailySF6.Count; i++)
+            {
+                snapshot.dailySF6.Add(GPlanet.dailySF6[i]);
+            }
+            for (int i = fromIndex; i < GPlanet.dailyNF3.Count; i++)
+            {
+                snapshot.dailyNF3.Add(GPlanet.dailyNF3[i]);
+            }
+            for (int i = fromIndex; i < GPlanet.dailyTemperature.Count; i++)
+            {
+                snapshot.dailyTemperature.Add(GPlanet.dailyTemperature[i]);
+            }
         }
 
-        internal override void ApplySnapshot()
+        internal void ApplySnapshot()
         {
-            snapshot.ApplySnapshot();
+            GPlanet.name = snapshot.name;
+            GPlanet.sf6_NbContainersInAtm = snapshot.sf6ContainerCount;
+            GPlanet.nf3_NbContainersInAtm = snapshot.nf3ContainerCount;
+
+            GPlanet.dailySF6.AddRange(snapshot.dailySF6);
+            GPlanet.dailyNF3.AddRange(snapshot.dailyNF3);
+            GPlanet.dailyTemperature.AddRange(snapshot.dailyTemperature);
         }
 
         public override void Encode(BinaryWriter output)

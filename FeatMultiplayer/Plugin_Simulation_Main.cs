@@ -74,9 +74,7 @@ namespace FeatMultiplayer
                     {
                         SSingleton<SPlanet>.Inst.Update();
 
-                        var msgp = new MessageUpdatePlanet();
-                        msgp.GetSnapshot();
-                        SendAllClients(msgp);
+                        SyncPlanetAllClients();
                     }
                     // FIXME GWater.supergridWater updates, too large for now
                     SSingleton<SRain>.Inst.Update();
@@ -207,6 +205,23 @@ namespace FeatMultiplayer
             return multiplayerMode != MultiplayerMode.Client;
         }
 
+        static void SyncPlanetAllClients()
+        {
+            int idx = GPlanet.dailyTemperature.Count;
+
+            foreach (var session in sessions.Values)
+            {
+                var curr = session.planetDataSync;
+                if (idx != curr)
+                {
+                    session.planetDataSync = idx;
+
+                    var msgp = new MessageUpdatePlanet();
+                    msgp.GetSnapshot(curr);
+                    session.Send(msgp);
+                }
+            }
+        }
 
         // ------------------------------------------------------------------------------
         // Message receviers

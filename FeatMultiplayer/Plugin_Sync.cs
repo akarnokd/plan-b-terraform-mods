@@ -38,6 +38,8 @@ namespace FeatMultiplayer
             FullSync<MessageSyncAllWays>(session);
 
             FullSync<MessageSyncAllCamera>(session);
+
+            session.planetDataSync = GPlanet.dailyTemperature.Count;
         }
 
         static void FullSync<T>(ClientSession sess) where T : MessageSync, new()
