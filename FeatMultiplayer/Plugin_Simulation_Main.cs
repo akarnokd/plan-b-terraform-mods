@@ -13,7 +13,7 @@ namespace FeatMultiplayer
     public partial class Plugin : BaseUnityPlugin
     {
 
-        static readonly MessageTelemetry mainTelemetry = new("Main");
+        static readonly CallTelemetry mainTelemetry = new("Main");
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SMain), nameof(SMain.Update))]

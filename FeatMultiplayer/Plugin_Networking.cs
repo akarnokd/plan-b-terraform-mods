@@ -36,8 +36,8 @@ namespace FeatMultiplayer
 
         public static bool logDebugNetworkMessages;
 
-        static Telemetry sendTelemetry = new("Send");
-        static Telemetry receiveTelemetry = new("Receive");
+        static NetworkTelemetry sendTelemetry = new("Send");
+        static NetworkTelemetry receiveTelemetry = new("Receive");
 
         /// <summary>
         /// Send a message to the host.
@@ -521,69 +521,5 @@ namespace FeatMultiplayer
         }
     }
 
-    internal class Telemetry
-    {
-
-        public static bool isEnabled = true;
-
-        internal string name;
-        internal long logTelemetry = 30000;
-        internal Stopwatch stopWatch = new();
-
-        internal readonly ConcurrentDictionary<string, long> bytes = new();
-        internal readonly ConcurrentDictionary<string, long> messages = new();
-
-        internal Telemetry(string name)
-        {
-            this.name = name;
-        }
-
-        internal void AddTelemetry(string message, long length)
-        {
-            if (isEnabled)
-            {
-                messages.AddOrUpdate(message, 1, (k, v) => v + 1);
-                bytes.AddOrUpdate(message, length, (k, v) => v + length);
-
-                var n = stopWatch.ElapsedMilliseconds;
-                if (n >= logTelemetry)
-                {
-                    StringBuilder sb = new();
-                    sb.Append("Telemetry < ").Append(name).Append(" >");
-
-                    long sumBytes = 0;
-                    long sumMsgs = 0;
-
-                    var pad = messages.Keys.Select(k => k.Length).Max();
-
-                    foreach (var k in messages.Keys)
-                    {
-                        var bs = bytes[k];
-                        var ms = messages[k];
-
-                        sumBytes += bs;
-                        sumMsgs += ms;
-
-                        sb.AppendLine()
-                            .Append("    ").Append(k.PadRight(pad)).Append(" x ").AppendFormat("{0,8}", ms)
-                            .Append(" ~~~~ ").Append(string.Format("{0:#,##0}", bs).PadLeft(12))
-                            .Append(" bytes :::: ").Append(string.Format("{0:#,##0.00} kB/s", ((double)bs) * 1000 / n / 1024).PadLeft(16));
-                    }
-
-                    sb.AppendLine()
-                    .Append("    =====").AppendLine()
-                    .Append("    ").Append("Total".PadRight(pad)).Append(" x ").AppendFormat("{0,8}", sumMsgs)
-                    .Append(" ~~~~ ").Append(string.Format("{0:#,##0}", sumBytes).PadLeft(12))
-                    .Append(" bytes :::: ").Append(string.Format("{0:#,##0.00} kB/s", ((double)sumBytes) * 1000 / n / 1024).PadLeft(16));
-
-                    messages.Clear();
-                    bytes.Clear();
-
-                    Plugin.LogDebug(sb.ToString());
-
-                    stopWatch.Restart();
-                }
-            }
-        }
-    }
+    
 }
