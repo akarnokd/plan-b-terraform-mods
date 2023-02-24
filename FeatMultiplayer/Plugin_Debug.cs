@@ -130,7 +130,7 @@ namespace FeatMultiplayer
             }
         }
 
-        static CallTelemetry viewBlocks = new("SViewBlocks");
+        static CallTelemetry viewBlocksTelemetry = new("SViewBlocks");
 
         /*
         [HarmonyPrefix]
@@ -145,84 +145,84 @@ namespace FeatMultiplayer
         [HarmonyPatch(typeof(SViewBlocks), "GenerateBlockFull")]
         static void Patch_SViewBlocks_GenerateBlockFull_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "GenerateBlockFull")]
         static void Patch_SViewBlocks_GenerateBlockFull_Post()
         {
-            viewBlocks.AddTelemetry("GenerateBlockFull");
+            viewBlocksTelemetry.AddTelemetry("GenerateBlockFull");
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "RegenerateBlockModels")]
         static void Patch_SViewBlocks_RegenerateBlockModels_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "RegenerateBlockModels")]
         static void Patch_SViewBlocks_RegenerateBlockModels_Post()
         {
-            viewBlocks.AddTelemetry("RegenerateBlockModels");
+            viewBlocksTelemetry.AddTelemetry("RegenerateBlockModels");
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "UpdateGroundColors")]
         static void Patch_SViewBlocks_UpdateGroundColors_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "UpdateGroundColors")]
         static void Patch_SViewBlocks_UpdateGroundColors_Post()
         {
-            viewBlocks.AddTelemetry("UpdateGroundColors");
+            viewBlocksTelemetry.AddTelemetry("UpdateGroundColors");
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock")]
         static void Patch_SViewBlocks_CreateNewViewBlock_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock")]
         static void Patch_SViewBlocks_CreateNewViewBlock_Post()
         {
-            viewBlocks.AddTelemetry("CreateNewViewBlock");
+            viewBlocksTelemetry.AddTelemetry("CreateNewViewBlock");
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "GetViewBlockFree")]
         static void Patch_SViewBlocks_GetViewBlockFree_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "GetViewBlockFree")]
         static void Patch_SViewBlocks_GetViewBlockFree_Post()
         {
-            viewBlocks.AddTelemetry("GetViewBlockFree");
+            viewBlocksTelemetry.AddTelemetry("GetViewBlockFree");
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "UpdateVisibleContent")]
         static void Patch_SViewBlocks_UpdateVisibleContent_Pre()
         {
-            viewBlocks.GetAndReset();
+            viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SViewBlocks), "UpdateVisibleContent")]
         static void Patch_SViewBlocks_UpdateVisibleContent_Post()
         {
-            viewBlocks.AddTelemetry("UpdateVisibleContent");
+            viewBlocksTelemetry.AddTelemetry("UpdateVisibleContent");
         }
         
     }

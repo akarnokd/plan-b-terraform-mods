@@ -39,6 +39,8 @@ namespace FeatMultiplayer
 
         static ConfigEntry<bool> autoScale;
 
+        static ConfigEntry<bool> enableTelemetry;
+
         void InitConfig()
         {
             modEnabled = Cfg("General", "Enabled", true, "Is the mod enabled?");
@@ -67,6 +69,11 @@ namespace FeatMultiplayer
             networkButtonLeft = Cfg("GUI", "NetworkButtonLeft", 250, "Position of the network button on the top-left");
             networkButtonSize = Cfg("GUI", "NetworkButtonSize", 50, "Size of the network button");
             autoScale = Cfg("GUI", "AutoScale", true, "Automatically scale the GUIs?");
+
+            enableTelemetry = Cfg("General", "Telemetry", true, "Do telemetry debug logs of network and UI activity?");
+
+            CallTelemetry.isEnabled = enableTelemetry.Value;
+            NetworkTelemetry.isEnabled = enableTelemetry.Value;
         }
 
         private ConfigEntry<T> Cfg<T>(string group, string name, T value, string desc)

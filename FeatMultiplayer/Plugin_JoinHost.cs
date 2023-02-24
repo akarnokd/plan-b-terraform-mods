@@ -26,6 +26,7 @@ namespace FeatMultiplayer
 
                     messageTelemetry.Start();
                     mainTelemetry.Start();
+                    viewBlocksTelemetry.Start();
                 }
             }
             else

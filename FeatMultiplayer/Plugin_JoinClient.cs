@@ -257,7 +257,7 @@ namespace FeatMultiplayer
 
             messageTelemetry.Start();
             mainTelemetry.Start();
-            viewBlocks.Start();
+            viewBlocksTelemetry.Start();
 
             yield return new WaitForSeconds(0.1f);
         }
