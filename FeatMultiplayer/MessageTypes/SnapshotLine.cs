@@ -75,7 +75,7 @@ namespace FeatMultiplayer
             return result;
         }
 
-        internal void ApplySnapshot(CLine line, Dictionary<string, CItem> itemDictionary)
+        internal void ApplySnapshot(CLine line, Dictionary<string, CItem> itemDictionary, bool updateBlocks)
         {
             line.id = id;
             if (itemDictionary.TryGetValue(itemStopOrigin, out var item))
@@ -117,7 +117,7 @@ namespace FeatMultiplayer
             }
             line.vehicles.RemoveRange(vehicles.Count, line.vehicles.Count - vehicles.Count);
 
-            line.UpdateStopDataOrginEnd(true, false); // FIXME not sure about erase?!
+            line.UpdateStopDataOrginEnd(updateBlocks, false); // FIXME not sure about erase?!
         }
 
         internal void Encode(BinaryWriter output)

@@ -41,7 +41,7 @@ namespace FeatMultiplayer
             {
                 if (lineLookup.TryGetValue(line.id, out var cline))
                 {
-                    line.ApplySnapshot(cline, itemLookup);
+                    line.ApplySnapshot(cline, itemLookup, false);
                 }
             }
             var sWays = SSingleton<SWays>.Inst;

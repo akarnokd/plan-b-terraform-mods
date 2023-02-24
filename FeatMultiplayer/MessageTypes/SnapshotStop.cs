@@ -31,14 +31,13 @@ namespace FeatMultiplayer
 
         internal void Encode(BinaryWriter output)
         {
-            output.Write(coords.x);
-            output.Write(coords.y);
+            output.WriteShort(coords);
             output.Write(t);
         }
 
         internal void Decode(BinaryReader input)
         {
-            coords = new int2(input.ReadInt32(), input.ReadInt32());
+            coords = input.ReadInt2Short();
             t = input.ReadInt32();
         }
     }

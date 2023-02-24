@@ -30,12 +30,13 @@ namespace FeatMultiplayer
         /// <returns></returns>
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SBlocks), "OnChangeItem")]
-        static bool Patch_SBlocks_OnChangeItem()
+        static bool Patch_SBlocks_OnChangeItem(int2 c)
         {
             if (suppressBlocksOnChange)
             {
                 blocksOnChangeCalledWhileSuppressed = true;
             }
+            viewBlocksTelemetry.AddTelemetry(ContentAt(c)?.codeName ?? "empty", 1);
             return !suppressBlocksOnChange;
         }
 

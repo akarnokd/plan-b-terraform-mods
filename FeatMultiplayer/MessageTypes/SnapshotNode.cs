@@ -39,8 +39,7 @@ namespace FeatMultiplayer
 
         internal void Encode(BinaryWriter output)
         {
-            output.Write(coords.x);
-            output.Write(coords.y);
+            output.WriteShort(coords);
             output.Write(tExit);
             output.Write(posMiddle);
             output.Write(posExit);
@@ -48,7 +47,7 @@ namespace FeatMultiplayer
 
         internal void Decode(BinaryReader input)
         {
-            coords = new int2(input.ReadInt32(), input.ReadInt32());
+            coords = input.ReadInt2Short();
             tExit = input.ReadSingle();
             posMiddle = input.ReadVector3();
             posExit = input.ReadVector3();

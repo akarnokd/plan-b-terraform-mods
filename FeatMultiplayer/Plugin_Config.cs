@@ -70,7 +70,7 @@ namespace FeatMultiplayer
             networkButtonSize = Cfg("GUI", "NetworkButtonSize", 50, "Size of the network button");
             autoScale = Cfg("GUI", "AutoScale", true, "Automatically scale the GUIs?");
 
-            enableTelemetry = Cfg("General", "Telemetry", true, "Do telemetry debug logs of network and UI activity?");
+            enableTelemetry = Cfg("General", "Telemetry", false, "Do telemetry debug logs of network and UI activity?");
 
             CallTelemetry.isEnabled = enableTelemetry.Value;
             NetworkTelemetry.isEnabled = enableTelemetry.Value;

@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace FeatMultiplayer
@@ -132,15 +133,6 @@ namespace FeatMultiplayer
 
         static CallTelemetry viewBlocksTelemetry = new("SViewBlocks");
 
-        /*
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(SViewBlocks), nameof(SViewBlocks.Update))]
-        static void Patch_SViewBlocks_Update_Pre()
-        {
-            viewBlocks.GetAndReset();
-        }
-        */
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SViewBlocks), "GenerateBlockFull")]
         static void Patch_SViewBlocks_GenerateBlockFull_Pre()
@@ -184,14 +176,14 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock")]
+        [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock", new Type[] { typeof(bool) })]
         static void Patch_SViewBlocks_CreateNewViewBlock_Pre()
         {
             viewBlocksTelemetry.GetAndReset();
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock")]
+        [HarmonyPatch(typeof(SViewBlocks), "CreateNewViewBlock", new Type[] { typeof(bool) })]
         static void Patch_SViewBlocks_CreateNewViewBlock_Post()
         {
             viewBlocksTelemetry.AddTelemetry("CreateNewViewBlock");

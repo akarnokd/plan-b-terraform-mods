@@ -25,7 +25,7 @@ namespace FeatMultiplayer
         internal void ApplySnapshot(CLine cline)
         {
             var itemLookup = Plugin.GetItemsDictionary();
-            line.ApplySnapshot(cline, itemLookup);
+            line.ApplySnapshot(cline, itemLookup, false);
         }
 
         public override void Encode(BinaryWriter output)

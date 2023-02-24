@@ -50,9 +50,8 @@ namespace FeatMultiplayer
         internal void Encode(BinaryWriter output)
         {
             output.Write(id);
-            output.Write(depotIndex);
-            output.Write(depotCoords);
-            output.Write((byte)state);
+            output.Write((byte)(depotIndex * 16 + state));
+            output.WriteShort(depotCoords);
             output.Write(depotItem);
             output.Write(startTransform);
             output.Write(endTransform);
@@ -63,9 +62,10 @@ namespace FeatMultiplayer
         internal void Decode(BinaryReader input)
         {
             id = input.ReadInt32();
-            depotIndex = input.ReadInt32();
-            depotCoords = input.ReadInt2();
-            state = (CDrone.State)input.ReadByte();
+            byte depotIndexState = input.ReadByte();
+            depotIndex = (depotIndexState & 0xF0) >> 4;
+            depotCoords = input.ReadInt2Short();
+            state = (CDrone.State)(depotIndexState & 0x0F);
             depotItem = input.ReadString();
             startTransform = input.ReadCTransform();
             endTransform = input.ReadCTransform();

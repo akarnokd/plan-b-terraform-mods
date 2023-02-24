@@ -253,7 +253,7 @@ namespace FeatMultiplayer
                 var itemLookup = GetItemsDictionary();
 
                 var cline = new CLine(msg.newLine.stops[0].coords);
-                msg.newLine.ApplySnapshot(cline, itemLookup);
+                msg.newLine.ApplySnapshot(cline, itemLookup, true);
 
                 int numVehiclesToCopy;
                 if (lineLookup.TryGetValue(msg.oldLineId, out var oldLine))
@@ -311,7 +311,7 @@ namespace FeatMultiplayer
                 }
 
                 var cline = new CLine(msg.line.stops[0].coords);
-                msg.line.ApplySnapshot(cline, itemLookup);
+                msg.line.ApplySnapshot(cline, itemLookup, true);
                 GWays.lines.Add(cline);
                 cline.ComputePath_Positions(true);
                 cline.UpdateStopDataOrginEnd(true, false);

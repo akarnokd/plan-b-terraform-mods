@@ -93,11 +93,24 @@ namespace FeatMultiplayer
             writer.Write(vector.y);
         }
 
+        public static void WriteShort(this BinaryWriter writer, in int2 vector)
+        {
+            writer.Write((ushort)vector.x);
+            writer.Write((ushort)vector.y);
+        }
+
         public static int2 ReadInt2(this BinaryReader reader)
         {
             return new int2(
                 reader.ReadInt32(),
                 reader.ReadInt32()
+            );
+        }
+        public static int2 ReadInt2Short(this BinaryReader reader)
+        {
+            return new int2(
+                reader.ReadUInt16(),
+                reader.ReadUInt16()
             );
         }
 
