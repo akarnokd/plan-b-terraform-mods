@@ -31,9 +31,12 @@ namespace FeatProductionStats
         static ConfigEntry<int> buttonSize;
         static ConfigEntry<int> historyLength;
         static ConfigEntry<bool> autoScale;
+        static ConfigEntry<AnchorType> anchorType;
+        static ConfigEntry<int> offsetX;
+        static ConfigEntry<int> offsetY;
 
-        static readonly int2 dicoCoordinates1 = new int2 { x = -1_000_100_100, y = 0 };
-        static readonly int2 dicoCoordinates2 = new int2 { x = -1_000_100_100, y = 1 };
+        static readonly int2 dicoCoordinates1 = new() { x = -1_000_100_100, y = 0 };
+        static readonly int2 dicoCoordinates2 = new() { x = -1_000_100_100, y = 1 };
 
         static ManualLogSource logger;
 
@@ -80,6 +83,10 @@ namespace FeatProductionStats
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
             historyLength = Config.Bind("General", "HistoryLength", 300, "How many days to keep as past production data?");
             autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
+
+            anchorType = Config.Bind("General", "Anchor", AnchorType.CenterMiddle, "Where to anchor the stats panel?");
+            offsetX = Config.Bind("General", "OffsetX", 0, "Move the panel relative to the anchor point, positive is to the right");
+            offsetY = Config.Bind("General", "OffsetY", 0, "Move the panel relative to the anchor point, positive is upwards");
 
             Assembly me = Assembly.GetExecutingAssembly();
             string dir = Path.GetDirectoryName(me.Location);
@@ -508,18 +515,21 @@ namespace FeatProductionStats
             var rectBg2 = statsPanelBackground2.GetComponent<RectTransform>();
 
             // do not resize when the bgWidth does small changes
-            var currWidth = rectBg2.sizeDelta.x;
-            if (Math.Abs(currWidth - bgWidth) >= 10)
-            {
-                bgWidth = Mathf.CeilToInt(bgWidth / 10) * 10;
-            }
-            else
-            {
-                bgWidth = currWidth;
-            }
+            var currWidth = (Mathf.FloorToInt(bgWidth / 10) + 1) * 10;
+            bgWidth = currWidth;
 
             rectBg2.sizeDelta = new Vector2(bgWidth, bgHeight);
             rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
+
+            if (anchorType.Value == AnchorType.LeftMiddle)
+            {
+                rectBg2.localPosition = new Vector3(-Screen.width / 2 + offsetX.Value * theScale + bgWidth / 2, rectBg2.localPosition.y + offsetY.Value * theScale);
+            }
+            else
+            if (anchorType.Value == AnchorType.RightMiddle)
+            {
+                rectBg2.localPosition = new Vector3(Screen.width / 2 - offsetX.Value * theScale - bgWidth / 2, rectBg2.localPosition.y + offsetY.Value * theScale);
+            }
 
             var rectBg = statsPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
@@ -956,5 +966,12 @@ namespace FeatProductionStats
                 { "FeatProductionStats.Ratio", "<i>Arány</i>" },
             });
         }
+    }
+
+    public enum AnchorType
+    {
+        LeftMiddle,
+        CenterMiddle,
+        RightMiddle
     }
 }

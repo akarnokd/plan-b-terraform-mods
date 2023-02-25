@@ -834,6 +834,8 @@ The statistics is persisted in your save.
 ```
 [General]
 
+[General]
+
 ## Is the mod enabled?
 # Setting type: Boolean
 # Default value: true
@@ -874,6 +876,27 @@ MaxLines = 16
 # Setting type: Int32
 # Default value: 300
 HistoryLength = 300
+
+## Scale the position and size of the button with the UI scale of the game?
+# Setting type: Boolean
+# Default value: true
+AutoScale = true
+
+## Where to anchor the stats panel?
+# Setting type: AnchorType
+# Default value: CenterMiddle
+# Acceptable values: LeftMiddle, CenterMiddle, RightMiddle
+Anchor = CenterMiddle
+
+## Move the panel relative to the anchor point, positive is to the right
+# Setting type: Int32
+# Default value: 0
+OffsetX = 0
+
+## Move the panel relative to the anchor point, positive is upwards
+# Setting type: Int32
+# Default value: 0
+OffsetY = 0
 ```
 </details>
 
