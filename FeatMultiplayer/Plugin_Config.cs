@@ -41,6 +41,8 @@ namespace FeatMultiplayer
 
         static ConfigEntry<bool> enableTelemetry;
 
+        static ConfigEntry<bool> syncDroneDiff;
+
         void InitConfig()
         {
             modEnabled = Cfg("General", "Enabled", true, "Is the mod enabled?");
@@ -74,6 +76,8 @@ namespace FeatMultiplayer
 
             CallTelemetry.isEnabled = enableTelemetry.Value;
             NetworkTelemetry.isEnabled = enableTelemetry.Value;
+
+            syncDroneDiff = Cfg("Host", "SyncDroneDiff", true, "Experimental: do not synchronize all drones, only the ones that have changed between frames.");
         }
 
         private ConfigEntry<T> Cfg<T>(string group, string name, T value, string desc)

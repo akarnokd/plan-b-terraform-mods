@@ -200,24 +200,54 @@ namespace FeatMultiplayer
             }
         }
 
+        static readonly Dictionary<int, SnapshotDroneLive> droneStateSnapshot = new();
+
         static void MultiplayerSMainUpdate_DronesUpdate()
         {
-            HashSet<int> dronesBefore = new();
-            foreach (var drone in GDrones.drones)
+            if (syncDroneDiff.Value)
             {
-                dronesBefore.Add(drone.id);
-            }
+                droneStateSnapshot.Clear();
+                HashSet<int> dronesBefore = new();
 
-            SSingleton<SDrones>.Inst.Update();
-            
-            foreach (var drone in GDrones.drones)
+                foreach (var drone in GDrones.drones)
+                {
+                    dronesBefore.Add(drone.id);
+                    var snp = new SnapshotDroneLive();
+                    snp.GetSnapshot(drone);
+                    droneStateSnapshot.Add(drone.id, snp);
+                }
+
+                SSingleton<SDrones>.Inst.Update();
+
+                foreach (var drone in GDrones.drones)
+                {
+                    dronesBefore.Remove(drone.id);
+                }
+
+                var msgd = new MessageUpdateDrones();
+                msgd.GetDiffSnapshot(dronesBefore, droneStateSnapshot);
+                SendAllClients(msgd);
+            }
+            else
             {
-                dronesBefore.Remove(drone.id);
-            }
+                HashSet<int> dronesBefore = new();
+                foreach (var drone in GDrones.drones)
+                {
+                    dronesBefore.Add(drone.id);
+                }
 
-            var msgd = new MessageUpdateDrones();
-            msgd.GetSnapshot(dronesBefore);
-            SendAllClients(msgd);
+
+                SSingleton<SDrones>.Inst.Update();
+
+                foreach (var drone in GDrones.drones)
+                {
+                    dronesBefore.Remove(drone.id);
+                }
+
+                var msgd = new MessageUpdateDrones();
+                msgd.GetSnapshot(dronesBefore);
+                SendAllClients(msgd);
+            }
         }
 
         [HarmonyPrefix]

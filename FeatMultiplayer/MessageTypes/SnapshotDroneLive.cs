@@ -19,6 +19,18 @@ namespace FeatMultiplayer
         internal double startTime;
         internal double endTime;
 
+        internal bool HasChangedSince(SnapshotDroneLive other)
+        {
+            return this.state != other.state
+                || this.depotItem != other.depotItem
+                || this.startTransform.pos != other.startTransform.pos
+                || this.startTransform.rot != other.startTransform.rot
+                || this.endTransform.pos != other.endTransform.pos
+                || this.endTransform.rot != other.endTransform.rot
+                || this.startTime != other.startTime
+                || this.endTime != other.endTime;
+        }
+
         internal void GetSnapshot(CDrone drone)
         {
             id = drone.id;

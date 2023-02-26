@@ -28,6 +28,23 @@ namespace FeatMultiplayer
             }
         }
 
+        internal void GetDiffSnapshot(HashSet<int> removedIds, Dictionary<int, SnapshotDroneLive> before)
+        {
+            this.removedIds = removedIds;
+            foreach (var drone in GDrones.drones)
+            {
+                var snp = new SnapshotDroneLive();
+                snp.GetSnapshot(drone);
+
+                before.TryGetValue(drone.id, out var b);
+
+                if (b == null || snp.HasChangedSince(b))
+                {
+                    drones.Add(snp);
+                }
+            }
+        }
+
         internal void ApplySnapshot()
         {
             var itemLookup = Plugin.GetItemsDictionary();
