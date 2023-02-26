@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace FeatMultiplayer
@@ -56,6 +57,20 @@ namespace FeatMultiplayer
 
         public override void Encode(BinaryWriter output)
         {
+            if (Plugin.compressNetwork.Value)
+            {
+                using (var ds = new DeflateStream(output.BaseStream, CompressionLevel.Optimal, true)) {
+                    EncodeInternal(new BinaryWriter(ds));
+                }
+            }
+            else
+            {
+                EncodeInternal(output);
+            }
+        }
+
+        public void EncodeInternal(BinaryWriter output)
+        {
             output.Write(lines.Count);
             foreach (var line in lines)
             {
@@ -69,6 +84,21 @@ namespace FeatMultiplayer
         }
 
         void Decode(BinaryReader input)
+        {
+            if (Plugin.compressNetwork.Value)
+            {
+                using (var ds = new DeflateStream(input.BaseStream, CompressionMode.Decompress, true))
+                {
+                    DecodeInternal(new BinaryReader(ds));
+                }
+            }
+            else
+            {
+                DecodeInternal(input);
+            }
+        }
+
+        void DecodeInternal(BinaryReader input)
         {
             int c = input.ReadInt32();
             for (int i = 0; i < c; i++)

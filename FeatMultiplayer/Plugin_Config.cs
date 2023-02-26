@@ -43,6 +43,8 @@ namespace FeatMultiplayer
 
         static ConfigEntry<bool> syncDroneDiff;
 
+        internal static ConfigEntry<bool> compressNetwork;
+
         void InitConfig()
         {
             modEnabled = Cfg("General", "Enabled", true, "Is the mod enabled?");
@@ -78,6 +80,8 @@ namespace FeatMultiplayer
             NetworkTelemetry.isEnabled = enableTelemetry.Value;
 
             syncDroneDiff = Cfg("Host", "SyncDroneDiff", true, "Experimental: do not synchronize all drones, only the ones that have changed between frames.");
+
+            compressNetwork = Cfg("General", "CompressNetwork", true, "Experimental: some messages, such as vehicle info, will use zlib compression over the network");
         }
 
         private ConfigEntry<T> Cfg<T>(string group, string name, T value, string desc)
