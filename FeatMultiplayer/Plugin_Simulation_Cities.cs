@@ -30,7 +30,8 @@ namespace FeatMultiplayer
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update01s))]
         static bool Patch_CCity_Update01s_Pre(CCity __instance, 
             CCityInOutData ___inData,
-            CCityInOutData ___outData)
+            CCityInOutData ___outData,
+            ref MessageUpdateCity __state)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -44,12 +45,14 @@ namespace FeatMultiplayer
             {
                 cityHexChanges.Add(h);
             }
+            __state = new MessageUpdateCity();
+            __state.GetSnapshot(__instance, cityHexChanges);
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CCity), nameof(CCity.Update01s))]
-        static void Patch_CCity_Update01s_Post(CCity __instance) 
+        static void Patch_CCity_Update01s_Post(CCity __instance, MessageUpdateCity __state) 
         { 
             if (multiplayerMode != MultiplayerMode.Host)
             {
@@ -61,7 +64,10 @@ namespace FeatMultiplayer
             }
             var msg = new MessageUpdateCity();
             msg.GetSnapshot(__instance, cityHexChanges);
-            SendAllClients(msg);
+            if (msg.HasChanged(__state))
+            {
+                SendAllClients(msg);
+            }
 
             foreach (var h in cityInOutChanges)
             {

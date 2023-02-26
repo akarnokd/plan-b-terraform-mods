@@ -14,6 +14,12 @@ namespace FeatMultiplayer
         internal byte contentId;
         internal uint contentData;
 
+        internal bool HasChanged(SnapshotContentAt other)
+        {
+            return contentId != other.contentId
+                || contentData != other.contentData;
+        }
+
         internal void GetSnapshot(int2 coords)
         {
             this.coords = coords;

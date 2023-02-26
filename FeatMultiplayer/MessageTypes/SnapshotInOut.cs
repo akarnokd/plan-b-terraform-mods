@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0
 
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 
 namespace FeatMultiplayer
@@ -13,6 +14,58 @@ namespace FeatMultiplayer
         internal int framesSinceProcess;
         internal float score;
         internal readonly Queue<bool>[] results = new Queue<bool>[4];
+
+        internal bool HaveChanged(SnapshotInOut other)
+        {
+            return this.needed != other.needed
+                || this.done != other.done
+                || this.framesSinceProcess != other.framesSinceProcess
+                || this.score != other.score
+                || HaveQueuesChanged(other.results)
+                ;
+        }
+
+        internal bool HaveQueuesChanged(Queue<bool>[] other)
+        {
+            if (this.results.Length != other.Length)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < this.results.Length; i++)
+            {
+                var q1 = this.results[i];
+                var q2 = other[i];
+
+                if (HaveQueuesChanged(q1, q2))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        internal bool HaveQueuesChanged(Queue<bool> q1, Queue<bool> q2)
+        {
+            if (q1.Count != q2.Count)
+            {
+                return true;
+            }
+
+            using var en1 = q1.GetEnumerator();
+            using var en2 = q2.GetEnumerator();
+
+            while (en1.MoveNext() && en2.MoveNext())
+            {
+                if (en1.Current != en2.Current)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         internal void GetSnapshot(CCityInOutData ind)
         {

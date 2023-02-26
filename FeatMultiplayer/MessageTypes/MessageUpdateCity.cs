@@ -34,6 +34,33 @@ namespace FeatMultiplayer
             this.city.ApplySnapshot(city);
         }
 
+        internal bool HasChanged(MessageUpdateCity other)
+        {
+            return this.city.HasChanged(other.city)
+                || HaveHexesChanged(other.updatedHexes);
+        }
+
+        internal bool HaveHexesChanged(List<SnapshotContentAt> updatedHexes)
+        {
+            if (this.updatedHexes.Count != updatedHexes.Count)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < this.updatedHexes.Count; i++)
+            {
+                var h1 = this.updatedHexes[i];
+                var h2 = updatedHexes[i];
+
+                if (h1.HasChanged(h2))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override void Encode(BinaryWriter output)
         {
             city.Write(output);

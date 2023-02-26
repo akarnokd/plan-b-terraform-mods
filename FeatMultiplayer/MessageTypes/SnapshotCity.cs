@@ -17,6 +17,35 @@ namespace FeatMultiplayer
         internal readonly SnapshotInOut inputs = new();
         internal readonly SnapshotInOut outputs = new();
 
+        internal bool HasChanged(SnapshotCity other)
+        {
+            return this.center != other.center
+                || HaveHexesChanged(other.hexes)
+                || this.name != other.name
+                || this.population != other.population
+                || this.score != other.score
+                || inputs.HaveChanged(other.inputs)
+                || outputs.HaveChanged(other.outputs)
+                ;
+        }
+
+        internal bool HaveHexesChanged(List<int2> hexes)
+        {
+            if (this.hexes.Count != hexes.Count)
+            {
+                return true;
+            }
+            for (int i = 0; i < this.hexes.Count; i++)
+            {
+                if (this.hexes[i] != hexes[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         internal void GetSnapshot(CCity city)
         {
             id = city.cityId;
