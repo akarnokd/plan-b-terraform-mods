@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FeatMultiplayer
@@ -40,6 +41,32 @@ namespace FeatMultiplayer
                     stacks.Add(ssnp);
                 }
             }
+        }
+
+        internal bool HasChanged(MessageUpdateDatasAt other)
+        {
+            return this.updateBlocks != other.updateBlocks
+                || this.groundData != other.groundData
+                || this.contentData != other.contentData
+                || HaveStacksChanged(other.stacks);
+        }
+
+        internal bool HaveStacksChanged(List<SnapshotStack> otherStack)
+        {
+            if (stacks.Count != otherStack.Count)
+            {
+                return true;
+            }
+            for (int i = 0; i < stacks.Count; i++)
+            {
+                var s1 = stacks[i];
+                var s2 = otherStack[i];
+                if (s1.HasChanged(s2))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void ApplySnapshot()

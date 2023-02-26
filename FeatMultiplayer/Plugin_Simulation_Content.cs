@@ -16,11 +16,20 @@ namespace FeatMultiplayer
 
         static readonly List<int2> worldTexturesToUpdate = new();
 
-        static void SendUpdateStacksAndContentData(int2 coords, bool updateBlocks)
+        static void PrepareStacksAndContentData(int2 coords, out MessageUpdateDatasAt msg)
+        {
+            msg = new MessageUpdateDatasAt();
+            msg.GetSnapshot(coords, false);
+        }
+
+        static void SendMessageUpdateDatasAt(int2 coords, bool updateBlocks, MessageUpdateDatasAt before)
         {
             var msg = new MessageUpdateDatasAt();
             msg.GetSnapshot(coords, updateBlocks);
-            SendAllClients(msg);
+            if (msg.HasChanged(before))
+            {
+                SendAllClients(msg);
+            }
         }
 
         /// <summary>
@@ -54,7 +63,7 @@ namespace FeatMultiplayer
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update01s))]
-        static bool Patch_CItem_ContentExtractor_Update01s_Pre()
+        static bool Patch_CItem_ContentExtractor_Update01s_Pre(int2 coords, ref MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -66,18 +75,19 @@ namespace FeatMultiplayer
                 // the content data update message, so defer it and call SBlocks.OnChangeItem in post.
                 suppressBlocksOnChange = true;
                 blocksOnChangeCalledWhileSuppressed = false;
+                PrepareStacksAndContentData(coords, out __state);
             }
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentExtractor), nameof(CItem_ContentExtractor.Update01s))]
-        static void Patch_CItem_ContentExtractor_Update01s_Post(int2 coords)
+        static void Patch_CItem_ContentExtractor_Update01s_Post(int2 coords, MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 suppressBlocksOnChange = false;
-                SendUpdateStacksAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
+                SendMessageUpdateDatasAt(coords, blocksOnChangeCalledWhileSuppressed, __state);
                 if (blocksOnChangeCalledWhileSuppressed)
                 {
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);
@@ -87,7 +97,7 @@ namespace FeatMultiplayer
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentExtractorDeep), nameof(CItem_ContentExtractorDeep.Update01s))]
-        static bool Patch_CItem_ContentExtractorDeep_Update01s_Pre()
+        static bool Patch_CItem_ContentExtractorDeep_Update01s_Pre(int2 coords, ref MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -99,18 +109,19 @@ namespace FeatMultiplayer
                 // the content data update message, so defer it and call SBlocks.OnChangeItem in post.
                 suppressBlocksOnChange = true;
                 blocksOnChangeCalledWhileSuppressed = false;
+                PrepareStacksAndContentData(coords, out __state);
             }
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentExtractorDeep), nameof(CItem_ContentExtractorDeep.Update01s))]
-        static void Patch_CItem_ContentExtractorDeep_Update01s_Post(int2 coords)
+        static void Patch_CItem_ContentExtractorDeep_Update01s_Post(int2 coords, MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 suppressBlocksOnChange = false;
-                SendUpdateStacksAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
+                SendMessageUpdateDatasAt(coords, blocksOnChangeCalledWhileSuppressed, __state);
                 if (blocksOnChangeCalledWhileSuppressed)
                 {
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);
@@ -120,7 +131,7 @@ namespace FeatMultiplayer
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
-        static bool Patch_CItem_ContentFactory_Update01s_Pre()
+        static bool Patch_CItem_ContentFactory_Update01s_Pre(int2 coords, ref MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -132,18 +143,19 @@ namespace FeatMultiplayer
                 // the content data update message, so defer it and call SBlocks.OnChangeItem in post.
                 suppressBlocksOnChange = true;
                 blocksOnChangeCalledWhileSuppressed = false;
+                PrepareStacksAndContentData(coords, out __state);
             }
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), nameof(CItem_ContentFactory.Update01s))]
-        static void Patch_CItem_ContentFactory_Update01s_Post(int2 coords)
+        static void Patch_CItem_ContentFactory_Update01s_Post(int2 coords, MessageUpdateDatasAt __state)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 suppressBlocksOnChange = false;
-                SendUpdateStacksAndContentData(coords, blocksOnChangeCalledWhileSuppressed);
+                SendMessageUpdateDatasAt(coords, blocksOnChangeCalledWhileSuppressed, __state);
                 if (blocksOnChangeCalledWhileSuppressed)
                 {
                     Haxx.SBlocks_OnChangeItem(coords, false, false, true);

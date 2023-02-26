@@ -13,6 +13,13 @@ namespace FeatMultiplayer
         internal int count;
         internal int booked;
 
+        internal bool HasChanged(SnapshotStack other)
+        {
+            return codeName != other.codeName
+                || count != other.count
+                || booked != other.booked;
+        }
+
         internal void GetSnapshot(in CStack stack)
         {
             codeName = stack.item?.codeName ?? "";
