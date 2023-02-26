@@ -14,6 +14,7 @@ namespace FeatMultiplayer
         internal readonly List<SnapshotStop> stops = new();
         internal readonly List<SnapshotNode> nodes = new();
         internal readonly List<SnapshotVehicle> vehicles = new();
+        internal bool updateNodes;
 
         internal void GetSnapshot(CLine line)
         {
@@ -41,8 +42,27 @@ namespace FeatMultiplayer
                 vehicles.Add(svehicle);
                 svehicle.GetSnapshot(vehicle);
             }
+            updateNodes = true;
         }
 
+        internal bool HaveNodesChanged(List<SnapshotNode> nodes)
+        {
+            if (this.nodes.Count != nodes.Count)
+            {
+                return true;
+            }
+            for (int i = 0; i < this.nodes.Count; i++)
+            {
+                var n = this.nodes[i];
+                var m = nodes[i];
+
+                if (n.HasChanged(m))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         internal CLine Create(Dictionary<string, CItem> itemDictionary)
         {
             var result = new CLine(int2.negative);
@@ -98,14 +118,18 @@ namespace FeatMultiplayer
             }
             line.stops.RemoveRange(stops.Count, line.stops.Count - stops.Count);
 
-            for (int i = 0; i < nodes.Count; i++) {
-                if (line.nodes.Count == i)
+            if (updateNodes)
+            {
+                for (int i = 0; i < nodes.Count; i++)
                 {
-                    line.nodes.Add(new CLine.Node(int2.negative));
+                    if (line.nodes.Count == i)
+                    {
+                        line.nodes.Add(new CLine.Node(int2.negative));
+                    }
+                    nodes[i].ApplySnapshot(line.nodes[i]);
                 }
-                nodes[i].ApplySnapshot(line.nodes[i]);
+                line.nodes.RemoveRange(nodes.Count, line.nodes.Count - nodes.Count);
             }
-            line.nodes.RemoveRange(nodes.Count, line.nodes.Count - nodes.Count);
 
             for (int i = 0; i < vehicles.Count; i++)
             {
@@ -145,6 +169,7 @@ namespace FeatMultiplayer
             {
                 vehicle.Encode(output);
             }
+            output.Write(updateNodes);
         }
 
         internal void Decode(BinaryReader input)
@@ -174,6 +199,7 @@ namespace FeatMultiplayer
                 vehicle.Decode(input);
                 vehicles.Add(vehicle);
             }
+            updateNodes = input.ReadBoolean();
         }
     }
 }

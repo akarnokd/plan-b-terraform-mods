@@ -33,6 +33,28 @@ namespace FeatMultiplayer
             linesRemoved = linesBefore;
         }
 
+        internal void GetSnapshotDiff(HashSet<int> linesBefore, Dictionary<int, List<SnapshotNode>> nodesBefore)
+        {
+            for (int i = 1; i < GWays.lines.Count; i++)
+            {
+                CLine line = GWays.lines[i];
+
+                var snp = new SnapshotLine();
+                snp.GetSnapshot(line);
+                lines.Add(snp);
+                linesBefore.Remove(line.id);
+
+                nodesBefore.TryGetValue(line.id, out var nodes);
+                if (nodes != null && !snp.HaveNodesChanged(nodes))
+                {
+                    snp.updateNodes = false;
+                    snp.nodes.Clear();
+                }
+            }
+
+            linesRemoved = linesBefore;
+        }
+
         internal void ApplySnapshot()
         {
             var lineLookup = Plugin.GetLineDictionary();

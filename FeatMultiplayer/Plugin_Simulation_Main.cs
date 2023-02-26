@@ -90,15 +90,7 @@ namespace FeatMultiplayer
                     mainTelemetry.AddTelemetryCheckpoint("SRain.Update");
                     if (isHost)
                     {
-                        // SWays.Update() can remove lines
-                        var before = new HashSet<int>(GWays.lines.Select(x => x?.id ?? 0));
-
-                        SSingleton<SWays>.Inst.Update();
-                        mainTelemetry.AddTelemetryCheckpoint("SWays.Update");
-
-                        var msgw = new MessageUpdateLines();
-                        msgw.GetSnapshot(before);
-                        SendAllClients(msgw);
+                        MultiplayerSMainUpdate_SWaysUpdate();
 
                         // NOTE this Update() method is currently empty
                         SSingleton<SWays_PF>.Inst.Update();
@@ -247,6 +239,54 @@ namespace FeatMultiplayer
                 var msgd = new MessageUpdateDrones();
                 msgd.GetSnapshot(dronesBefore);
                 SendAllClients(msgd);
+            }
+        }
+
+        static Dictionary<int, List<SnapshotNode>> lineNodes = new();
+        static void MultiplayerSMainUpdate_SWaysUpdate()
+        {
+            if (syncLineDiff.Value) {
+                // SWays.Update() can remove lines
+                var before = new HashSet<int>();
+                lineNodes.Clear();
+                for (int i = 1; i < GWays.lines.Count; i++)
+                {
+                    var line = GWays.lines[i];
+                    before.Add(line.id);
+
+                    var nodeSnp = new List<SnapshotNode>();
+                    foreach (var n in line.nodes)
+                    {
+                        var snp = new SnapshotNode();
+                        snp.GetSnapshot(n);
+                        nodeSnp.Add(snp);
+                    }
+                    lineNodes.Add(line.id, nodeSnp);
+                }
+
+                SSingleton<SWays>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SWays.Update");
+
+                var msgw = new MessageUpdateLines();
+                msgw.GetSnapshotDiff(before, lineNodes);
+                SendAllClients(msgw);
+            }
+            else
+            {
+                // SWays.Update() can remove lines
+                var before = new HashSet<int>();
+                for (int i = 1; i < GWays.lines.Count; i++)
+                {
+                    var line = GWays.lines[i];
+                    before.Add(line.id);
+                }
+
+                SSingleton<SWays>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SWays.Update");
+
+                var msgw = new MessageUpdateLines();
+                msgw.GetSnapshot(before);
+                SendAllClients(msgw);
             }
         }
 

@@ -42,6 +42,7 @@ namespace FeatMultiplayer
         static ConfigEntry<bool> enableTelemetry;
 
         static ConfigEntry<bool> syncDroneDiff;
+        static ConfigEntry<bool> syncLineDiff;
 
         internal static ConfigEntry<bool> compressNetwork;
 
@@ -80,6 +81,7 @@ namespace FeatMultiplayer
             NetworkTelemetry.isEnabled = enableTelemetry.Value;
 
             syncDroneDiff = Cfg("Host", "SyncDroneDiff", true, "Experimental: do not synchronize all drones, only the ones that have changed between frames.");
+            syncLineDiff = Cfg("Host", "syncLineDiff", true, "Experimental: do not synchronize every line data, only the ones that have changed between frames.");
 
             compressNetwork = Cfg("General", "CompressNetwork", true, "Experimental: some messages, such as vehicle info, will use zlib compression over the network");
         }

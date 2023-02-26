@@ -13,6 +13,15 @@ namespace FeatMultiplayer
         internal Vector3 posMiddle;
         internal Vector3 posExit;
 
+        internal bool HasChanged(SnapshotNode other)
+        {
+            return
+                this.coords != other.coords
+                || this.tExit != other.tExit
+                || this.posMiddle != other.posMiddle
+                || this.posExit != other.posExit;
+        }
+
         internal void GetSnapshot(CLine.Node node)
         {
             coords = node.coords;
