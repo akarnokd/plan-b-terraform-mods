@@ -42,6 +42,7 @@ namespace FeatMultiplayer
             }
         }
 
+        /*
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_WayStop), nameof(CItem_WayStop.StartBuildMode))]
         static bool Patch_CItem_WayStop_StartBuildMode_Pre(int2 coordsOrigin, bool isReverse)
@@ -68,6 +69,7 @@ namespace FeatMultiplayer
                 SendAllClients(msg);
             }
         }
+        */
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_WayStop), "Update_IfSelected")]
