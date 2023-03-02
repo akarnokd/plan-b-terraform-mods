@@ -66,9 +66,9 @@ namespace FeatHotbar
         static readonly List<string> globalProducts =
             new List<string> {
                 "roadway",
-                "roadstop",
+                //"roadstop",
                 "railway",
-                "railstop",
+                // "railstop",
                 "extractor",
                 "iceExtractor",
                 "pumpingStation",
@@ -90,7 +90,9 @@ namespace FeatHotbar
                 // "forest_savannah",
                 // "forest_coconut",
                 "cityIn",
-                "cityOut"
+                "cityOut",
+                "truck",
+                "train"
             };
 
         private void Awake()
