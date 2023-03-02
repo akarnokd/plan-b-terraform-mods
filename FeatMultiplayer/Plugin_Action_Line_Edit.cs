@@ -42,33 +42,6 @@ namespace FeatMultiplayer
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_WayStop), nameof(CItem_WayStop.StartBuildMode))]
-        static bool Patch_CItem_WayStop_StartBuildMode_Pre(int2 coordsOrigin, bool isReverse)
-        {
-            if (multiplayerMode == MultiplayerMode.Client)
-            {
-                var msg = new MessageActionBeginLine();
-                msg.coords = coordsOrigin;
-                msg.reverse = isReverse;
-                SendHost(msg);
-                return false;
-            }
-            return true;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_WayStop), nameof(CItem_WayStop.StartBuildMode))]
-        static void Patch_CItem_WayStop_StartBuildMode_Post(CLine ____buildLine)
-        {
-            if (multiplayerMode == MultiplayerMode.Host)
-            {
-                var msg = new MessageUpdateLine();
-                msg.GetSnapshot(____buildLine, false);
-                SendAllClients(msg);
-            }
-        }
-
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_WayStop), "Update_IfSelected")]
         static void Patch_CItem_WayStop_Update_IfSelected()
@@ -190,25 +163,6 @@ namespace FeatMultiplayer
         // Message receivers
         // ------------------------------------------------------------------------------
 
-        static void ReceiveMessageActionBeginLine(MessageActionBeginLine msg)
-        {
-            if (multiplayerMode == MultiplayerMode.Host)
-            {
-                LogDebug("ReceiveMessageActionBeginLine: Handling " + msg.GetType());
-
-                var response = new MessageUpdateStartLine();
-                response.lineId = ++CLine.idMax; // reserve an id
-                response.coords = msg.coords;
-                response.reverse = msg.reverse;
-
-                msg.sender.Send(response);
-            }
-            else
-            {
-                LogWarning("ReceiveMessageActionBeginLine: wrong multiplayerMode: " + multiplayerMode);
-            }
-        }
-
         static void ReceiveMessageUpdateStartLine(MessageUpdateStartLine msg)
         {
             if (multiplayerMode == MultiplayerMode.ClientJoin)
@@ -227,7 +181,6 @@ namespace FeatMultiplayer
                     var cline = new CLine(msg.coords);
                     cline.id = msg.lineId;
 
-                    Haxx.cItemWayStopBuildLine(stop) = cline;
                     Haxx.cItemWayStopIsReverse(stop) = msg.reverse;
                     Haxx.cItemWayStopBuildModeLastFrame(stop) = Time.frameCount;
                 }
@@ -343,8 +296,6 @@ namespace FeatMultiplayer
                 {
                     if (x != null && x.id == msg.lineId)
                     {
-                        CancelBuildLine(x);
-
                         x.UpdateStopDataOrginEnd(true, true);
                         return true;
                     }
@@ -358,7 +309,6 @@ namespace FeatMultiplayer
                 var lineLookup = GetLineDictionary();
                 if (lineLookup.TryGetValue(msg.lineId, out var line))
                 {
-                    CancelBuildLine(line);
                     SSingleton<SWays>.Inst.RemoveLine(line);
                 }
                 else 
@@ -369,21 +319,6 @@ namespace FeatMultiplayer
             else
             {
                 LogWarning("ReceiveMessageActionRemoveLine: wrong multiplayerMode: " + multiplayerMode);
-            }
-        }
-
-        static void CancelBuildLine(CLine line)
-        {
-            foreach (var stop in line.stops)
-            {
-                var content = ContentAt(stop.coords);
-                if (content is CItem_WayStop wayStop)
-                {
-                    if (Haxx.cItemWayStopBuildLine.Invoke(wayStop) == line)
-                    {
-                        Haxx.cItemWayStopBuildLine.Invoke(wayStop) = null;
-                    }
-                }
             }
         }
 

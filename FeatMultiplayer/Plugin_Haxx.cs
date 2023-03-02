@@ -40,7 +40,6 @@ namespace FeatMultiplayer
 
             Haxx._sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
 
-            Haxx.cItemWayStopBuildLine = AccessTools.FieldRefAccess<CItem_WayStop, CLine>("_buildLine");
             Haxx.cItemWayStopIsReverse = AccessTools.FieldRefAccess<CItem_WayStop, bool>("_isReverse");
             Haxx.cItemWayStopBuildModeLastFrame = AccessTools.FieldRefAccess<CItem_WayStop, int>("_buildModeLastFrame");
         }
@@ -82,8 +81,6 @@ namespace FeatMultiplayer
             _sBlocksOnChangeItemDelegate ??= AccessTools.MethodDelegate<Action<int2, bool, bool, bool>>(_sBlocksOnChangeItem, SSingleton<SBlocks>.Inst);
             _sBlocksOnChangeItemDelegate(c, updateNeighbors, updateGroundToo, containersOnly);
         }
-
-        internal static AccessTools.FieldRef<CItem_WayStop, CLine> cItemWayStopBuildLine;
 
         internal static AccessTools.FieldRef<CItem_WayStop, bool> cItemWayStopIsReverse;
 

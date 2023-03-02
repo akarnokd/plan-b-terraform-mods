@@ -72,7 +72,6 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateTransportStacks>(ReceiveMessageUpdateTransportStacks);
             AddMessageRegistry<MessageUpdateItems>(ReceiveMessageUpdateItems);
 
-            AddMessageRegistry<MessageActionBeginLine>(ReceiveMessageActionBeginLine);
             AddMessageRegistry<MessageUpdateStartLine>(ReceiveMessageUpdateStartLine);
             AddMessageRegistry<MessageActionFinishLine>(ReceiveMessageActionFinishLine);
             AddMessageRegistry<MessageUpdateFinishLine>(ReceiveMessageUpdateFinishLine);

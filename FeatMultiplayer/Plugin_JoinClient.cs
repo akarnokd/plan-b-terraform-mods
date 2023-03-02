@@ -129,7 +129,7 @@ namespace FeatMultiplayer
             yield return sload.LoadingStep(15f, new Action(SSingleton<SGame>.Inst.Reset), 0);
             yield return sload.LoadingStep(16f, new Action(SMain.Inst.Reset), 0);
             yield return sload.LoadingStep(17f, new Action(SSingleton<SDrones>.Inst.Reset_DroneGrid), 0);
-
+            yield return sload.LoadingStep(18f, new Action(SSingleton<SWays>.Inst.Reset), 0);
             /*
             for (int i = 0; i < 60; i++)
             {
