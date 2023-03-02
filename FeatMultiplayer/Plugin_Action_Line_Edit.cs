@@ -11,6 +11,15 @@ namespace FeatMultiplayer
     {
         static bool suppressLineCreateItemPicking;
 
+        static string currentWayBuilt;
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_Way), nameof(CItem_Way.BuildWay))]
+        static void Patch_CItem_WayStop_BuildWay(CItem_Way __instance)
+        {
+            currentWayBuilt = __instance.codeName;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SWays), nameof(SWays.CreateLine))]
         static bool Patch_SWays_CreateLine_Pre(CLine line, CLine lineOld)
@@ -20,6 +29,7 @@ namespace FeatMultiplayer
                 var msg = new MessageActionFinishLine();
                 msg.pickCoords = GScene3D.selectionCoords;
                 msg.newLine.GetSnapshot(line);
+                msg.newLine.itemStopOrigin = currentWayBuilt ?? "";
                 msg.oldLineId = lineOld?.id ?? -1;
                 SendHost(msg);
 
@@ -43,8 +53,8 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_WayStop), "Update_IfSelected")]
-        static void Patch_CItem_WayStop_Update_IfSelected()
+        [HarmonyPatch(typeof(CItem_Vehicle), "Update_TryToBuild")]
+        static void Patch_CItem_Vehicle_Update_TryToBuild()
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -269,10 +279,19 @@ namespace FeatMultiplayer
                 cline.ComputePath_Positions(true);
                 cline.UpdateStopDataOrginEnd(true, false);
 
+                SSceneSingleton<SSceneHud_ItemsBars>.Inst.TryCancel(false);
+
+                GScene3D.selectionCoordsLastFrame = int2.negative;
+                GScene3D.selectionCoords = msg.line.stops[1].coords;
+                GScene3D.selectedItem = cline.itemStopOrigin;
+
+                SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
+
+                // LogDebug("msg.pickItem " + msg.pickItem);
                 if (msg.pickItem)
                 {
                     SSceneSingleton<SScenePopup>.Inst.ActivateAndShow(false, true, SLoc.Get("Popup_ItemPicking"), null);
-                    SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(msg.pickCoords);
+                    SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(msg.line.stops[1].coords);
                 }
             }
             else

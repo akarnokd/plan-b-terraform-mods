@@ -66,9 +66,9 @@ namespace FeatHotbar
         static readonly List<string> globalProducts =
             new List<string> {
                 "roadway",
-                //"roadstop",
+                "roadstop",
                 "railway",
-                // "railstop",
+                "railstop",
                 "extractor",
                 "iceExtractor",
                 "pumpingStation",

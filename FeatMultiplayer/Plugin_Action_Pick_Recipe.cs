@@ -15,7 +15,7 @@ namespace FeatMultiplayer
             if (multiplayerMode == MultiplayerMode.Client || multiplayerMode == MultiplayerMode.Host)
             {
 
-                var content = ContentAt(____pickCoords); ;
+                var content = ContentAt(____pickCoords);
 
                 if (content is CItem_ContentDepot)
                 {
@@ -58,6 +58,9 @@ namespace FeatMultiplayer
                     {
                         SendAllClients(msg);
                     }
+                } else
+                {
+                    LogWarning("Unsupported pick at " + ____pickCoords + " " + content?.GetType() + " ~ " + content?.codeName);
                 }
 
                 if (multiplayerMode == MultiplayerMode.Client)

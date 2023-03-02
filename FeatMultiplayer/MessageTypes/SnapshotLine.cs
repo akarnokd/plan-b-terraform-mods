@@ -19,7 +19,7 @@ namespace FeatMultiplayer
         internal void GetSnapshot(CLine line)
         {
             id = line.id;
-            itemStopOrigin = line.itemStopOrigin.codeName;
+            itemStopOrigin = line.itemStopOrigin?.codeName ?? "";
             itemTransported = line.itemTransported?.codeName ?? "";
 
             foreach (var stop in line.stops)
