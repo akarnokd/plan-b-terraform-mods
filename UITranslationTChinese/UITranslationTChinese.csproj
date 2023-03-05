@@ -9,11 +9,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\solution_private.targets" />
+    <Import Project="$(SolutionDir)\BepInEx.PluginInfoProps.props" />
 
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.14" IncludeAssets="compile" />
   </ItemGroup>
   

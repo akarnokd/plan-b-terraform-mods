@@ -9,7 +9,9 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\solution_private.targets" />
-  <ItemGroup>
+    <Import Project="$(SolutionDir)\BepInEx.PluginInfoProps.props" />
+  
+    <ItemGroup>
     <Compile Include="..\LibCommon\GUITools.cs" Link="GUITools.cs" />
     <Compile Include="..\LibCommon\Translation.cs" Link="Translation.cs" />
   </ItemGroup>
@@ -17,7 +19,6 @@
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.14" IncludeAssets="compile" />
   </ItemGroup>
   

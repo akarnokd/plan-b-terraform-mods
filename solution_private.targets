@@ -16,5 +16,4 @@
 	<PropertyGroup>
 		<Destination1>$(PluginsFolder)\akarnokd - $(Description)</Destination1>
 	</PropertyGroup>
-
 </Project>
