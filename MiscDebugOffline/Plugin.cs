@@ -62,8 +62,8 @@ namespace MiscDebugOffline
             string f = dir + "\\..\\..\\..\\Plan B Terraform_Data\\Plugins\\x86_64\\P" + "l" + "a" + "n" + "B" + "_" + "D" + "l" + "l" + "." + "d" + "l" + "l";
             string f2 = f + ".bak";
 
-            string h0 = "48f868ddfdbebde27410875994af51b0";
-            string h1 = "cc516da4d1ea9c876f589c22a87a1a0a";
+            string h0 = "f4c2ee857fa66fcc5a7381903774d73e";
+            string h1 = "baf5aa35e46aab17fff7a8943dfe3db0";
 
             if (File.Exists(f))
             {
