@@ -15,14 +15,16 @@ namespace FeatMultiplayer
 
         internal bool pickItem;
         internal int2 pickCoords;
-        internal int oldLineId;
+        internal int lineModifiedId;
+        internal int lineCopiedId;
         internal readonly SnapshotLine line = new();
 
         public override void Encode(BinaryWriter output)
         {
             output.Write(pickItem);
             output.Write(pickCoords);
-            output.Write(oldLineId);
+            output.Write(lineModifiedId);
+            output.Write(lineCopiedId);
             line.Encode(output);
         }
 
@@ -30,7 +32,8 @@ namespace FeatMultiplayer
         {
             pickItem = input.ReadBoolean();
             pickCoords = input.ReadInt2();
-            oldLineId = input.ReadInt32();
+            lineModifiedId = input.ReadInt32();
+            lineCopiedId = input.ReadInt32();
             line.Decode(input);
         }
 

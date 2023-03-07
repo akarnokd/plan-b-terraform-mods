@@ -551,7 +551,7 @@ namespace FeatDepotPriority
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.ToggleCopy))]
+        [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.ToggleCopy2))]
         static void SSceneHud_Selection_ToggleCopy(bool state)
         {
             if (!state)

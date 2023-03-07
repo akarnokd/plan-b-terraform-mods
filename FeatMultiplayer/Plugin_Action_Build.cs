@@ -11,6 +11,7 @@ namespace FeatMultiplayer
         static bool suppressBuildNotification;
 
         static bool suppressRecipePickAndCopy;
+        static int2 suppressRecipePickAndCopyCoords;
 
         static bool suppressCopyNotification;
 
@@ -31,6 +32,14 @@ namespace FeatMultiplayer
                 LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
                 return false;
             }
+            if (multiplayerMode == MultiplayerMode.Host)
+            {
+                if (suppressRecipePickAndCopy)
+                {
+                    suppressRecipePickAndCopyCoords = GScene3D.duplicatedCoords;
+                    GScene3D.duplicatedCoords = int2.negative;
+                }
+            }
             return true;
         }
 
@@ -43,6 +52,11 @@ namespace FeatMultiplayer
                 msg.id = __instance.id;
                 SendAllClients(msg);
                 LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
+
+                if (suppressRecipePickAndCopy)
+                {
+                    GScene3D.duplicatedCoords = suppressRecipePickAndCopyCoords;
+                }
             }
         }
 
@@ -62,7 +76,7 @@ namespace FeatMultiplayer
 
                     // capture if copying of configuration is needed
                     msg.copyMode = __instance.recipes.Length > 1
-                        && !SSceneSingleton<SSceneHud_Selection>.Inst.IsCopying()
+                        && !GScene3D.duplicatedCoords.Negative
                         && !(__instance is CItem_ContentCityInOut); 
 
                     msg.copyFrom = ____firstBuildCoords;
@@ -126,7 +140,7 @@ namespace FeatMultiplayer
                     var msg = new MessageActionBuild();
                     msg.coords = coords;
                     msg.id = __instance.id;
-                    msg.copyMode = !SSceneSingleton<SSceneHud_Selection>.Inst.IsCopying()
+                    msg.copyMode = !GScene3D.duplicatedCoords.Negative
                         && ContentAt(coords) is not CItem_ContentDepot;
                     msg.copyFrom = ____firstBuildCoords;
                     SendHost(msg);
@@ -266,16 +280,6 @@ namespace FeatMultiplayer
         static void Patch_CItem_ContentForest_Build_Post(CItem_ContentForest __instance, int2 coords)
         {
             BuildPost(__instance, coords);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.IsCopying))]
-        static void Patch_SSceneHud_Selection_IsCopying(ref bool __result)
-        {
-            if (suppressRecipePickAndCopy)
-            {
-                __result = true;
-            }
         }
 
         [HarmonyPrefix]

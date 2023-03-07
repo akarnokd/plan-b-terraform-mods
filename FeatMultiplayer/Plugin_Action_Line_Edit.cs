@@ -22,7 +22,7 @@ namespace FeatMultiplayer
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SWays), nameof(SWays.CreateLine))]
-        static bool Patch_SWays_CreateLine_Pre(CLine line, CLine lineOld)
+        static bool Patch_SWays_CreateLine_Pre(CLine line, CLine lineModified, CLine lineCopied)
         {
             if (multiplayerMode == MultiplayerMode.Client)
             {
@@ -30,7 +30,8 @@ namespace FeatMultiplayer
                 msg.pickCoords = GScene3D.selectionCoords;
                 msg.newLine.GetSnapshot(line);
                 msg.newLine.itemStopOrigin = currentWayBuilt ?? "";
-                msg.oldLineId = lineOld?.id ?? -1;
+                msg.lineModifiedId = lineModified?.id ?? -1;
+                msg.lineCopiedId = lineCopied?.id ?? -1;
                 SendHost(msg);
 
                 suppressLineCreateItemPicking = true;
@@ -42,7 +43,7 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SWays), nameof(SWays.CreateLine))]
-        static void Patch_SWays_CreateLine_Post(CLine line, CLine lineOld)
+        static void Patch_SWays_CreateLine_Post(CLine line, CLine lineModified, CLine lineCopied)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
@@ -219,7 +220,7 @@ namespace FeatMultiplayer
                 msg.newLine.ApplySnapshot(cline, itemLookup, true);
 
                 int numVehiclesToCopy;
-                if (lineLookup.TryGetValue(msg.oldLineId, out var oldLine))
+                if (lineLookup.TryGetValue(msg.lineModifiedId, out var oldLine))
                 {
                     cline.itemTransported = oldLine.itemTransported;
                     numVehiclesToCopy = oldLine.vehicles.Count;
@@ -239,7 +240,8 @@ namespace FeatMultiplayer
                 var msgResponse = new MessageUpdateFinishLine();
                 msgResponse.pickItem = cline.itemTransported == null || oldLine == null;
                 msgResponse.pickCoords = msg.pickCoords;
-                msgResponse.oldLineId = msg.oldLineId;
+                msgResponse.lineModifiedId = msg.lineModifiedId;
+                msgResponse.lineCopiedId = msg.lineCopiedId;
                 msgResponse.line.GetSnapshot(cline);
                 msg.sender.Send(msgResponse);
 
@@ -267,7 +269,7 @@ namespace FeatMultiplayer
                 var itemLookup = GetItemsDictionary();
                 var lineLookup = GetLineDictionary();
 
-                if (lineLookup.TryGetValue(msg.oldLineId, out var oldLine))
+                if (lineLookup.TryGetValue(msg.lineModifiedId, out var oldLine))
                 {
                     oldLine.UpdateStopDataOrginEnd(true, true);
                     GWays.lines.Remove(oldLine);

@@ -14,20 +14,23 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal readonly SnapshotLine newLine = new();
-        internal int oldLineId;
+        internal int lineModifiedId;
+        internal int lineCopiedId;
         internal int2 pickCoords;
 
         public override void Encode(BinaryWriter output)
         {
             newLine.Encode(output);
-            output.Write(oldLineId);
+            output.Write(lineModifiedId);
+            output.Write(lineCopiedId);
             output.Write(pickCoords);
         }
 
         void Decode(BinaryReader input)
         {
             newLine.Decode(input);
-            oldLineId = input.ReadInt32();
+            lineModifiedId = input.ReadInt32();
+            lineCopiedId = input.ReadInt32();
             pickCoords = input.ReadInt2();
         }
 
