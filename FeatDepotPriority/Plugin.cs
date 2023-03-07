@@ -508,7 +508,7 @@ namespace FeatDepotPriority
             SaveState();
         }
 
-        static int2 copyCoordsFrom = int2.negative;
+        // static int2 copyCoordsFrom = int2.negative;
         static int copyIncrements;
 
         [HarmonyPrefix]
@@ -517,12 +517,7 @@ namespace FeatDepotPriority
         {
             if (__instance is CItem_ContentDepot)
             {
-                if (copyCoordsFrom == int2.negative)
-                {
-                    copyCoordsFrom = coordsFrom;
-                }
-
-                if (priorityDictionary.TryGetValue(copyCoordsFrom, out var p))
+                if (priorityDictionary.TryGetValue(coordsFrom, out var p))
                 {
                     int delta = 0;
 
@@ -551,14 +546,21 @@ namespace FeatDepotPriority
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(SSceneHud_Selection), nameof(SSceneHud_Selection.ToggleCopy2))]
-        static void SSceneHud_Selection_ToggleCopy(bool state)
+        [HarmonyPatch(typeof(SSceneHud_Selection), "OnValueChange_ToggleCopy")]
+        static void SSceneHud_Selection_OnValueChange_ToggleCopy(bool value)
         {
-            if (!state)
+            if (!value)
             {
-                copyCoordsFrom = int2.negative;
+                // copyCoordsFrom = int2.negative;
                 copyIncrements = 0;
             }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(SScene3D), nameof(SScene3D.Select))]
+        static void SScene3D_Select()
+        {
+            copyIncrements = 0;
         }
 
         [HarmonyPostfix]
