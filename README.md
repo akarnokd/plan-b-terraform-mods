@@ -55,6 +55,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 3. *[One time only]* Run the game. Quit the game
     - You should now see the `BepInEx\plugins` directory in the game's directory
 4. Unpack the mod zip into the `BepInEx\plugins` directory.
+    - [Visit the download page](https://github.com/akarnokd/plan-b-terraform-mods/releases/latest) and **look for the `akarnokd-YYYYY.zip` files!**
     - I highly recommend keeping the directory structure of the zip intact, so, for example, it will look like `BepInEx\plugins\akarnokd - (Feat) Add City Names`
     - It makes updating or removing mods much easier.
 5. If the mods don't appear to work, check the `BepInEx\OutputLog.log` for errors.
