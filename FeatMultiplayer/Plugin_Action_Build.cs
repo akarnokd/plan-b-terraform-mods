@@ -3,6 +3,7 @@
 
 using BepInEx;
 using HarmonyLib;
+using System;
 
 namespace FeatMultiplayer
 {
@@ -21,6 +22,23 @@ namespace FeatMultiplayer
 
         static MessageUpdateDepotDrones deferredDepotDrones;
 
+        static void SuppressRecipePickAndCopyPre()
+        {
+            if (suppressRecipePickAndCopy)
+            {
+                suppressRecipePickAndCopyCoords = GScene3D.duplicatedCoords;
+                GScene3D.duplicatedCoords = new int2(1_000_000_000, 1_000_000_000);
+            }
+        }
+
+        static void SuppressRecipePickAndCopyPost()
+        {
+            if (suppressRecipePickAndCopy)
+            {
+                GScene3D.duplicatedCoords = suppressRecipePickAndCopyCoords;
+            }
+        }
+
         static bool BuildPre(CItem_Content __instance, int2 coords)
         {
             if (!suppressBuildNotification && multiplayerMode == MultiplayerMode.Client)
@@ -32,14 +50,7 @@ namespace FeatMultiplayer
                 LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
                 return false;
             }
-            if (multiplayerMode == MultiplayerMode.Host)
-            {
-                if (suppressRecipePickAndCopy)
-                {
-                    suppressRecipePickAndCopyCoords = GScene3D.duplicatedCoords;
-                    GScene3D.duplicatedCoords = int2.negative;
-                }
-            }
+            SuppressRecipePickAndCopyPre();
             return true;
         }
 
@@ -53,11 +64,8 @@ namespace FeatMultiplayer
                 SendAllClients(msg);
                 LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
 
-                if (suppressRecipePickAndCopy)
-                {
-                    GScene3D.duplicatedCoords = suppressRecipePickAndCopyCoords;
-                }
             }
+            SuppressRecipePickAndCopyPost();
         }
 
         [HarmonyPrefix]
@@ -76,7 +84,7 @@ namespace FeatMultiplayer
 
                     // capture if copying of configuration is needed
                     msg.copyMode = __instance.recipes.Length > 1
-                        && !GScene3D.duplicatedCoords.Negative
+                        && GScene3D.duplicatedCoords.Negative
                         && !(__instance is CItem_ContentCityInOut); 
 
                     msg.copyFrom = ____firstBuildCoords;
@@ -92,6 +100,7 @@ namespace FeatMultiplayer
                     deferCopyDestination = int2.negative;
                 }
             }
+            SuppressRecipePickAndCopyPre();
             return true;
         }
 
@@ -115,8 +124,11 @@ namespace FeatMultiplayer
                     {
                         Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
                     }
+
                 }
             }
+
+            SuppressRecipePickAndCopyPost();
         }
 
         internal struct BuildHasPriorStack
@@ -140,7 +152,7 @@ namespace FeatMultiplayer
                     var msg = new MessageActionBuild();
                     msg.coords = coords;
                     msg.id = __instance.id;
-                    msg.copyMode = !GScene3D.duplicatedCoords.Negative
+                    msg.copyMode = GScene3D.duplicatedCoords.Negative
                         && ContentAt(coords) is not CItem_ContentDepot;
                     msg.copyFrom = ____firstBuildCoords;
                     SendHost(msg);
@@ -161,8 +173,10 @@ namespace FeatMultiplayer
                         __state.has = true;
                         __state.stack = __instance.GetStack(coords, 0);
                     }
+
                 }
             }
+            SuppressRecipePickAndCopyPre();
             return true;
         }
 
@@ -206,7 +220,9 @@ namespace FeatMultiplayer
                 {
                     SendAllClients(dd);
                 }
+
             }
+            SuppressRecipePickAndCopyPost();
         }
 
         [HarmonyPrefix]
@@ -276,7 +292,7 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_Content), "Build")]
+        [HarmonyPatch(typeof(CItem_ContentForest), "Build")]
         static void Patch_CItem_ContentForest_Build_Post(CItem_ContentForest __instance, int2 coords)
         {
             BuildPost(__instance, coords);
@@ -359,6 +375,13 @@ namespace FeatMultiplayer
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentStock), "CopyData")]
+        static bool Patch_CItem_ContentStock_CopyData(CItem_ContentStock __instance, int2 coordsFrom, int2 coordsTo)
+        {
+            return __instance.GetStacks(coordsFrom) != null && __instance.GetStacks(coordsTo) != null;
+        }
+
         // -----------------------------------------------------------------------
         // Message receivers
         // -----------------------------------------------------------------------
@@ -403,11 +426,11 @@ namespace FeatMultiplayer
                             msg.sender.Send(msg); 
 
                             // everyone else, perform a no-copy no recipe-picking build
-                            var msg2 = new MessageActionBuild();
-                            msg2.id = msg.id;
-                            msg2.coords = msg.coords;
-                            msg2.overrideId = msg.overrideId;
-                            SendAllClientsExcept(msg.sender, msg);
+                            var msgToOtherClients = new MessageActionBuild();
+                            msgToOtherClients.id = msg.id;
+                            msgToOtherClients.coords = msg.coords;
+                            msgToOtherClients.overrideId = msg.overrideId;
+                            SendAllClientsExcept(msg.sender, msgToOtherClients);
 
                             // make sure the drones created come after the client has seen the build command
                             var dd = deferredDepotDrones;
@@ -447,6 +470,7 @@ namespace FeatMultiplayer
                             {
                                 if (msg.copyFrom == int2.negative)
                                 {
+                                    LogDebug("Show Recipe Picking Dialog for " + msg.coords);
                                     SSceneSingleton<SScenePopup>.Inst.ActivateAndShow(false, true, SLoc.Get("Popup_RecipePicking"), null);
 
                                     if (content is CItem_ContentDepot)
