@@ -76,7 +76,7 @@ namespace LibCommon
                 {
                     cs.words.Add("");
                 }
-                cs.words[languageIndex] = kv.Value.Replace("\\n", "\n");
+                cs.words[languageIndex] = kv.Value.Replace("\\n", "\n").Replace("\\t", "\t");
             }
 
             return true;

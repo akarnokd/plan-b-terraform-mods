@@ -19,7 +19,7 @@ namespace FeatMultiplayer
         internal void GetSnapshot(CLine line)
         {
             id = line.id;
-            itemStopOrigin = line.itemStopOrigin?.codeName ?? "";
+            itemStopOrigin = line.ItemStop?.codeName ?? "";
             itemTransported = line.itemTransported?.codeName ?? "";
 
             foreach (var stop in line.stops)
@@ -65,13 +65,13 @@ namespace FeatMultiplayer
         }
         internal CLine Create(Dictionary<string, CItem> itemDictionary)
         {
-            var result = new CLine(int2.negative);
+            var result = new CLine(int2.negative, null);
             result.stops.Clear();
 
             result.id = id;
             if (itemDictionary.TryGetValue(itemStopOrigin, out var item))
             {
-                result.itemStopOrigin = item as CItem_WayStop;
+                Haxx.cLineItemStop(result) = item as CItem_WayStop;
             }
             itemDictionary.TryGetValue(itemTransported, out result.itemTransported);
 
@@ -100,11 +100,11 @@ namespace FeatMultiplayer
             line.id = id;
             if (itemDictionary.TryGetValue(itemStopOrigin, out var item))
             {
-                line.itemStopOrigin = item as CItem_WayStop;
+                Haxx.cLineItemStop(line) = item as CItem_WayStop;
             }
             else
             {
-                line.itemStopOrigin = null;
+                Haxx.cLineItemStop(line) = null;
             }
             itemDictionary.TryGetValue(itemTransported, out line.itemTransported);
 

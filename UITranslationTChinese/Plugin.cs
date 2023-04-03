@@ -98,7 +98,7 @@ namespace UITranslationTChinese
 
                 if (____dicoLoc.TryGetValue(lkey, out var cs))
                 {
-                    cs.words[languageIndex] = lvalue.Replace("\\n", "\n");
+                    cs.words[languageIndex] = lvalue.Replace("\\n", "\n").Replace("\\t", "\t");
                     cs.CheckValidity();
                 }
             }

@@ -189,7 +189,7 @@ namespace FeatMultiplayer
 
                 if (content is CItem_WayStop stop)
                 {
-                    var cline = new CLine(msg.coords);
+                    var cline = new CLine(msg.coords, null);
                     cline.id = msg.lineId;
 
                     Haxx.cItemWayStopIsReverse(stop) = msg.reverse;
@@ -216,7 +216,7 @@ namespace FeatMultiplayer
                 var lineLookup = GetLineDictionary();
                 var itemLookup = GetItemsDictionary();
 
-                var cline = new CLine(msg.newLine.stops[0].coords);
+                var cline = new CLine(msg.newLine.stops[0].coords, null);
                 msg.newLine.ApplySnapshot(cline, itemLookup, true);
 
                 int numVehiclesToCopy;
@@ -275,7 +275,7 @@ namespace FeatMultiplayer
                     GWays.lines.Remove(oldLine);
                 }
 
-                var cline = new CLine(msg.line.stops[0].coords);
+                var cline = new CLine(msg.line.stops[0].coords, null);
                 msg.line.ApplySnapshot(cline, itemLookup, true);
                 GWays.lines.Add(cline);
                 cline.ComputePath_Positions(true);
@@ -285,7 +285,7 @@ namespace FeatMultiplayer
 
                 GScene3D.selectionCoordsLastFrame = int2.negative;
                 GScene3D.selectionCoords = msg.line.stops[1].coords;
-                GScene3D.selectedItem = cline.itemStopOrigin;
+                GScene3D.selectedItem = cline.ItemStop;
 
                 SSceneSingleton<SSceneHud_Selection>.Inst.RefreshSelectionPanel(true);
 
@@ -392,7 +392,7 @@ namespace FeatMultiplayer
                 }
 
                 // create a new line
-                var line = new CLine(msg.line.stops[0].coords);
+                var line = new CLine(msg.line.stops[0].coords, null);
                 msg.ApplySnapshot(line);
                 GWays.lines.Add(line);
             }

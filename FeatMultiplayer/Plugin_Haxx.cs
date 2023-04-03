@@ -42,6 +42,8 @@ namespace FeatMultiplayer
 
             Haxx.cItemWayStopIsReverse = AccessTools.FieldRefAccess<CItem_WayStop, bool>("_isReverse");
             Haxx.cItemWayStopBuildModeLastFrame = AccessTools.FieldRefAccess<CItem_WayStop, int>("_buildModeLastFrame");
+
+            Haxx.cLineItemStop = AccessTools.FieldRefAccess<CLine, CItem_WayStop>("_itemStop");
         }
     }
 
@@ -75,6 +77,8 @@ namespace FeatMultiplayer
         internal static MethodInfo _sBlocksOnChangeItem;
 
         static Action<int2, bool, bool, bool> _sBlocksOnChangeItemDelegate;
+
+        internal static AccessTools.FieldRef<CLine, CItem_WayStop> cLineItemStop;
 
         internal static void SBlocks_OnChangeItem(int2 c, bool updateNeighbors = false, bool updateGroundToo = false, bool containersOnly = false)
         {

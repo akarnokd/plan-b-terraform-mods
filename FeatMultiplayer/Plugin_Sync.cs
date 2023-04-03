@@ -15,6 +15,8 @@ namespace FeatMultiplayer
 
             FullSync<MessageSyncAllWater>(session);
 
+            FullSync<MessageSyncAllWaterFlow>(session);
+
             FullSync<MessageSyncAllContentId>(session);
 
             FullSync<MessageSyncAllContentData>(session);

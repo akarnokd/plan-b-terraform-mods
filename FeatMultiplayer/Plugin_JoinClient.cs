@@ -16,6 +16,7 @@ namespace FeatMultiplayer
         static MessageSyncAllFlags syncAllFlags;
         static MessageSyncAllAltitude syncAllAltitude;
         static MessageSyncAllWater syncAllWater;
+        static MessageSyncAllWaterFlow syncAllWaterFlow;
         static MessageSyncAllContentId syncAllContentId;
         static MessageSyncAllContentData syncAllContentData;
         static MessageSyncAllGroundId syncAllGroundId;
@@ -48,6 +49,7 @@ namespace FeatMultiplayer
             syncAllFlags = null;
             syncAllAltitude = null;
             syncAllWater = null;
+            syncAllWaterFlow = null;
             syncAllContentId = null;
             syncAllContentData = null;
             syncAllGroundId = null;
@@ -154,6 +156,10 @@ namespace FeatMultiplayer
 
             yield return WaitForField(() => syncAllWater, () => syncAllWater = null);
 
+            yield return sload.LoadingStep(25f, "Waiting for GHexes.waterFlow", 0);
+
+            yield return WaitForField(() => syncAllWaterFlow, () => syncAllWaterFlow = null);
+
             yield return sload.LoadingStep(26f, "Waiting for GHexes.contentId", 0);
 
             yield return WaitForField(() => syncAllContentId, () => syncAllContentId = null);
@@ -223,6 +229,9 @@ namespace FeatMultiplayer
 
             yield return sload.LoadingStep(74f, new Action(SSingleton<SRain>.Inst.Generate), 0);
 
+            yield return sload.LoadingStep(75f, new Action(SSingleton<SWater>.Inst.GenerateWaterFlow), 0);
+
+            yield return sload.LoadingStep(76f, "SCamera Reset", 0);
             SSingleton<SCamera>.Inst.Reset(true);
 
             yield return sload.LoadingStep(82f, new Action(SSingleton<SViewWorld>.Inst.GenerateMeshes), 0);
@@ -231,7 +240,9 @@ namespace FeatMultiplayer
 
             yield return sload.LoadingStep(85f, new Action(SSingleton<SViewOverlay>.Inst.GenerateMeshes), 0);
 
-            yield return sload.LoadingStep(86f, new Action(SSingleton<SWater>.Inst.GenerateMesh), 0);
+            yield return sload.LoadingStep(86f, new Action(SSingleton<SViewWater>.Inst.GenerateMesh), 0);
+
+            yield return sload.LoadingStep(87f, new Action(SSingleton<SViewWaterflow>.Inst.GenerateMesh), 0);
 
             yield return sload.LoadingStep(90f, "Loading finalization", 0);
 
@@ -359,6 +370,16 @@ namespace FeatMultiplayer
                 return;
             }
             syncAllWater = msg;
+        }
+
+        static void ReceiveMessageSyncAllWaterFlow(MessageSyncAllWaterFlow msg)
+        {
+            if (multiplayerMode != MultiplayerMode.ClientJoin)
+            {
+                LogDebug("Receive" + msg.GetType() + " ignored in " + multiplayerMode);
+                return;
+            }
+            syncAllWaterFlow = msg;
         }
 
         static void ReceiveMessageSyncAllContentId(MessageSyncAllContentId msg)

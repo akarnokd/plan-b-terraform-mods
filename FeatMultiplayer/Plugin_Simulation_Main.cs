@@ -73,6 +73,10 @@ namespace FeatMultiplayer
                 mainTelemetry.AddTelemetryCheckpoint("SViewOverlay.Update");
                 SSingleton<SWater>.Inst.Update();
                 mainTelemetry.AddTelemetryCheckpoint("SWater.Update");
+                SSingleton<SViewWater>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SViewWater.Update");
+                SSingleton<SViewWaterflow>.Inst.Update();
+                mainTelemetry.AddTelemetryCheckpoint("SViewWaterflow.Update");
 
                 bool paused = isHost && __instance.IsPausedInGame();
                 // TODO the Update methods

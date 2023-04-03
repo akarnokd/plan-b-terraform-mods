@@ -62,8 +62,8 @@ namespace MiscDebugOffline
             string f = dir + "\\..\\..\\..\\Plan B Terraform_Data\\Plugins\\x86_64\\P" + "l" + "a" + "n" + "B" + "_" + "D" + "l" + "l" + "." + "d" + "l" + "l";
             string f2 = f + ".bak";
 
-            string h0 = "f4c2ee857fa66fcc5a7381903774d73e";
-            string h1 = "baf5aa35e46aab17fff7a8943dfe3db0";
+            string h0 = "bad9e02f2b1f3f2a50ab789f06e1da9f";
+            string h1 = "10142a14d4fda1e385c6a56c24249759";
 
             if (File.Exists(f))
             {
@@ -85,11 +85,12 @@ namespace MiscDebugOffline
                     {
                         0x75, 0x12, 0x48, 0xC7,
                         0xC0, 0xFF, 0xFF, 0xFF,
-                        0xFF, 0x2B, 0x05, 0xB2,
-                        0x12, 0x01, 0x00, 0xE9,
+                        0xFF, 0x2B, 0x05, 0x12,
+                        0x25, 0x01, 0x00, 0xE9,
                         0x0A, 0x09, 0x00, 0x00
                     };
 
+                    var notfoundAtAll = true;
                     var nmax = bytes.Length - old.Length;
                     for (int i = 0; i < nmax; i++)
                     {
@@ -120,14 +121,19 @@ namespace MiscDebugOffline
                                 bytes[i + j] = 0x90;
                             }
                             logger.LogInfo("    patching");
+                            notfoundAtAll = false;
                             File.WriteAllBytes(f, bytes);
                             break;
                         }
                     }
+                    if (notfoundAtAll)
+                    {
+                        logger.LogInfo("    pattern not found");
+                    }
                 }
                 else
                 {
-                    logger.LogWarning("    original changed");
+                    logger.LogWarning("    dragon needed");
                 }
 
                 logger.LogInfo("    Done.");

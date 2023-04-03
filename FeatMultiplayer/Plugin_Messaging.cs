@@ -36,6 +36,7 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageSyncAllGroundData>(ReceiveMessageSyncAllGroundData);
             AddMessageRegistry<MessageSyncAllGroundId>(ReceiveMessageSyncAllGroundId);
             AddMessageRegistry<MessageSyncAllWater>(ReceiveMessageSyncAllWater);
+            AddMessageRegistry<MessageSyncAllWaterFlow>(ReceiveMessageSyncAllWaterFlow);
 
             AddMessageRegistry<MessageSyncAllMain>(ReceiveMessageSyncAllMain);
             AddMessageRegistry<MessageSyncAllGame>(ReceiveMessageSyncAllGame);
