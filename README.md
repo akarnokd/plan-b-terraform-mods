@@ -99,6 +99,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 - [Hungarian Translation](#hungarian-translation) - Hungarian Translation (Magyar fordítás).
 - [Traditional Chinese Translation](#traditional-chinese-translation) - Traditional Chinese Translation (繁體中文).
+- [Vietnamese Translation](#vietnamese-translation) - Vietnamese Translation (Tiếng Việt).
 
 ### Cheats
 
@@ -1126,3 +1127,15 @@ Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's 
 FramerateDivider = 1
 ```
 </details>
+
+## Vietnamese Translation
+
+Adds the **Vietnamese (Tiếng Việt)** language option and translated labels to the game.
+
+Thêm tùy chọn ngôn ngữ tiếng Việt và nhãn dịch vào trò chơi.
+
+Translation kindly provided by **-skull-#0283** on Discord.
+
+#### Configuration
+
+Not relevant for end users; contains an option to dump languages to see the diffs between versions.
