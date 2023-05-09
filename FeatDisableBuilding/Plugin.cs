@@ -310,6 +310,7 @@ namespace FeatDisableBuilding
         static void CItem_Content_Destroy(int2 coords)
         {
             disabledLocations.Remove(coords);
+            SaveState();
         }
 
         static void SaveState()
