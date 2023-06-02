@@ -56,6 +56,7 @@ namespace FeatMultiplayer
                 if (itemsDictionary.TryGetValue(isnp.codeName, out var item))
                 {
                     item.nbOwned = isnp.count;
+                    item.nbOwnedMax = isnp.max;
                 }
                 else
                 {
@@ -101,6 +102,7 @@ namespace FeatMultiplayer
             {
                 output.Write(item.codeName);
                 output.Write(item.count);
+                output.Write(item.max);
 
                 codeNameTable.Add(item.codeName, (byte)codeNameTable.Count);
             }
@@ -144,6 +146,7 @@ namespace FeatMultiplayer
                 items.Add(isnp);
                 isnp.codeName = input.ReadString();
                 isnp.count = input.ReadInt32();
+                isnp.max = input.ReadInt32();
 
                 codeNameTable.Add((byte)codeNameTable.Count, isnp.codeName);
             }

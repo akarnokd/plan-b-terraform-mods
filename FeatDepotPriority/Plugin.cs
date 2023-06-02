@@ -512,12 +512,12 @@ namespace FeatDepotPriority
         static int copyIncrements;
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_Content), "Copy")]
-        static void CItem_Content_Copy_Pre(CItem_Content __instance, int2 coordsFrom, int2 coordsTo)
+        [HarmonyPatch(typeof(CItem_ContentDepot), "Build")]
+        static void CItem_Content_Copy_Pre(CItem_ContentDepot __instance, int2 coords)
         {
-            if (__instance is CItem_ContentDepot)
+            if (GScene3D.duplicatedCoords.Positive)
             {
-                if (priorityDictionary.TryGetValue(coordsFrom, out var p))
+                if (priorityDictionary.TryGetValue(GScene3D.duplicatedCoords, out var p))
                 {
                     int delta = 0;
 
@@ -539,7 +539,7 @@ namespace FeatDepotPriority
                         copyIncrements += delta;
                         newp += delta;
                     }
-                    priorityDictionary[coordsTo] = newp;
+                    priorityDictionary[coords] = newp;
                     SaveState();
                 }
             }

@@ -122,7 +122,8 @@ namespace FeatMultiplayer
 
                     if (deferCopySource != int2.negative)
                     {
-                        Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
+                        // FIXME copy changed
+                        // Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
                     }
 
                 }
@@ -197,7 +198,8 @@ namespace FeatMultiplayer
 
                 if (deferCopySource != int2.negative)
                 {
-                    Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
+                    // FIXME copy changed
+                    // Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
                 }
                 // reapply stack after the copy above might have destroyed it
                 if (__state.has)
@@ -299,48 +301,6 @@ namespace FeatMultiplayer
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_Content), "Copy")]
-        static bool Patch_CItem_Content_Copy(CItem_Content __instance, int2 coordsFrom, int2 coordsTo)
-        {
-            if (deferCopy)
-            {
-                LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ") deferred");
-                deferCopySource = coordsFrom;
-                deferCopyDestination = coordsTo;
-                return false;
-            }
-            if (!suppressCopyNotification)
-            {
-                if (multiplayerMode == MultiplayerMode.Host)
-                {
-                    LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ")");
-
-                    var msg = new MessageActionCopy();
-                    msg.codeName = __instance.codeName;
-                    msg.fromCoords = coordsFrom;
-                    msg.toCoords = coordsTo;
-                    SendAllClients(msg);
-                }
-                else if (multiplayerMode == MultiplayerMode.Client)
-                {
-                    LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ")");
-
-                    var msg = new MessageActionCopy();
-                    msg.codeName = __instance.codeName;
-                    msg.fromCoords = coordsFrom;
-                    msg.toCoords = coordsTo;
-                    SendHost(msg);
-                    return false;
-                }
-            } 
-            else
-            {
-                LogDebug("    " + __instance.codeName + " -> CItem_Content::Copy(" + coordsFrom + ", " + coordsTo + ") while suppressed notifications");
-            }
-            return true;
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_Way), "Build")]
         static bool Patch_CItem_Way_Build_Pre(CItem_Way __instance, int2 coords)
         {
@@ -375,17 +335,9 @@ namespace FeatMultiplayer
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_ContentStock), "CopyData")]
-        static bool Patch_CItem_ContentStock_CopyData(CItem_ContentStock __instance, int2 coordsFrom, int2 coordsTo)
-        {
-            return __instance.GetStacks(coordsFrom) != null && __instance.GetStacks(coordsTo) != null;
-        }
-
         // -----------------------------------------------------------------------
         // Message receivers
         // -----------------------------------------------------------------------
-
 
         static void ReceiveMessageActionBuild(MessageActionBuild msg)
         {
@@ -445,7 +397,8 @@ namespace FeatMultiplayer
                             {
                                 if (msg.copyFrom != int2.negative)
                                 {
-                                    Haxx.cItemContentCopy.Invoke(content, new object[] { msg.copyFrom, msg.coords });
+                                    // FIXME copy changed
+                                    // Haxx.cItemContentCopy.Invoke(content, new object[] { msg.copyFrom, msg.coords });
                                 }
                             }
 
@@ -531,7 +484,8 @@ namespace FeatMultiplayer
                         suppressCopyNotification = true;
                         try
                         {
-                            Haxx.cItemContentCopy.Invoke(content, new object[] { msg.fromCoords, msg.toCoords });
+                            // FIXME copy changed
+                            // Haxx.cItemContentCopy.Invoke(content, new object[] { msg.fromCoords, msg.toCoords });
                         }
                         finally
                         {

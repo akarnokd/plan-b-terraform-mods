@@ -7,11 +7,13 @@ namespace FeatMultiplayer
     {
         internal string codeName;
         internal int count;
+        internal int max;
 
         internal void GetSnapshot(CItem item)
         {
             codeName = item.codeName;
             count = item.nbOwned;
+            max = item.nbOwnedMax;
         }
     }
 }

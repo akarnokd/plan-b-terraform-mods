@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -17,8 +18,10 @@ namespace FeatProductionLimiter
 {
     [BepInPlugin("akarnokd.planbterraformmods.featproductionlimiter", PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     [BepInDependency("akarnokd.planbterraformmods.uitranslationhungarian", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(modFeatMultiplayerGuid, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
+        const string modFeatMultiplayerGuid = "akarnokd.planbterraformmods.featmultiplayer";
 
         static ConfigEntry<bool> modEnabled;
 
@@ -53,7 +56,6 @@ namespace FeatProductionLimiter
                 "cityIn",
                 "cityOut"
             };
-        static Dictionary<string, ConfigEntry<int>> limits = new();
 
         static ConfigEntry<bool> showAll;
         static ConfigEntry<KeyCode> toggleKey;
@@ -89,6 +91,8 @@ namespace FeatProductionLimiter
         static LimiterRow limiterPanelHeaderRow;
         static GameObject limiterPanelEmpty;
 
+        static MethodInfo mpApiUpdateItemLimit;
+
         private void Awake()
         {
             // Plugin startup logic
@@ -97,11 +101,6 @@ namespace FeatProductionLimiter
 
             modEnabled = Config.Bind("General", "Enabled", true, "Is the mod enabled?");
             showAll = Config.Bind("General", "ShowAll", false, "Always show all products?");
-
-            foreach (var ids in globalProducts)
-            {
-                limits.Add(ids, Config.Bind("General", ids, 500, "Limit the production of " + ids));
-            }
 
             toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F4, "Key to toggle the limiter panel");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the panel");
@@ -117,29 +116,18 @@ namespace FeatProductionLimiter
             var iconPng = LoadPNG(Path.Combine(dir, "Icon.png"));
             icon = Sprite.Create(iconPng, new Rect(0, 0, iconPng.width, iconPng.height), new Vector2(0.5f, 0.5f));
 
+            if (Chainloader.PluginInfos.TryGetValue(modFeatMultiplayerGuid, out var pi))
+            {
+                logger.LogInfo("Mod " + modFeatMultiplayerGuid + " found. Item limit changes will sync in multiplayer.");
+                mpApiUpdateItemLimit = AccessTools.Method(pi.Instance.GetType(), "ApiUpdateItemLimit", new Type[] { typeof(CItem) });
+            }
+            else
+            {
+                logger.LogInfo("Mod " + modFeatMultiplayerGuid + " not found.");
+            }
+
             var h = Harmony.CreateAndPatchAll(typeof(Plugin));
             GUIScalingSupport.TryEnable(h);
-        }
-
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_ContentFactory), "CheckStocks2")]
-        static void CItem_ContentFactory_CheckStocks2(CRecipe recipe, ref bool __result)
-        {
-            if (modEnabled.Value)
-            {
-                foreach (var outp in recipe.outputs)
-                {
-                    if (limits.TryGetValue(outp.item.codeName, out var entry))
-                    {
-                        if (outp.item.nbOwned >= entry.Value)
-                        {
-                            __result = false;
-                            return;
-                        }
-                    }
-                }
-            }
         }
 
         [HarmonyPrefix]
@@ -308,7 +296,6 @@ namespace FeatProductionLimiter
                     items.TryGetValue(codeName, out row.item);
                     row.codeName = codeName;
                     row.name = SLoc.Get("ITEM_NAME_" + codeName);
-                    limits.TryGetValue(codeName, out row.limitConfig);
                     limiterRowsCache.Add(row);
 
                     row.gIcon = new GameObject("FeatProductionLimiterPanel_Row_" + i + "_Icon");
@@ -349,14 +336,13 @@ namespace FeatProductionLimiter
 
             foreach (var sr in limiterRowsCache)
             {
-                if (sr.limitConfig != null)
+                if (sr.item.nbOwnedMax < 0)
                 {
-                    sr.currentLimit = sr.limitConfig.Value;
-                    sr.gAmount.GetComponent<Text>().text = "<b>" + sr.currentLimit + "</b>";
+                    sr.gAmount.GetComponent<Text>().text = "<b>" + SLoc.Get("FeatProductionLimiter.Unlimited") + "</b>";
                 }
                 else
                 {
-                    sr.gAmount.GetComponent<Text>().text = "N/A";
+                    sr.gAmount.GetComponent<Text>().text = "<b>" + sr.item.nbOwnedMax + "</b>";
                 }
 
                 sr.gInventory.GetComponent<Text>().text = string.Format("{0:#,##0}", sr.item.nbOwned);
@@ -411,7 +397,18 @@ namespace FeatProductionLimiter
             {
                 comp = (a, b) =>
                 {
-                    var c = a.currentLimit.CompareTo(b.currentLimit);
+                    var limA = a.item.nbOwnedMax;
+                    var limB = b.item.nbOwnedMax;
+                    if (limA < 0 && limB >= 0)
+                    {
+                        return 1;
+                    }
+                    if (limA >= 0 && limB < 0)
+                    {
+                        return -1;
+                    }
+
+                    var c = limA.CompareTo(limB);
                     if (c == 0)
                     {
                         c = a.name.CompareTo(b.name);
@@ -612,14 +609,14 @@ namespace FeatProductionLimiter
 
                 if (i != limiterPanelOffset)
                 {
-                    CheckRowButton(rectBg2, mp, row.gZero, ChangeLimit(row, -int.MaxValue));
-                    CheckRowButton(rectBg2, mp, row.gMinus100, ChangeLimit(row, -100, true));
-                    CheckRowButton(rectBg2, mp, row.gMinus10, ChangeLimit(row, -10, true));
-                    CheckRowButton(rectBg2, mp, row.gMinus1, ChangeLimit(row, -1, true));
-                    CheckRowButton(rectBg2, mp, row.gPlus1, ChangeLimit(row, 1, true));
-                    CheckRowButton(rectBg2, mp, row.gPlus10, ChangeLimit(row, 10, true));
-                    CheckRowButton(rectBg2, mp, row.gPlus100, ChangeLimit(row, 100, true));
-                    CheckRowButton(rectBg2, mp, row.gUnlimited, ChangeLimit(row, int.MaxValue));
+                    CheckRowButton(rectBg2, mp, row.gZero, ChangeLimitZero(row));
+                    CheckRowButton(rectBg2, mp, row.gMinus100, ChangeLimit(row, -100));
+                    CheckRowButton(rectBg2, mp, row.gMinus10, ChangeLimit(row, -10));
+                    CheckRowButton(rectBg2, mp, row.gMinus1, ChangeLimit(row, -1));
+                    CheckRowButton(rectBg2, mp, row.gPlus1, ChangeLimit(row, 1));
+                    CheckRowButton(rectBg2, mp, row.gPlus10, ChangeLimit(row, 10));
+                    CheckRowButton(rectBg2, mp, row.gPlus100, ChangeLimit(row, 100));
+                    CheckRowButton(rectBg2, mp, row.gUnlimited, ChangeLimitUnlimited(row));
                 }
             }
 
@@ -653,36 +650,53 @@ namespace FeatProductionLimiter
             return true;
         }
 
-        static Action ChangeLimit(LimiterRow row, int delta, bool shiftable = false)
+        static Action ChangeLimitZero(LimiterRow row)
         {
-            if (shiftable)
+            return () => 
             {
-                return () =>
-                {
-                    long d = delta;
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    {
-                        d *= 10;
-                        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-                        {
-                            d *= 10;
-                        }
-                    }
-                    row.limitConfig.Value = (int)Clamp(0, row.limitConfig.Value + d, int.MaxValue);
-                };
-            }
-            return () => row.limitConfig.Value = (int)Clamp(0, row.limitConfig.Value + (long)delta, int.MaxValue);
+                row.item.nbOwnedMax = 0;
+                mpApiUpdateItemLimit?.Invoke(null, new object[] { row.item });
+            };
+        }
+        static Action ChangeLimitUnlimited(LimiterRow row)
+        {
+            return () =>
+            {
+                row.item.nbOwnedMax = -1;
+                mpApiUpdateItemLimit?.Invoke(null,new object[] { row.item });
+            };
         }
 
-        static long Clamp(long min, long value, long max)
+        static Action ChangeLimit(LimiterRow row, int delta)
         {
-            if (min > max)
+            return () =>
             {
-                var t = min;
-                min = max; 
-                max = t;
-            }
-            return Math.Max(min, Math.Min(value, max));
+                long d = delta;
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                {
+                    d *= 10;
+                    if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                    {
+                        d *= 10;
+                    }
+                }
+
+                long n = row.item.nbOwnedMax;
+                if (n < 0 && d < 0)
+                {
+                    row.item.nbOwnedMax = 0;
+                }
+                else
+                {
+                    if (n < 0)
+                    {
+                        n = 0;
+                    }
+                    n += d;
+                    row.item.nbOwnedMax = (int)Math.Min(int.MaxValue, Math.Max(0, n));
+                }
+                mpApiUpdateItemLimit?.Invoke(null, new object[] { row.item });
+            };
         }
 
         static void CheckRowButton(RectTransform rectBg2, Vector2 mp, GameObject button, Action onPress)
@@ -768,8 +782,6 @@ namespace FeatProductionLimiter
             internal string codeName;
             internal string name;
             internal CItem item;
-            internal int currentLimit;
-            internal ConfigEntry<int> limitConfig;
 
             internal GameObject gIcon;
             internal GameObject gName;
@@ -830,6 +842,7 @@ namespace FeatProductionLimiter
                 { "FeatProductionLimiter.Item", "<i>Item</i>" },
                 { "FeatProductionLimiter.Amount", "<i>Limit (pcs)</i>" },
                 { "FeatProductionLimiter.Inventory", "<i>Inventory (pcs)</i>" },
+                { "FeatProductionLimiter.Unlimited", "Unlimited" },
             });
 
             LibCommon.Translation.UpdateTranslations("Hungarian", new()
@@ -839,6 +852,7 @@ namespace FeatProductionLimiter
                 { "FeatProductionLimiter.Item", "<i>Név</i>" },
                 { "FeatProductionLimiter.Amount", "<i>Korlát (db)</i>" },
                 { "FeatProductionLimiter.Inventory", "<i>Készleten (db)</i>" },
+                { "FeatProductionLimiter.Unlimited", "Korlátlan" },
             });
         }
 

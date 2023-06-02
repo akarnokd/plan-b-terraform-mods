@@ -37,6 +37,7 @@ namespace FeatMultiplayer
                 if (itemLookup.TryGetValue(isnp.codeName, out var item))
                 {
                     item.nbOwned = isnp.count;
+                    item.nbOwnedMax = isnp.max;
                 }
                 else
                 {
@@ -52,6 +53,7 @@ namespace FeatMultiplayer
             {
                 output.Write(item.codeName);
                 output.Write(item.count);
+                output.Write(item.max);
             }
         }
 
@@ -65,6 +67,7 @@ namespace FeatMultiplayer
                 items.Add(isnp);
                 isnp.codeName = input.ReadString();
                 isnp.count = input.ReadInt32();
+                isnp.max = input.ReadInt32();
             }
         }
 
