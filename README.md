@@ -91,7 +91,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
 - [Live GUI Scaler](#live-gui-scaler) - Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
-- [Production Limiter](#production-limiter) - Limit the production items that go into the global storage.
+- [Production Limiter](#production-limiter) - Edit the production limits of multiple items/buildings via a dialog.
 - [Production Statistics](#production-statistics) - Show the production and consumption speed of items.
 - [VSync Limit Framerate](#vsync-limit-framerate) - Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate.
 
@@ -180,13 +180,13 @@ VehicleSpeedMaxAdd = 0
 
 ## Production Limiter
 
-Limit the production items that go into the global storage.
+Edit the production limits of multiple items/buildings via a dialog.
 
 There is an ingame button to the top-left of the screen ("Limit Prod") that opens up a dialog where each limit can be adjusted ingame (Shortcut <kbd>F4</kbd> - configurable). 
 
 You can hold <kbd>SHIFT</kbd> to change by **10x** the button's amount and  <kbd>CTRL+SHIFT</kbd> to change by **100x**. (I.e., clicking on the <kbd>+100</kbd> while holding <kbd>CTRL+SHIFT</kbd> will add **10000** to the limit.)
 
-The default is 500. Currently, the following items are supported:
+Currently, the following items are supported:
 
 - roadway
 - roadstop
@@ -233,126 +233,6 @@ Enabled = true
 # Setting type: Boolean
 # Default value: false
 ShowAll = false
-
-## Limit the production of roadway
-# Setting type: Int32
-# Default value: 500
-roadway = 500
-
-## Limit the production of roadstop
-# Setting type: Int32
-# Default value: 500
-roadstop = 500
-
-## Limit the production of truck
-# Setting type: Int32
-# Default value: 500
-truck = 500
-
-## Limit the production of railway
-# Setting type: Int32
-# Default value: 500
-railway = 500
-
-## Limit the production of railstop
-# Setting type: Int32
-# Default value: 500
-railstop = 500
-
-## Limit the production of train
-# Setting type: Int32
-# Default value: 500
-train = 500
-
-## Limit the production of extractor
-# Setting type: Int32
-# Default value: 500
-extractor = 500
-
-## Limit the production of iceExtractor
-# Setting type: Int32
-# Default value: 500
-iceExtractor = 500
-
-## Limit the production of pumpingStation
-# Setting type: Int32
-# Default value: 500
-pumpingStation = 500
-
-## Limit the production of depot
-# Setting type: Int32
-# Default value: 500
-depot = 500
-
-## Limit the production of depotMK2
-# Setting type: Int32
-# Default value: 500
-depotMK2 = 500
-
-## Limit the production of depotMK3
-# Setting type: Int32
-# Default value: 500
-depotMK3 = 500
-
-## Limit the production of factory
-# Setting type: Int32
-# Default value: 500
-factory = 500
-
-## Limit the production of factoryAssemblyPlant
-# Setting type: Int32
-# Default value: 500
-factoryAssemblyPlant = 500
-
-## Limit the production of factoryAtmExtractor
-# Setting type: Int32
-# Default value: 500
-factoryAtmExtractor = 500
-
-## Limit the production of factoryGreenhouse
-# Setting type: Int32
-# Default value: 500
-factoryGreenhouse = 500
-
-## Limit the production of factoryRecycle
-# Setting type: Int32
-# Default value: 500
-factoryRecycle = 500
-
-## Limit the production of factoryFood
-# Setting type: Int32
-# Default value: 500
-factoryFood = 500
-
-## Limit the production of landmark
-# Setting type: Int32
-# Default value: 500
-landmark = 500
-
-## Limit the production of cityDam
-# Setting type: Int32
-# Default value: 500
-cityDam = 500
-
-## Limit the production of forest_pine
-# Setting type: Int32
-# Default value: 500
-forest_pine = 500
-
-## Limit the production of forest_leavesHigh
-# Setting type: Int32
-# Default value: 500
-forest_leavesHigh = 500
-
-## Limit the production of cityIn
-# Setting type: Int32
-# Default value: 500
-cityIn = 500
-
-## Limit the production of cityOut
-# Setting type: Int32
-# Default value: 500
-cityOut = 500
 
 ## Key to toggle the limiter panel
 # Setting type: KeyCode
