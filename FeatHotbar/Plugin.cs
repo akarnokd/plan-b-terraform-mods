@@ -352,6 +352,7 @@ namespace FeatHotbar
                                     var delay = buildModeDelay.Value;
                                     if (delay > 0)
                                     {
+                                        GSceneHud.itemInBarSelected = null;
                                         SSceneSingleton<SSceneHud_ItemsBars>.Inst.StartCoroutine(EnterBuildMode(item, delay));
                                     }
                                     else
