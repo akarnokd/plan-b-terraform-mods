@@ -4,10 +4,6 @@
 using BepInEx;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using UnityEngine.UIElements;
 
 namespace FeatMultiplayer
 {
@@ -51,7 +47,6 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageActionDestroy>(ReceiveMessageActionDestroy);
             AddMessageRegistry<MessageActionRenameLandmark>(ReceiveMessageActionRenameLandmark);
             AddMessageRegistry<MessageActionReverseLine>(ReceiveMessageActionReverseLine);
-            AddMessageRegistry<MessageActionCopy>(ReceiveMessageActionCopy);
             AddMessageRegistry<MessageUpdateDepotDrones>(ReceiveMessageUpdateDepotDrones);
 
             AddMessageRegistry<MessageUpdateStackAt>(ReceiveMessageUpdateStackAt);
@@ -79,6 +74,8 @@ namespace FeatMultiplayer
             AddMessageRegistry<MessageUpdateFinishLine>(ReceiveMessageUpdateFinishLine);
             AddMessageRegistry<MessageActionRemoveLine>(ReceiveMessageActionRemoveLine);
             AddMessageRegistry<MessageActionChangeVehicleCount>(ReceiveMessageActionChangeVehicleCount);
+
+            AddMessageRegistry<MessageRenameCity>(ReceiveMessageRenameCity);
         }
 
         static void AddMessageRegistry<T>(Action<T> handler) where T : MessageBase, new()

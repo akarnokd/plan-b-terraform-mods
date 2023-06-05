@@ -28,7 +28,7 @@ namespace FeatMultiplayer
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageSyncAllWater();
+            var msg = new MessageSyncAllWaterFlow();
             msg.Decode(input);
             message = msg;
             return true;

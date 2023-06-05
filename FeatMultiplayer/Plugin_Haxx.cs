@@ -32,8 +32,6 @@ namespace FeatMultiplayer
 
             Haxx.cVehicleLoadWait = AccessTools.FieldRefAccess<CVehicle, float>("_loadWait");
 
-            Haxx.cItemContentFirstBuildCoords = AccessTools.FieldRefAccess<CItem_Content, int2>("_firstBuildCoords");
-
             Haxx.cItemContentBuild = AccessTools.Method(typeof(CItem_Content), "Build", new[] { typeof(int2), typeof(bool) });
 
             Haxx._sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
@@ -65,8 +63,6 @@ namespace FeatMultiplayer
         internal static AccessTools.FieldRef<CVehicle, int> cVehicleStopObjective;
 
         internal static AccessTools.FieldRef<CVehicle, float> cVehicleLoadWait;
-
-        internal static AccessTools.FieldRef<CItem_Content, int2> cItemContentFirstBuildCoords;
 
         internal static MethodInfo cItemContentBuild;
 

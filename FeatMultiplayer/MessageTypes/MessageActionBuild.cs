@@ -15,26 +15,29 @@ namespace FeatMultiplayer
 
         internal int2 coords;
         internal byte id;
-        internal bool copyMode;
         internal int2 copyFrom = int2.negative;
         internal byte overrideId;
+        internal bool allowRecipePick;
+        internal bool firstBuild;
 
         public override void Encode(BinaryWriter output)
         {
             output.Write(coords);
             output.Write(id);
-            output.Write(copyMode);
             output.Write(copyFrom);
             output.Write(overrideId);
+            output.Write(allowRecipePick);
+            output.Write(firstBuild);
         }
 
         void Decode(BinaryReader input)
         {
             coords = new int2(input.ReadInt32(), input.ReadInt32());
             id = input.ReadByte();
-            copyMode = input.ReadBoolean();
             copyFrom = input.ReadInt2();
             overrideId = input.ReadByte();
+            allowRecipePick = input.ReadBoolean();
+            firstBuild = input.ReadBoolean();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
@@ -51,8 +54,10 @@ namespace FeatMultiplayer
 
             sb.Append(nameof(coords)).Append(" = ").Append(coords).Append(", ")
                 .Append(nameof(id)).Append(" = ").Append(id).Append(", ")
-                .Append(nameof(copyMode)).Append(" = ").Append(copyMode).Append(", ")
-                .Append(nameof(copyFrom)).Append(" = ").Append(copyFrom)
+                .Append(nameof(copyFrom)).Append(" = ").Append(copyFrom).Append(", ")
+                .Append(nameof(overrideId)).Append(" = ").Append(overrideId).Append(", ")
+                .Append(nameof(allowRecipePick)).Append(" = ").Append(allowRecipePick).Append(", ")
+                .Append(nameof(firstBuild)).Append(" = ").Append(firstBuild)
                 ;
 
             return sb.ToString();

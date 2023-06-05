@@ -37,14 +37,22 @@ namespace FeatMultiplayer
 
         static void ReceiveMessageUpdateItem(MessageUpdateItem msg)
         {
-            if (multiplayerMode == MultiplayerMode.Host)
+            if (multiplayerMode == MultiplayerMode.ClientJoin)
             {
-                msg.ApplySnapshot();
-                SendAllClientsExcept(msg.sender, msg);
+                LogDebug("ReceiveMessageUpdateItem: Deferring " + msg.GetType());
+                deferredMessages.Enqueue(msg);
             }
             else
             {
-                msg.ApplySnapshot();
+                if (multiplayerMode == MultiplayerMode.Host)
+                {
+                    msg.ApplySnapshot();
+                    SendAllClientsExcept(msg.sender, msg);
+                }
+                else
+                {
+                    msg.ApplySnapshot();
+                }
             }
         }
     }

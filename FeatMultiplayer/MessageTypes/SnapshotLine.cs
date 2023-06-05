@@ -106,7 +106,11 @@ namespace FeatMultiplayer
             {
                 Haxx.cLineItemStop(line) = null;
             }
-            itemDictionary.TryGetValue(itemTransported, out line.itemTransported);
+
+            
+            itemDictionary.TryGetValue(itemTransported, out var itemTransportedObj);
+
+            line.SetItemTransported(itemTransportedObj);
 
             for (int i = 0; i < stops.Count; i++)
             {

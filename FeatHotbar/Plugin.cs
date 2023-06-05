@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using LibCommon;
 using static LibCommon.GUITools;
 using static UnityEngine.ParticleSystem.PlaybackState;
+using System.Collections;
 
 namespace FeatHotbar
 {
@@ -31,6 +32,7 @@ namespace FeatHotbar
         static ConfigEntry<int> fontSize;
         static ConfigEntry<int> fontSizeSmall;
         static ConfigEntry<KeyCode> toggleKey;
+        static ConfigEntry<int> buildModeDelay;
 
         static ManualLogSource logger;
 
@@ -111,6 +113,7 @@ namespace FeatHotbar
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the building selection panel");
             fontSizeSmall = Config.Bind("General", "FontSizeSmall", 12, "The font size of the total current count on buildings");
             toggleKey = Config.Bind("General", "ToggleKey", KeyCode.H, "The key to show/hide the hotbar");
+            buildModeDelay = Config.Bind("General", "BuildModeDelay", 100, "Delay the build mode activation by this amount of milliseconds. Should help with click-drag misplacements near the hotbar.");
 
             hotbarPanelSlotAssignments = new string[numSubpanels, numButtonsPerPanel];
             loadouts = new ConfigEntry<string>[numSubpanels];
@@ -346,7 +349,15 @@ namespace FeatHotbar
                                 if (item != null)
                                 {
                                     SSceneSingleton<SSceneHud_ItemsBars>.Inst.toggleDelete.isOn = false;
-                                    GSceneHud.itemInBarSelected = item;
+                                    var delay = buildModeDelay.Value;
+                                    if (delay > 0)
+                                    {
+                                        SSceneSingleton<SSceneHud_ItemsBars>.Inst.StartCoroutine(EnterBuildMode(item, delay));
+                                    }
+                                    else
+                                    {
+                                        GSceneHud.itemInBarSelected = item;
+                                    }
                                 }
                             }
                         }
@@ -357,6 +368,12 @@ namespace FeatHotbar
                     }
                 }
             }
+        }
+
+        static IEnumerator EnterBuildMode(CItem item, int delay)
+        {
+            yield return new WaitForSecondsRealtime(delay / 1000f);
+            GSceneHud.itemInBarSelected = item;
         }
 
         static void PersistHotbar()

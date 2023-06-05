@@ -6,34 +6,42 @@ using System.Text;
 
 namespace FeatMultiplayer
 {
-    internal class MessageActionCopy : MessageBase
+    internal class MessageRenameCity : MessageBase
     {
-        const string messageCode = "ActionCopy";
+        const string messageCode = "RenameCity";
         static readonly byte[] messageCodeBytes = Encoding.UTF8.GetBytes(messageCode);
         public override string MessageCode() => messageCode;
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
-        internal string codeName;
-        internal int2 fromCoords;
-        internal int2 toCoords;
+        internal int id;
+        internal string name;
+
+        public void GetSnapshot(CCity city)
+        {
+            id = city.cityId;
+            name = city.name;
+        }
+
+        public void ApplySnapshot(CCity city)
+        {
+            city.name = name;
+        }
 
         public override void Encode(BinaryWriter output)
         {
-            output.Write(codeName);
-            output.Write(fromCoords);
-            output.Write(toCoords);
+            output.Write(id);
+            output.Write(name);
         }
 
         void Decode(BinaryReader input)
         {
-            codeName = input.ReadString();
-            fromCoords = input.ReadInt2();
-            toCoords = input.ReadInt2();
+            id = input.ReadInt32();
+            name = input.ReadString();
         }
 
         public override bool TryDecode(BinaryReader input, out MessageBase message)
         {
-            var msg = new MessageActionCopy();
+            var msg = new MessageRenameCity();
             msg.Decode(input);
             message = msg;
             return true;

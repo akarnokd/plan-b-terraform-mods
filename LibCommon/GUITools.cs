@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.IO;
 using HarmonyLib;
-using Unity.Collections;
 
 namespace LibCommon
 {

@@ -17,6 +17,7 @@ namespace FeatMultiplayer
         public override byte[] MessageCodeBytes() => messageCodeBytes;
 
         internal readonly List<SnapshotDrone> drones = new();
+        internal int2 coords;
 
         internal void GetSnapshot(int startIndex, int endIndex)
         {
@@ -40,10 +41,18 @@ namespace FeatMultiplayer
                 GDrones.drones.Add(drone);
                 addDroneInGrid(drone);
             }
+            if (coords.Positive)
+            {
+                for (int i = 0; i < GDrones.drones.Count; i++)
+                {
+                    GDrones.drones[i].OnBuildingStackItemChanged(coords);
+                }
+            }
         }
 
         public override void Encode(BinaryWriter output)
         {
+            output.Write(coords);
             output.Write(drones.Count);
             foreach (var drone in drones)
             {
@@ -53,6 +62,7 @@ namespace FeatMultiplayer
 
         void Decode(BinaryReader input)
         {
+            coords = input.ReadInt2();
             int c = input.ReadInt32();
 
             for (int i = 0; i < c; i++)

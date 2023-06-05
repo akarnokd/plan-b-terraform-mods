@@ -4,6 +4,7 @@
 using BepInEx;
 using HarmonyLib;
 using System;
+using Unity.Audio;
 
 namespace FeatMultiplayer
 {
@@ -11,33 +12,13 @@ namespace FeatMultiplayer
     {
         static bool suppressBuildNotification;
 
-        static bool suppressRecipePickAndCopy;
+        //static bool suppressRecipePickAndCopy;
         static int2 suppressRecipePickAndCopyCoords;
-
-        static bool suppressCopyNotification;
-
-        static bool deferCopy;
-        static int2 deferCopySource;
-        static int2 deferCopyDestination;
+        static CRecipe[] suppressRecipePickAndCopyRecipes;
+        static readonly CRecipe[] suppressRecipePickAndCopyRecipesEmpty = new CRecipe[1];
+        static bool suppressRecipePickAndCopyFirstBuild;
 
         static MessageUpdateDepotDrones deferredDepotDrones;
-
-        static void SuppressRecipePickAndCopyPre()
-        {
-            if (suppressRecipePickAndCopy)
-            {
-                suppressRecipePickAndCopyCoords = GScene3D.duplicatedCoords;
-                GScene3D.duplicatedCoords = new int2(1_000_000_000, 1_000_000_000);
-            }
-        }
-
-        static void SuppressRecipePickAndCopyPost()
-        {
-            if (suppressRecipePickAndCopy)
-            {
-                GScene3D.duplicatedCoords = suppressRecipePickAndCopyCoords;
-            }
-        }
 
         static bool BuildPre(CItem_Content __instance, int2 coords)
         {
@@ -46,11 +27,13 @@ namespace FeatMultiplayer
                 var msg = new MessageActionBuild();
                 msg.coords = coords;
                 msg.id = __instance.id;
+                msg.copyFrom = GScene3D.duplicatedCoords;
+                msg.firstBuild = GScene3D.isDuplicatingAFirstBuild;
+                msg.allowRecipePick = true;
                 SendHost(msg);
                 LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
                 return false;
             }
-            SuppressRecipePickAndCopyPre();
             return true;
         }
 
@@ -61,170 +44,53 @@ namespace FeatMultiplayer
                 var msg = new MessageActionBuild();
                 msg.coords = coords;
                 msg.id = __instance.id;
+                msg.copyFrom = GScene3D.duplicatedCoords;
+                msg.firstBuild = GScene3D.isDuplicatingAFirstBuild;
                 SendAllClients(msg);
                 LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
 
             }
-            SuppressRecipePickAndCopyPost();
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentFactory), "Build")]
         static bool Patch_CItem_ContentFactory_Build_Pre(CItem_ContentFactory __instance, 
-            int2 coords, ref int2 ____firstBuildCoords)
+            int2 coords)
         {
-            if (!suppressBuildNotification)
-            {
-                if (multiplayerMode == MultiplayerMode.Client)
-                {
-
-                    var msg = new MessageActionBuild();
-                    msg.coords = coords;
-                    msg.id = __instance.id;
-
-                    // capture if copying of configuration is needed
-                    msg.copyMode = __instance.recipes.Length > 1
-                        && GScene3D.duplicatedCoords.Negative
-                        && !(__instance is CItem_ContentCityInOut); 
-
-                    msg.copyFrom = ____firstBuildCoords;
-                    SendHost(msg);
-
-                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
-                    return false;
-                }
-                else if (multiplayerMode == MultiplayerMode.Host)
-                {
-                    deferCopy = true;
-                    deferCopySource = int2.negative;
-                    deferCopyDestination = int2.negative;
-                }
-            }
-            SuppressRecipePickAndCopyPre();
-            return true;
+            return BuildPre(__instance, coords);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentFactory), "Build")]
         static void Patch_CItem_ContentFactory_Build_Post(CItem_ContentFactory __instance, int2 coords)
         {
-            if (!suppressBuildNotification)
-            {
-                if (multiplayerMode == MultiplayerMode.Host)
-                {
-                    deferCopy = false;
-
-                    var msg = new MessageActionBuild();
-                    msg.coords = coords;
-                    msg.id = __instance.id;
-                    SendAllClients(msg);
-                    LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
-
-                    if (deferCopySource != int2.negative)
-                    {
-                        // FIXME copy changed
-                        // Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
-                    }
-
-                }
-            }
-
-            SuppressRecipePickAndCopyPost();
-        }
-
-        internal struct BuildHasPriorStack
-        {
-            internal bool has;
-            internal CStack stack;
+            BuildPost(__instance, coords);
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentDepot), "Build")]
         static bool Patch_CItem_ContentDepot_Build_Pre(
             CItem_ContentDepot __instance, 
-            int2 coords, 
-            ref int2 ____firstBuildCoords,
-            ref BuildHasPriorStack __state)
+            int2 coords)
         {
-            if (!suppressBuildNotification)
-            {
-                if (multiplayerMode == MultiplayerMode.Client)
-                {
-                    var msg = new MessageActionBuild();
-                    msg.coords = coords;
-                    msg.id = __instance.id;
-                    msg.copyMode = GScene3D.duplicatedCoords.Negative
-                        && ContentAt(coords) is not CItem_ContentDepot;
-                    msg.copyFrom = ____firstBuildCoords;
-                    SendHost(msg);
-                    LogDebug("MessageActionBuild: Request " + __instance.codeName + " -> " + msg);
-
-                    return false;
-                }
-                else
-                if (multiplayerMode == MultiplayerMode.Host)
-                {
-                    deferCopy = true;
-                    deferCopySource = int2.negative;
-                    deferCopyDestination = int2.negative;
-
-                    // preserve any previous depot stack info
-                    if (ContentAt(coords) is CItem_ContentDepot)
-                    {
-                        __state.has = true;
-                        __state.stack = __instance.GetStack(coords, 0);
-                    }
-
-                }
-            }
-            SuppressRecipePickAndCopyPre();
-            return true;
+            return BuildPre(__instance, coords);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CItem_ContentDepot), "Build")]
         static void Patch_CItem_ContentDepot_Build_Post(CItem_ContentDepot __instance, 
-            int2 coords, ref BuildHasPriorStack __state)
+            int2 coords)
         {
-            if (!suppressBuildNotification && multiplayerMode == MultiplayerMode.Host)
+            BuildPost(__instance, coords);
+            Haxx.SBlocks_OnChangeItem(coords, true, false, false);
+            if (multiplayerMode == MultiplayerMode.Host && !suppressBuildNotification)
             {
-                deferCopy = false;
+                var msg1 = new MessageUpdateStackAt();
+                msg1.GetSnapshot(coords, 0);
+                SendAllClients(msg1);
 
-                var msg = new MessageActionBuild();
-                msg.coords = coords;
-                msg.id = __instance.id;
-                SendAllClients(msg);
-                LogDebug("MessageActionBuild: Command " + __instance.codeName + " -> " + msg);
-
-                if (deferCopySource != int2.negative)
-                {
-                    // FIXME copy changed
-                    // Haxx.cItemContentCopy.Invoke(__instance, new object[] { deferCopySource, deferCopyDestination });
-                }
-                // reapply stack after the copy above might have destroyed it
-                if (__state.has)
-                {
-                    ref var st = ref __instance.GetStack(coords, 0);
-
-                    st.item = __state.stack.item;
-                    st.nb = __state.stack.nb;
-
-                    var msgs = new MessageUpdateStackAt();
-                    msgs.GetSnapshot(coords, 0);
-                    SendAllClients(msgs);
-                }
-
-                // make sure the drones created come after the client has seen the build command
-                var dd = deferredDepotDrones;
-                deferredDepotDrones = null;
-
-                if (dd != null)
-                {
-                    SendAllClients(dd);
-                }
-
+                SignalDeferredDepotDrones();
             }
-            SuppressRecipePickAndCopyPost();
         }
 
         [HarmonyPrefix]
@@ -241,13 +107,15 @@ namespace FeatMultiplayer
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SDrones), nameof(SDrones.OnDepotBuilt))]
-        static void Patch_SDrones_OnDepotBuild_Post(ref int __state)
+        static void Patch_SDrones_OnDepotBuild_Post(int2 depotCoords, ref int __state)
         {
             if (multiplayerMode == MultiplayerMode.Host)
             {
                 var msg = new MessageUpdateDepotDrones();
+                msg.coords = depotCoords;
                 msg.GetSnapshot(__state, GDrones.drones.Count);
                 deferredDepotDrones = msg;
+                LogDebug("Deferring SDrones.OnDepotBuild at " + depotCoords);
             }
         }
 
@@ -335,6 +203,19 @@ namespace FeatMultiplayer
             }
         }
 
+        static void SignalDeferredDepotDrones()
+        {
+            // make sure the drones created come after the client has seen the build command
+            var dd = deferredDepotDrones;
+            deferredDepotDrones = null;
+
+            if (dd != null)
+            {
+                LogDebug("    UpdateDepotDrones -> " + dd.coords + ", " + dd.drones.Count);
+                SendAllClients(dd);
+            }
+        }
+
         // -----------------------------------------------------------------------
         // Message receivers
         // -----------------------------------------------------------------------
@@ -359,16 +240,24 @@ namespace FeatMultiplayer
                         if (content.nbOwned != 0)
                         {
                             // this essentially skips the custom copy logic
-                            suppressRecipePickAndCopy = true;
                             suppressBuildNotification = true;
+                            suppressLineCreateItemPicking = true;
+
+                            var copyPosSave = GScene3D.duplicatedCoords;
+                            GScene3D.duplicatedCoords = msg.copyFrom;
+                            var copyFirstSave = GScene3D.isDuplicatingAFirstBuild;
+                            GScene3D.isDuplicatingAFirstBuild = msg.firstBuild;
+
                             try
                             {
                                 Haxx.cItemContentBuild.Invoke(content, new object[] { msg.coords, false });
                             }
                             finally
                             {
-                                suppressRecipePickAndCopy = false;
                                 suppressBuildNotification = false;
+                                suppressLineCreateItemPicking = false;
+                                GScene3D.duplicatedCoords = copyPosSave;
+                                GScene3D.isDuplicatingAFirstBuild = copyFirstSave;
                             }
 
                             // CWays can change what's actually built
@@ -384,25 +273,7 @@ namespace FeatMultiplayer
                             msgToOtherClients.overrideId = msg.overrideId;
                             SendAllClientsExcept(msg.sender, msgToOtherClients);
 
-                            // make sure the drones created come after the client has seen the build command
-                            var dd = deferredDepotDrones;
-                            deferredDepotDrones = null;
-
-                            if (dd != null)
-                            {
-                                SendAllClients(dd);
-                            }
-
-                            if (msg.copyMode)
-                            {
-                                if (msg.copyFrom != int2.negative)
-                                {
-                                    // FIXME copy changed
-                                    // Haxx.cItemContentCopy.Invoke(content, new object[] { msg.copyFrom, msg.coords });
-                                }
-                            }
-
-
+                            SignalDeferredDepotDrones();
                         }
                         else
                         {
@@ -412,36 +283,19 @@ namespace FeatMultiplayer
                     else if (multiplayerMode == MultiplayerMode.Client)
                     {
                         suppressBuildNotification = true;
-                        suppressRecipePickAndCopy = true;
+                        suppressLineCreateItemPicking = !msg.allowRecipePick;
+
+                        var copyPosSave = GScene3D.duplicatedCoords;
+                        GScene3D.duplicatedCoords = msg.copyFrom;
+                        var copyFirstSave = GScene3D.isDuplicatingAFirstBuild;
+                        GScene3D.isDuplicatingAFirstBuild = msg.firstBuild;
+
                         try
                         {
                             // build without copying
 
                             Haxx.cItemContentBuild.Invoke(content, new object[] { msg.coords, false });
 
-                            if (msg.copyMode)
-                            {
-                                if (msg.copyFrom == int2.negative)
-                                {
-                                    LogDebug("Show Recipe Picking Dialog for " + msg.coords);
-                                    SSceneSingleton<SScenePopup>.Inst.ActivateAndShow(false, true, SLoc.Get("Popup_RecipePicking"), null);
-
-                                    if (content is CItem_ContentDepot)
-                                    {
-                                        SSceneSingleton<SScenePopup>.Inst.ShowItemsPickUp(msg.coords);
-                                    }
-                                    else
-                                    {
-                                        SSceneSingleton<SScenePopup>.Inst.Show_Factory_RecipePick(msg.coords);
-                                    }
-
-                                    Haxx.cItemContentFirstBuildCoords(content) = msg.coords;
-                                }
-                                else
-                                {
-                                    // don't perform the copy, a separate message will arrive
-                                }
-                            }
                             if (content is CItem_Way)
                             {
                                 GHexes.contentId[msg.coords.x, msg.coords.y] = msg.overrideId;
@@ -453,57 +307,15 @@ namespace FeatMultiplayer
                         finally
                         {
                             suppressBuildNotification = false;
-                            suppressRecipePickAndCopy = false;
+                            suppressLineCreateItemPicking = false;
+                            GScene3D.duplicatedCoords = copyPosSave;
+                            GScene3D.isDuplicatingAFirstBuild = copyFirstSave;
                         }
                     }
                 }
                 else
                 {
                     LogWarning("ReceiveMessageActionBuild: Could not find item with id " + msg.id);
-                }
-            }
-        }
-
-        static void ReceiveMessageActionCopy(MessageActionCopy msg)
-        {
-            if (multiplayerMode == MultiplayerMode.ClientJoin)
-            {
-                LogDebug("ReceiveMessageActionCopy: Deferring " + msg.GetType());
-                deferredMessages.Enqueue(msg);
-            }
-            else
-            {
-                LogDebug("ReceiveMessageActionCopy: Handling " + msg.GetType());
-
-                var itemLookup = GetItemsDictionary();
-
-                if (itemLookup.TryGetValue(msg.codeName, out var citem))
-                {
-                    if (citem is CItem_Content content)
-                    {
-                        suppressCopyNotification = true;
-                        try
-                        {
-                            // FIXME copy changed
-                            // Haxx.cItemContentCopy.Invoke(content, new object[] { msg.fromCoords, msg.toCoords });
-                        }
-                        finally
-                        {
-                            suppressCopyNotification = false;
-                        }
-                        if (multiplayerMode == MultiplayerMode.Host)
-                        {
-                            SendAllClients(msg);
-                        }
-                    }
-                    else
-                    {
-                        LogWarning("ReceiveMessageActionCopy: Item " + msg.codeName + " has the wrong type = " + citem.GetType());
-                    }
-                }
-                else
-                {
-                    LogWarning("ReceiveMessageActionCopy: Unknown item " + msg.codeName);
                 }
             }
         }
