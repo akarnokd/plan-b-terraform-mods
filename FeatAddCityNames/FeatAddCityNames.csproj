@@ -4,7 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatAddCityNames</AssemblyName>
     <Description>(Feat) Add City Names</Description>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.0.2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

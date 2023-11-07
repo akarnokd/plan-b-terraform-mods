@@ -177,7 +177,7 @@ namespace FeatMultiplayer
             GMain.frameRealTime_LastFrame = GMain.frameRealTime;
             GMain.frameRealTime = (double)Time.realtimeSinceStartup;
             GMain.frameRealTime_DeltaTime = (float)(GMain.frameRealTime - GMain.frameRealTime_LastFrame);
-            if (GInputs.debug.IsKeyDown())
+            if (GInputs.debug_v2.IsKeyDown())
             {
                 GGame.debugInfos = !GGame.debugInfos;
                 GGame.debugAllUnlocked = GGame.debugInfos && Application.isEditor;

@@ -33,13 +33,11 @@ namespace FeatMultiplayer
         {
             var sworld = SSingleton<SWorld>.Inst;
             var sdrones = SSingleton<SDrones>.Inst;
-            var addDroneInGrid = AccessTools.MethodDelegate<Action<CDrone>>(Haxx.sDronesAddDroneInGrid, sdrones);
 
             foreach (var ds in drones)
             {
                 var drone = ds.Create(sworld);
                 GDrones.drones.Add(drone);
-                addDroneInGrid(drone);
             }
             if (coords.Positive)
             {

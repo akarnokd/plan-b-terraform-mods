@@ -43,7 +43,7 @@ namespace MiscDebugOffline
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(SSteam), nameof(SSteam.GetLangage))]
+        [HarmonyPatch(typeof(SSteam), nameof(SSteam.GetLanguage))]
         static bool SSteam_GetLangage(bool ____initiliazed, ref GLoc.LanguageName __result)
         {
             if (!____initiliazed)

@@ -37,7 +37,7 @@ namespace FeatMultiplayer
             depotIndex = Haxx.cDroneDroneDepotIndex.Invoke(drone);
             depotCoords = drone.depotCoords;
             state = drone.state;
-            depotItem = drone.depotItem?.codeName ?? "";
+            depotItem = Haxx.cDroneDepot.Invoke(drone).GetStack(depotCoords).item ?.codeName ?? "";
             startTransform = Haxx.cDroneStartTransform.Invoke(drone);
             endTransform = Haxx.cDroneEndTransform.Invoke(drone);
             startTime = Haxx.cDroneStartTime.Invoke(drone);
@@ -50,7 +50,8 @@ namespace FeatMultiplayer
             Haxx.cDroneDroneDepotIndex.Invoke(drone) = depotIndex;
             drone.depotCoords = depotCoords;
             drone.state = state;
-            itemLookup.TryGetValue(depotItem, out drone.depotItem);
+            // no longer matters???
+            // itemLookup.TryGetValue(depotItem, out drone.depotItem);
             Haxx.cDroneStartTransform.Invoke(drone) = startTransform;
             Haxx.cDroneEndTransform.Invoke(drone) = endTransform;
             Haxx.cDroneStartTime.Invoke(drone) = startTime;

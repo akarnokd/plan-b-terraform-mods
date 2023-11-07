@@ -5,7 +5,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 [![Github All Releases](https://img.shields.io/github/downloads/akarnokd/plan-b-terraform-mods/total.svg)](https://github.com/akarnokd/plan-b-terraform-mods/releases)
 
-## Supported version: Early Access (0.6.9-703)
+## Supported version: Early Access (0.6.9-768)
 
 :information_source: **The plan is to support the main branch of the (Early Access) game**, depending on how differences will accumulate between it and the beta branch. Afaik, the Demo will completely go away and may return later, but it is unknown how far behind it will be kept mechanics-vise.
 
@@ -82,7 +82,6 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 - [Add City Names](#add-city-names) - Customize the selection of city names the game will use to generate the map.
 - [City Population Label](#city-population-label) - Display the population number underneath the city label in the main view and/or minimap.
-- [Depot Priority](#depot-priority) - Set priorities on depots so containers will be force-transferred towards higher priority depots.
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
 - [Go to Exhausted Extractors](#go-to-exhausted-extractors) - Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [Hotbar](#hotbar) - Adds a bar at the bottom of the screen with 3 subpanels and 9 slots each for quickly selecting a building to be built.
@@ -93,7 +92,6 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
 - [Production Limiter](#production-limiter) - Edit the production limits of multiple items/buildings via a dialog.
 - [Production Statistics](#production-statistics) - Show the production and consumption speed of items.
-- [VSync Limit Framerate](#vsync-limit-framerate) - Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate.
 
 ### Translations
 
@@ -942,6 +940,8 @@ Loadout3 = ,,,,,,,,
 
 ## Depot Priority
 
+:warning: Discontinued - Vanilla has now a similar feature. :warning:
+
 Set priorities on depots so containers will be force-transferred towards higher priority depots.
 
 Select a depot and see the small panel on the bottom-left of the screen. The up and down buttons can adjust the priority. You can have any priority number, only the relative numbers between depots in each other's reach matter.
@@ -994,6 +994,8 @@ OverlayFontScale = 15
 </details>
 
 ## VSync Limit Framerate
+
+:warning: Discontinued. Vanilla has now this feature. :warning:
 
 Reduce the framerate when vsync is turned on to 1/2, 1/3 or 1/4 of the system's default framerate. Set the divider in the config file.
 
