@@ -29,7 +29,6 @@ namespace UIVSyncLimitFramerate
 
             Harmony.CreateAndPatchAll(typeof(Plugin));
         }
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(COptionBool_VSync), nameof(COptionBool_VSync.Apply))]
         static bool COptionBool_VSync_Apply(COptionBool_VSync __instance)

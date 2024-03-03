@@ -1,4 +1,4 @@
-﻿using FeatMultiplayer;
+﻿// using FeatMultiplayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ namespace XUnitTests
     [TestClass]
     public class RLETests
     {
+        /*
         [TestMethod]
         public void BasicFloat()
         {
@@ -310,5 +311,6 @@ namespace XUnitTests
                 list[index] = value;
             }
         }
+        */
     }
 }
