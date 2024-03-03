@@ -191,9 +191,6 @@ namespace FeatMultiplayer
                 {
                     var cline = new CLine(msg.coords, null);
                     cline.id = msg.lineId;
-
-                    Haxx.cItemWayStopIsReverse(stop) = msg.reverse;
-                    Haxx.cItemWayStopBuildModeLastFrame(stop) = Time.frameCount;
                 }
                 else
                 {

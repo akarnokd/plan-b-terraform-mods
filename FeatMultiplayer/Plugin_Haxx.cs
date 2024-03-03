@@ -18,6 +18,8 @@ namespace FeatMultiplayer
         {
             Haxx.cDroneDroneDepotIndex = AccessTools.FieldRefAccess<CDrone, int>("droneDepotIndex");
 
+            Haxx.cDroneDepot = AccessTools.FieldRefAccess<CDrone, CItem_ContentDepot>("depot");
+
             Haxx.cDroneStartTransform = AccessTools.FieldRefAccess<CDrone, CTransform>("startTransform");
 
             Haxx.cDroneEndTransform = AccessTools.FieldRefAccess<CDrone, CTransform>("endTransform");
@@ -26,8 +28,6 @@ namespace FeatMultiplayer
 
             Haxx.cDroneEndTime = AccessTools.FieldRefAccess<CDrone, double>("endTime");
 
-            Haxx.sDronesAddDroneInGrid = AccessTools.Method(typeof(SDrones), "AddDroneInGrid", new Type[] { typeof(CDrone) });
-
             Haxx.cVehicleStopObjective = AccessTools.FieldRefAccess<CVehicle, int>("_stopObjective");
 
             Haxx.cVehicleLoadWait = AccessTools.FieldRefAccess<CVehicle, float>("_loadWait");
@@ -35,9 +35,6 @@ namespace FeatMultiplayer
             Haxx.cItemContentBuild = AccessTools.Method(typeof(CItem_Content), "Build", new[] { typeof(int2), typeof(bool) });
 
             Haxx._sBlocksOnChangeItem = AccessTools.Method(typeof(SBlocks), "OnChangeItem", new[] { typeof(int2), typeof(bool), typeof(bool), typeof(bool) });
-
-            Haxx.cItemWayStopIsReverse = AccessTools.FieldRefAccess<CItem_WayStop, bool>("_isReverse");
-            Haxx.cItemWayStopBuildModeLastFrame = AccessTools.FieldRefAccess<CItem_WayStop, int>("_buildModeLastFrame");
 
             Haxx.cLineItemStop = AccessTools.FieldRefAccess<CLine, CItem_WayStop>("_itemStop");
         }
@@ -50,6 +47,8 @@ namespace FeatMultiplayer
     {
         internal static AccessTools.FieldRef<CDrone, int> cDroneDroneDepotIndex;
 
+        internal static AccessTools.FieldRef<CDrone, CItem_ContentDepot> cDroneDepot;
+
         internal static AccessTools.FieldRef<CDrone, CTransform> cDroneStartTransform;
 
         internal static AccessTools.FieldRef<CDrone, CTransform> cDroneEndTransform;
@@ -57,8 +56,6 @@ namespace FeatMultiplayer
         internal static AccessTools.FieldRef<CDrone, double> cDroneStartTime;
 
         internal static AccessTools.FieldRef<CDrone, double> cDroneEndTime;
-
-        internal static MethodInfo sDronesAddDroneInGrid;
 
         internal static AccessTools.FieldRef<CVehicle, int> cVehicleStopObjective;
 
@@ -77,9 +74,5 @@ namespace FeatMultiplayer
             _sBlocksOnChangeItemDelegate ??= AccessTools.MethodDelegate<Action<int2, bool, bool, bool>>(_sBlocksOnChangeItem, SSingleton<SBlocks>.Inst);
             _sBlocksOnChangeItemDelegate(c, updateNeighbors, updateGroundToo, containersOnly);
         }
-
-        internal static AccessTools.FieldRef<CItem_WayStop, bool> cItemWayStopIsReverse;
-
-        internal static AccessTools.FieldRef<CItem_WayStop, int> cItemWayStopBuildModeLastFrame;
     }
 }
