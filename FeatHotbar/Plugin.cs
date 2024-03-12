@@ -836,5 +836,32 @@ namespace FeatHotbar
                 { "FeatHotbar.NoBuildings", "<b>Nincs elérhető épület</b>" },
             });
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SSceneHud_ItemsBars), nameof(SSceneHud_ItemsBars.TryCancel))]
+        static void SSceneHud_ItemBars_TryCancel()
+        {
+            if (GSceneHud.itemInBarSelected != null)
+            {
+                GScene3D.duplicatedCoords = int2.negative;
+            }
+        }
+
+        // *****************************************************************************************
+
+        /*
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CItem_ContentDepot), nameof(CItem_ContentDepot.Build))]
+        static void CItem_ContentDepot_Build()
+        {
+            logger.LogInfo("GScene3D.duplicateCoords = " + GScene3D.duplicatedCoords);
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SScene3D), nameof(SScene3D.Select))]
+        static void SScene3D_Select()
+        {
+            logger.LogInfo(Environment.StackTrace);
+        }
+        */
     }
 }
