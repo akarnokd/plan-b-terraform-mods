@@ -4,7 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>FeatGotoExhaustedExtractors</AssemblyName>
     <Description>(Feat) Go to Exhausted Extractors</Description>
-    <Version>1.0.0.8</Version>
+    <Version>1.0.0.9</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
