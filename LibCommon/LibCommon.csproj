@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyName>LibCommon</AssemblyName>
     <Description>(Lib) Common Routines</Description>
     <Version>1.0.0.0</Version>

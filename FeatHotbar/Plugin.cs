@@ -305,7 +305,7 @@ namespace FeatHotbar
                         if (item != null)
                         {
                             nbTxt.text = string.Format("<b>{0:#,##0}</b>", item.nbOwned);
-                            hotbarPanelSlots[i, j].GetComponent<Image>().sprite = item.icon.Sprite;
+                            hotbarPanelSlots[i, j].GetComponent<Image>().sprite = item.icon.Asset;
                             nbBox.SetActive(true);
                         }
                         else
@@ -451,7 +451,7 @@ namespace FeatHotbar
                     row.gIcon = new GameObject("FeatHotbarSelectionPanel_Row_" + i + "_Icon");
                     row.gIcon.transform.SetParent(hotbarSelectionPanelBackground.transform);
                     img = row.gIcon.AddComponent<Image>();
-                    img.sprite = row.item.icon.Sprite;
+                    img.sprite = row.item.icon.Asset;
                     img.color = row.item.colorItem;
                     row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 

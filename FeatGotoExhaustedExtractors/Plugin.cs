@@ -218,7 +218,7 @@ namespace FeatGotoExhaustedExtractors
         {
             if (__instance.codeName == "extractor")
             {
-                extractorSprite = __instance.icon.Sprite;
+                extractorSprite = __instance.icon.Asset;
                 extractorId = __instance.id;
             }
         }

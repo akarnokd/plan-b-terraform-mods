@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyName>FeatMoreOreFields</AssemblyName>
     <Description>(Feat) More Ore Fields</Description>
-    <Version>1.0.0.4</Version>
+    <Version>1.0.0.5</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -39,6 +39,7 @@
 	  </Reference>
   </ItemGroup>
 
+    <!--
   <Target Name="CopyDLLs" AfterTargets="Build">
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
 
@@ -49,5 +50,6 @@
             DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip"
             Overwrite="true" />
   </Target>
+  -->
 
 </Project>

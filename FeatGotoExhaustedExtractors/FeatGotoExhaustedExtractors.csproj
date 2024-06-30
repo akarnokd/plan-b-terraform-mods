@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyName>FeatGotoExhaustedExtractors</AssemblyName>
     <Description>(Feat) Go to Exhausted Extractors</Description>
-    <Version>1.0.0.9</Version>
+    <Version>1.0.0.10</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

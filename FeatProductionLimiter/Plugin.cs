@@ -301,7 +301,7 @@ namespace FeatProductionLimiter
                     row.gIcon = new GameObject("FeatProductionLimiterPanel_Row_" + i + "_Icon");
                     row.gIcon.transform.SetParent(limiterPanelBackground.transform);
                     img = row.gIcon.AddComponent<Image>();
-                    img.sprite = row.item.icon.Sprite;
+                    img.sprite = row.item.icon.Asset;
                     img.color = row.item.colorItem;
                     row.gIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(iconSize, iconSize);
 

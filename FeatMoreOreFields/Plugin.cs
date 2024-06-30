@@ -62,6 +62,7 @@ namespace FeatMoreOreFields
             Harmony.CreateAndPatchAll(typeof(Plugin));
         }
 
+        /*
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SWorld_GenerationLua), nameof(SWorld_GenerationLua.GenerateOreFields))]
         static void SWorld_GenerationLua_GenerateOreFields(
@@ -108,7 +109,7 @@ namespace FeatMoreOreFields
 
             mineral.quantityMax = __state;
         }
-
+        */
         internal class MineralConfig
         {
             internal ConfigEntry<int> generationPeriodAdd;

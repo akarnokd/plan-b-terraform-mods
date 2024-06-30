@@ -718,7 +718,7 @@ namespace FeatProductionStats
         [HarmonyPatch(typeof(CItem), nameof(CItem.Init))]
         static void CItem_Init(CItem __instance)
         {
-            itemSprites[__instance.codeName] = __instance.icon.Sprite;
+            itemSprites[__instance.codeName] = __instance.icon.Asset;
             itemColors[__instance.codeName] = __instance.colorItem;
         }
 

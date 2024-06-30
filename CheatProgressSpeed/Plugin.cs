@@ -101,7 +101,7 @@ namespace CheatProgressSpeed
             int c = factorySpeed.Value;
             for (int i = 0; i < c; i++)
             {
-                if (GHexes.water[coords.x, coords.y] < GItems.waterLevelStopBuildings)
+                if (GHexes.water[coords.x, coords.y] < __instance.waterLevelStopBuildings)
                 {
                     CRecipe recipe = __instance.GetRecipe(coords);
                     int value = __instance.dataProgress.GetValue(coords);
