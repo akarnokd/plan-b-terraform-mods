@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using static FeatMoreCities.Plugin;
 
 namespace FeatMoreCities
 {
@@ -74,7 +75,7 @@ namespace FeatMoreCities
         {
             if (cityCounterOption == null)
             {
-                var tr = __instance.inputPlanetName.gameObject.transform.parent.parent.parent.parent.parent;
+                var tr = __instance.inputPlanetName.gameObject.transform.parent.parent.parent;
 
                 cityCounterOption = new CityCounterOption();
                 cityCounterOption.InstantiateUI(tr, false);
@@ -116,6 +117,8 @@ namespace FeatMoreCities
                 value = v;
                 _slider.value = value;
                 _textValue.text = Mathf.RoundToInt(value).ToString();
+
+                _slider.gameObject.transform.parent.parent.name = "NewPlanet_CityCounter";
             }
         }
     }
