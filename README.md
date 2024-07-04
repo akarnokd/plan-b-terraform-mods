@@ -5,7 +5,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 [![Github All Releases](https://img.shields.io/github/downloads/akarnokd/plan-b-terraform-mods/total.svg)](https://github.com/akarnokd/plan-b-terraform-mods/releases)
 
-## Supported version: Early Access (0.8.0 build 879)
+## Supported version: Early Access (v0.8.1 build 881)
 
 :information_source: **The plan is to support the main branch of the (Early Access) game**, depending on how differences will accumulate between it and the beta branch. Afaik, the Demo will completely go away and may return later, but it is unknown how far behind it will be kept mechanics-vise.
 
@@ -82,13 +82,10 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 - [Add City Names](#add-city-names) - Customize the selection of city names the game will use to generate the map.
 - [City Population Label](#city-population-label) - Display the population number underneath the city label in the main view and/or minimap.
-- [Depot Priority](#depot-priority) - Set priorities on depots so containers will be force-transferred towards higher priority depots.
 - [Disable Building](#disable-building) - Enable and disable production buildings via a on-screen button or keyboard shortcut.
 - [Go to Exhausted Extractors](#go-to-exhausted-extractors) - Shows a blinking panel (bottom left) if there are any extractors that have run out of minable ore.
 - [Hotbar](#hotbar) - Adds a bar at the bottom of the screen with 3 subpanels and 9 slots each for quickly selecting a building to be built.
 - [More Cities](#more-cities) - Generate more cities for a new game.
-- [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
-- [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
 - [Live GUI Scaler](#live-gui-scaler) - Scale the GUI by holding <kbd>CTRL</kbd> and pressing <kbd>Numpad Plus</kbd>, <kbd>Numpad Minus</kbd> or via <kbd>Mouse wheel</kbd>
 - [Navigate to Points of Interest](#navigate-to-points-of-interest) - Shows a panel on the right side of the screen with cities and landmarks. Clickable/Scrollable.
 - [Production Limiter](#production-limiter) - Edit the production limits of multiple items/buildings via a dialog.
@@ -108,6 +105,12 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 - [Endless Resources](#endless-resources) - all resource nodes being extracted will have a minimum amount and never run out.
 - [Progress Speed](#progress-speed) - speed up extractors, factories, drones and vehicles.
 
+
+### Discontinued
+
+- [Depot Priority](#depot-priority) - Set priorities on depots so containers will be force-transferred towards higher priority depots.
+- [More Ore Fields](#more-ore-fields) - Generate more and bigger ore fields.
+- [Multiplayer](https://github.com/akarnokd/plan-b-terraform-mods/wiki/Multiplayer) - Lan/Internet-based co-op multiplayer where one player is the host. (Opens wiki).
 
 # Mod details
 
