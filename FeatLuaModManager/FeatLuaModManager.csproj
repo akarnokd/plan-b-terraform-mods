@@ -48,7 +48,7 @@
           <Private>False</Private>
       </Reference>
   </ItemGroup>
-
+<!--
   <Target Name="CopyDLLs" AfterTargets="Build">
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(Destination1)" />
 
@@ -56,5 +56,5 @@
 	  <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFolder="$(OutputPath)\..\..\..\..\akarnokd-all\akarnokd - $(Description)" />
 	  <ZipDirectory SourceDirectory="$(TargetDir)\$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\akarnokd-$(AssemblyName).zip" Overwrite="true" />
   </Target>
-
+-->
 </Project>
