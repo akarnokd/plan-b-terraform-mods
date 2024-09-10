@@ -24,7 +24,7 @@ namespace CheatProgressSpeed
 
         static MethodInfo IsExtracting;
         static MethodInfo IsExtractingDeep;
-        static MethodInfo CheckStocks2;
+        static MethodInfo CheckStocks;
         static MethodInfo ProcessStocks;
 
         private void Awake()
@@ -48,7 +48,7 @@ namespace CheatProgressSpeed
             IsExtracting = AccessTools.Method(typeof(CItem_ContentExtractor), "IsExtracting", new Type[] { typeof(int2) });
             IsExtractingDeep = AccessTools.Method(typeof(CItem_ContentExtractorDeep), "IsExtracting", new Type[] { typeof(int2) });
 
-            CheckStocks2 = AccessTools.Method(typeof(CItem_ContentFactory), "CheckStocks2", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
+            CheckStocks = AccessTools.Method(typeof(CItem_ContentFactory), "CheckStocks", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
             ProcessStocks = AccessTools.Method(typeof(CItem_ContentFactory), "ProcessStocks", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
 
             Harmony.CreateAndPatchAll(typeof(Plugin));
@@ -105,15 +105,12 @@ namespace CheatProgressSpeed
                 {
                     CRecipe recipe = __instance.GetRecipe(coords);
                     int value = __instance.dataProgress.GetValue(coords);
-                    if ((bool)CheckStocks2.Invoke(__instance, new object[] { coords, recipe, value }))
+                    if ((bool)CheckStocks.Invoke(__instance, new object[] { coords, recipe, value }))
                     {
                         ProcessStocks.Invoke(__instance, new object[] { coords, recipe, value });
                     }
                 }
             }
-
-            int counterPlaced = __instance.CounterPlaced;
-            __instance.CounterPlaced = counterPlaced + 1;
 
             return false;
         }

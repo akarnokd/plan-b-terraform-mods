@@ -276,8 +276,8 @@ namespace FeatDisableBuilding
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(CItem_ContentFactory), "CheckStocks2")]
-        static void CItem_ContentFactory_CheckStocks2(int2 coords, ref bool __result)
+        [HarmonyPatch(typeof(CItem_ContentFactory), "CheckStocks")]
+        static void CItem_ContentFactory_CheckStocks(int2 coords, ref bool __result)
         {
             if (modEnabled.Value && disabledLocations.Contains(coords))
             {
