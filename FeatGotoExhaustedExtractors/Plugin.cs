@@ -251,7 +251,7 @@ namespace FeatGotoExhaustedExtractors
 
         static void ShowCoords(int2 coords)
         {
-            SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords, false);
+            SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords);
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.Play();
         }
 

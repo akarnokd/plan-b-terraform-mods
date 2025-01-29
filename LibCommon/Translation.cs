@@ -78,6 +78,7 @@ namespace LibCommon
                 }
                 cs.words[languageIndex] = kv.Value.Replace("\\n", "\n").Replace("\\t", "\t");
             }
+            SLoc.Inst.Localize();
 
             return true;
         }

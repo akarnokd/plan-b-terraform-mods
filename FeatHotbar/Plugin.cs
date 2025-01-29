@@ -80,7 +80,7 @@ namespace FeatHotbar
                 "factory",
                 "factoryAssemblyPlant",
                 "factoryAtmExtractor",
-                "factoryGreenhouse",
+                "factoryGHG",
                 "factoryRecycle",
                 "factoryFood",
                 "landmark",
@@ -106,7 +106,7 @@ namespace FeatHotbar
 
             modEnabled = Config.Bind("General", "Enabled", true, "Is the mod enabled?");
             panelHeight = Config.Bind("General", "PanelHeight", 75, "The height of the panel");
-            panelBottom = Config.Bind("General", "PanelBottom", 45, "The distance from the bottom of the screen");
+            panelBottom = Config.Bind("General", "PanelBottom", 100, "The distance from the bottom of the screen");
             autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
             itemSize = Config.Bind("General", "ItemSize", 32, "The size of the item's icon in the building selection list");
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show in the building selection list");
@@ -443,7 +443,10 @@ namespace FeatHotbar
                 {
                     var row = new SelectionRow();
 
-                    items.TryGetValue(codeName, out row.item);
+                    if (!items.TryGetValue(codeName, out row.item))
+                    {
+                        continue;
+                    }
                     row.codeName = codeName;
                     row.name = SLoc.Get("ITEM_NAME_" + codeName);
                     selectionRowsCache.Add(row);
@@ -463,8 +466,6 @@ namespace FeatHotbar
 
                     i++;
                 }
-
-                hotbarSelectionPanelBackground2.AddComponent<GraphicRaycaster>();
             }
 
             if (IsKeyDown(KeyCode.Escape))

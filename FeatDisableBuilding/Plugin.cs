@@ -104,7 +104,6 @@ namespace FeatDisableBuilding
                 {
                     if (selBuilding is CItem_ContentFactory 
                         || selBuilding is CItem_ContentExtractor
-                        || selBuilding is CItem_ContentGreenHouse
                         || selBuilding is CItem_ContentPumpingStation
                         || selBuilding is CItem_ContentIceExtractor)
                     {
@@ -324,7 +323,7 @@ namespace FeatDisableBuilding
                 }
                 sb.Append(coords.x).Append(',').Append(coords.y);
             }
-            GGame.dicoLandmarks[dicoCoordinates] = sb.ToString();
+            SGame.Inst.AddLandmarkIFN(null, dicoCoordinates).text = sb.ToString();
         }
 
         [HarmonyPostfix]
@@ -338,8 +337,10 @@ namespace FeatDisableBuilding
         static void RestoreState()
         {
             disabledLocations.Clear();
-            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates, out var str))
+            var lm = GGame.landmarks.Find(f => f.coordsTower == dicoCoordinates);
+            if (lm != null)
             {
+                var str = lm.text;
                 var coords = str.Split(';');
                 foreach(var coord in coords)
                 {
@@ -387,5 +388,17 @@ namespace FeatDisableBuilding
                 { "FeatDisableBuilding.TooltipDetails", "A kiválasztott épület be vagy kikapcsolása.\nGyorsbillentyű: {0}.\n\n<i>FeatDisableBuilding mod</i>" }
             });
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SWorld), nameof(SWorld.GetContent))]
+        static bool SWorld_GetContent(in int2 coords, ref CItem_Content __result)
+        {
+            if (coords.Negative)
+            {
+                __result = null;
+                return false;
+            }
+            return true;
+        } 
     }
 }

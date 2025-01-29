@@ -23,6 +23,7 @@ namespace UICityPopulationLabel
 
         static ManualLogSource logger;
 
+        static AccessTools.FieldRef<CUiMinimapLabel, Text> uiTextRef;
 
         private void Awake()
         {
@@ -34,6 +35,8 @@ namespace UICityPopulationLabel
             showOnMinimap = Config.Bind("General", "ShowOnMinimap", true, "Show the label on the minimap view?");
 
             logger = Logger;
+
+            uiTextRef = AccessTools.FieldRefAccess<CUiMinimapLabel, Text>("uiText");
 
             Harmony.CreateAndPatchAll(typeof(Plugin));
         }
@@ -60,7 +63,7 @@ namespace UICityPopulationLabel
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CUiMinimapOverlay), "Update_Labels")]
-        static void CUiMinimapOverlay_Update_Labels(List<Text> ____textLabels)
+        static void CUiMinimapOverlay_Update_Labels(List<CUiMinimapLabel> ___labels)
         {
             if (!modEnabled.Value || !showOnMinimap.Value)
             {
@@ -68,12 +71,19 @@ namespace UICityPopulationLabel
             }
             for (int j = 0; j < GGame.cities.Count; j++)
             {
-                if (j < ____textLabels.Count)
+                if (j < ___labels.Count)
                 {
-                    var text = ____textLabels[j];
+                    var text = uiTextRef(___labels[j]);
 
                     var city = GGame.cities[j];
-                    text.text = text.text + "\n" + string.Format("( {0:#,##0} )", city.population);
+                    // prevent continuously adding to the text
+                    int idx = text.text.LastIndexOf("\n( ");
+                    if (idx < 0)
+                    {
+                        idx = text.text.Length;
+                    }
+                    text.text = text.text.Substring(0, idx) + "\n" + string.Format("( {0:#,##0} )", city.population);
+
                     text.verticalOverflow = VerticalWrapMode.Overflow;
                 }
             }

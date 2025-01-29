@@ -42,7 +42,7 @@ namespace FeatProductionLimiter
                 "factory",
                 "factoryAssemblyPlant",
                 "factoryAtmExtractor",
-                "factoryGreenhouse",
+                "factoryGHG",
                 "factoryRecycle",
                 "factoryFood",
                 "landmark",
@@ -105,7 +105,7 @@ namespace FeatProductionLimiter
             toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F4, "Key to toggle the limiter panel");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the panel");
             itemSize = Config.Bind("General", "ItemSize", 32, "The size of the item's icon in the list");
-            buttonLeft = Config.Bind("General", "ButtonLeft", 175, "The button's position relative to the left of the screen");
+            buttonLeft = Config.Bind("General", "ButtonLeft", 605, "The button's position relative to the left of the screen");
             buttonSize = Config.Bind("General", "ButtonSize", 50, "The button's width and height");
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
             autoScale = Config.Bind("General", "AutoScale", true, "Scale the position and size of the button with the UI scale of the game?");
@@ -293,7 +293,12 @@ namespace FeatProductionLimiter
                 {
                     var row = new LimiterRow();
 
-                    items.TryGetValue(codeName, out row.item);
+                    if (!items.TryGetValue(codeName, out row.item))
+                    {
+                        continue;
+                    }
+
+
                     row.codeName = codeName;
                     row.name = SLoc.Get("ITEM_NAME_" + codeName);
                     limiterRowsCache.Add(row);

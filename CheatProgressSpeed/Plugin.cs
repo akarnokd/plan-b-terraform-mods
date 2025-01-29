@@ -46,7 +46,6 @@ namespace CheatProgressSpeed
             vehicleSpeedMax = Config.Bind("General", "VehicleSpeedMaxAdd", 0f, "Adds to the vehicle's medium speed.");
 
             IsExtracting = AccessTools.Method(typeof(CItem_ContentExtractor), "IsExtracting", new Type[] { typeof(int2) });
-            IsExtractingDeep = AccessTools.Method(typeof(CItem_ContentExtractorDeep), "IsExtracting", new Type[] { typeof(int2) });
 
             CheckStocks = AccessTools.Method(typeof(CItem_ContentFactory), "CheckStocks", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
             ProcessStocks = AccessTools.Method(typeof(CItem_ContentFactory), "ProcessStocks", new Type[] { typeof(int2), typeof(CRecipe), typeof(int) });
@@ -65,24 +64,6 @@ namespace CheatProgressSpeed
             if ((bool)IsExtracting.Invoke(__instance, new object[] { coords }))
             {
                 int c = extractorSpeed.Value;
-                for (int i = 1; i < c; i++)
-                {
-                    __instance.dataProgress.IncrementIFP(coords);
-                }
-            }
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_ContentExtractorDeep), nameof(CItem_ContentExtractorDeep.Update01s))]
-        static void CITem_ContentExtractorDeep_Update01s(CItem_ContentExtractorDeep __instance, int2 coords)
-        {
-            if (!modEnabled.Value)
-            {
-                return;
-            }
-            if ((bool)IsExtractingDeep.Invoke(__instance, new object[] { coords }))
-            {
-                int c = extractorDeepSpeed.Value;
                 for (int i = 1; i < c; i++)
                 {
                     __instance.dataProgress.IncrementIFP(coords);

@@ -40,20 +40,5 @@ namespace CheatEndlessResources
                 GHexes.groundData[coords.x, coords.y] = (ushort)Math.Max(grnd, minResources.Value);
             }
         }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CItem_ContentExtractorDeep), nameof(CItem_ContentExtractorDeep.Update01s))]
-        static void CITem_ContentExtractorDeep_Update01s(ref int2 coords)
-        {
-            if (!modEnabled.Value)
-            {
-                return;
-            }
-            ushort grnd = GHexes.groundData[coords.x, coords.y];
-            if (grnd > 0)
-            {
-                GHexes.groundData[coords.x, coords.y] = (ushort)Math.Max(grnd, minResources.Value);
-            }
-        }
     }
 }

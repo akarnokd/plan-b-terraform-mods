@@ -126,19 +126,19 @@ namespace FeatNavigateToPOI
                 });
             }
 
-            foreach (var lm in GGame.dicoLandmarks)
+            foreach (var lm in GGame.landmarks)
             {
                 // wastly negative keys are used for mod persistence
-                if (lm.Key.Positive)
+                if (lm.Coords.Positive)
                 {
                     // verify the landmark actually exists, the dicoLandmarks is not deleted when the landmark is demolished
-                    var cd = SSingleton<SWorld>.Inst.GetContent(lm.Key) as CItem_ContentLandmark;
+                    var cd = SSingleton<SWorld>.Inst.GetContent(lm.Coords) as CItem_ContentLandmark;
                     if (cd != null)
                     {
                         pois.Add(new PoiInfo
                         {
-                            coords = lm.Key,
-                            name = lm.Value
+                            coords = lm.Coords,
+                            name = lm.text
                         });
                     }
                 }
@@ -313,7 +313,7 @@ namespace FeatNavigateToPOI
 
         static void ShowCoords(int2 coords)
         {
-            SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords, false);
+            SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.SetDestination(coords);
             SSceneSingleton<SSceneCinematic>.Inst.cameraMovement.Play();
         }
 

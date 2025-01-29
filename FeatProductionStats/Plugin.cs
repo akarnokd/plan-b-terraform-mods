@@ -78,7 +78,7 @@ namespace FeatProductionStats
             toggleKey = Config.Bind("General", "ToggleKey", KeyCode.F3, "Key to press while the building is selected to toggle its enabled/disabled state");
             fontSize = Config.Bind("General", "FontSize", 15, "The font size in the panel");
             itemSize = Config.Bind("General", "ItemSize", 32, "The size of the item's icon in the list");
-            buttonLeft = Config.Bind("General", "ButtonLeft", 100, "The button's position relative to the left of the screen");
+            buttonLeft = Config.Bind("General", "ButtonLeft", 530, "The button's position relative to the left of the screen");
             buttonSize = Config.Bind("General", "ButtonSize", 50, "The button's width and height");
             maxStatLines = Config.Bind("General", "MaxLines", 16, "How many lines of items to show");
             historyLength = Config.Bind("General", "HistoryLength", 300, "How many days to keep as past production data?");
@@ -647,11 +647,11 @@ namespace FeatProductionStats
         {
             StringBuilder sb = new(512);
             AppendData(productionSamples, sb);
-            GGame.dicoLandmarks[dicoCoordinates1] = sb.ToString();
+            SGame.Inst.AddLandmarkIFN(null, dicoCoordinates1).text = sb.ToString();
             
             sb.Clear();
             AppendData(consumptionSamples, sb);
-            GGame.dicoLandmarks[dicoCoordinates2] = sb.ToString();
+            SGame.Inst.AddLandmarkIFN(null, dicoCoordinates2).text = sb.ToString();
         }
 
         static void AppendData(Dictionary<int, Dictionary<string, int>> data, StringBuilder sb)
@@ -701,16 +701,18 @@ namespace FeatProductionStats
         {
             // logger.LogInfo("RestoreState()");
             productionSamples.Clear();
-            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates1, out var str))
+            var lm = GGame.landmarks.Find(f => f.coordsTower == dicoCoordinates1);
+            if (lm != null)
             {
                 // logger.LogInfo("  productionSamples\r\n  " + str);
-                ParseData(str, productionSamples);
+                ParseData(lm.text, productionSamples);
             }
             consumptionSamples.Clear();
-            if (GGame.dicoLandmarks.TryGetValue(dicoCoordinates2, out str))
+            lm = GGame.landmarks.Find(f => f.coordsTower == dicoCoordinates2);
+            if (lm != null)
             {
                 // logger.LogInfo("  consumptionSamples\r\n  " + str);
-                ParseData(str, consumptionSamples);
+                ParseData(lm.text, consumptionSamples);
             }
         }
 
@@ -966,7 +968,20 @@ namespace FeatProductionStats
                 { "FeatProductionStats.Ratio", "<i>Arány</i>" },
             });
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SWorld), nameof(SWorld.GetContent))]
+        static bool SWorld_GetContent(in int2 coords, ref CItem_Content __result)
+        {
+            if (coords.Negative)
+            {
+                __result = null;
+                return false;
+            }
+            return true;
+        }
     }
+
 
     public enum AnchorType
     {
