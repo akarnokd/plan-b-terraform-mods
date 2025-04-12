@@ -102,7 +102,7 @@ namespace UITranslationTChinese
                     cs.CheckValidity();
                 }
             }
-            SLoc.Inst.Localize();
+            SLoc.Localize();
             logger.LogInfo("  Language matrix updated.");
         }
     }

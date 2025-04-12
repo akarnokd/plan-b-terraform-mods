@@ -242,7 +242,7 @@ namespace CheatEditOreCells
 
             var newSizew = new Vector2(w, h);
             var x = 0;
-            var y = -Screen.height / 2 + h + 20;
+            var y = -Screen.height / 2 + h + 60;
 
             if (hotbarPluginPanel != null)
             {

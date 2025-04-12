@@ -65,37 +65,11 @@ namespace FeatHotbar
 
         static Dictionary<string, CItem> items = new();
 
-        static readonly List<string> globalProducts =
-            new List<string> {
-                "roadway",
-                "roadstop",
-                "railway",
-                "railstop",
-                "extractor",
-                "iceExtractor",
-                "pumpingStation",
-                "depot",
-                "depotMK2",
-                "depotMK3",
-                "factory",
-                "factoryAssemblyPlant",
-                "factoryAtmExtractor",
-                "factoryGHG",
-                "factoryRecycle",
-                "factoryFood",
-                "landmark",
-                "cityDam",
-                "forest_pine",
-                "forest_leavesHigh",
-                // "forest_leavesMultiple",
-                // "forest_cactus",
-                // "forest_savannah",
-                // "forest_coconut",
-                "cityIn",
-                "cityOut",
-                "truck",
-                "train"
-            };
+        static readonly HashSet<string> excludeItems = [
+            "contentNei",
+            "crossRailBuoy",
+            "crossRoadBuoy"
+            ];
 
         private void Awake()
         {
@@ -439,16 +413,23 @@ namespace FeatHotbar
 
                 selectionRowsCache.Clear();
                 int i = 0;
-                foreach (var codeName in globalProducts)
+                foreach (var item in items)
                 {
-                    var row = new SelectionRow();
-
-                    if (!items.TryGetValue(codeName, out row.item))
+                    if (item.Value is not CItem_Content 
+                        || item.Value.hiddenInItemBar
+                        || item.Value is CItem_ContentCity
+                        || item.Value is CItem_ContentCityDead
+                        || (item.Value.uiGroup != null && (item.Value.uiGroup.isDebug || !item.Value.uiGroup.showInItemBar))
+                        || excludeItems.Contains(item.Key)
+                        )
                     {
                         continue;
                     }
-                    row.codeName = codeName;
-                    row.name = SLoc.Get("ITEM_NAME_" + codeName);
+                    var row = new SelectionRow();
+
+                    row.item = item.Value;
+                    row.codeName = item.Key;
+                    row.name = SLoc.Get("ITEM_NAME_" + item.Key);
                     selectionRowsCache.Add(row);
 
                     row.gIcon = new GameObject("FeatHotbarSelectionPanel_Row_" + i + "_Icon");
@@ -631,7 +612,7 @@ namespace FeatHotbar
             }
 
             rectBg2.sizeDelta = new Vector2(bgWidth, bgHeight);
-            rectBg2.localPosition = new Vector3(0, -40 * theScale); // do not overlap the top-center panel
+            rectBg2.localPosition = new Vector3(0, 75 * theScale); // do not overlap the top-center panel
 
             var rectBg = hotbarSelectionPanelBackground.GetComponent<RectTransform>();
             rectBg.sizeDelta = new Vector2(rectBg2.sizeDelta.x - 2 * border * theScale, rectBg2.sizeDelta.y - 2 * border * theScale);
