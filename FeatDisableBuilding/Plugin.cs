@@ -93,8 +93,14 @@ namespace FeatDisableBuilding
         {
             if (modEnabled.Value)
             {
-                var selCoords = GScene3D.selectionCoords;
-                var selBuilding = GScene3D.selectedItem;
+                var selectedContent = ((SSingleton<SSelection>.Inst.selection.Count == 1) ? SSingleton<SSelection>.Inst.selection[0] : null);
+                var selCoords = int2.negative;
+                var selBuilding = default(CItem);
+                if (selectedContent != null)
+                {
+                    selCoords = selectedContent.coords;
+                    selBuilding = selectedContent.item;
+                }
 
                 EnsurePanel();
 

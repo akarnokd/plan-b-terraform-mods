@@ -78,20 +78,30 @@ namespace CheatProgressSpeed
             {
                 return true;
             }
-            int c = factorySpeed.Value;
-            for (int i = 0; i < c; i++)
+            if (__instance is CItem_ContentSpaceLift)
             {
-                if (GHexes.water[coords.x, coords.y] < __instance.waterLevelStopBuildings)
+                return true;
+            }
+            int c = factorySpeed.Value;
+            if (GHexes.water[coords.x, coords.y] < __instance.waterLevelStopBuildings)
+            {
+                if (!__instance.IsValidFrame(coords))
                 {
+                    return false;
+                }
+                for (int i = 0; i < c; i++) { 
                     CRecipe recipe = __instance.GetRecipe(coords);
                     int value = __instance.dataProgress.GetValue(coords);
-                    if ((bool)CheckStocks.Invoke(__instance, new object[] { coords, recipe, value, false }))
+                    if ((bool)CheckStocks.Invoke(__instance, [coords, recipe, value, false]))
                     {
-                        ProcessStocks.Invoke(__instance, new object[] { coords, recipe, value });
+                        ProcessStocks.Invoke(__instance, [coords, recipe, value]);
                     }
                 }
             }
-
+            else
+            {
+                SSingleton<SWarnings>.Inst.ShowWarning("Warning_BuildingDrowned", coords, 2f);
+            }
             return false;
         }
 

@@ -819,16 +819,6 @@ namespace FeatHotbar
             });
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(SSceneHud_ItemsBars), nameof(SSceneHud_ItemsBars.TryCancel))]
-        static void SSceneHud_ItemBars_TryCancel()
-        {
-            if (GSceneHud.itemInBarSelected != null)
-            {
-                GScene3D.duplicatedCoords = int2.negative;
-            }
-        }
-
         // *****************************************************************************************
 
         /*
