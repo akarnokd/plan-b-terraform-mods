@@ -33,7 +33,8 @@ namespace CheatEditOreCells
         static bool placementMode;
         static int currentOreIndex;
         //static byte[] oreIndices = { 7, 6, 8, 9 };
-        static byte[] oreIndices = { 8, 7, 9, 10 };
+        //static byte[] oreIndices = { 8, 7, 9, 10 };
+        static byte[] oreIndices = { 9, 8, 10, 11 };
         static string[] oreNames = { "sulfur", "iron", "aluminumOre", "fluoride" };
 
         static FieldInfo hotbarPluginPanel;
@@ -143,7 +144,7 @@ namespace CheatEditOreCells
                                 GHexes.groundData[mouseoverCoords.x, mouseoverCoords.y] = newAmount;
                                 if (newAmount == 0)
                                 {
-                                    GItems.itemDirt.Create(mouseoverCoords, true);
+                                    GItems.itemDirt.Create(mouseoverCoords);
                                 }
                                 logger.LogInfo(" Changing " + oreName + "(" + oreId + ") at " + mouseoverCoords.x + "," + mouseoverCoords.y + " = " + newAmount);
                             }
