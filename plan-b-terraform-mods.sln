@@ -5,7 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipRest", "ZipRest\ZipRest.csproj", "{E58044C8-684D-4949-A4F8-62388CC4700A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{035D4811-25EF-4EC9-BC3A-09A85013879F} = {035D4811-25EF-4EC9-BC3A-09A85013879F}
 		{20AAB25C-D565-43D6-A967-D572364C4220} = {20AAB25C-D565-43D6-A967-D572364C4220}
 		{2165A9AE-D505-46B0-9257-C762A42B2971} = {2165A9AE-D505-46B0-9257-C762A42B2971}
 		{2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2} = {2434F5BC-4FF4-4DBE-AB69-75C6CA2C57A2}
@@ -34,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		BepInEx.PluginInfoProps.props = BepInEx.PluginInfoProps.props
 		README.md = README.md
+		solution_private.targets = solution_private.targets
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheatProgressSpeed", "CheatProgressSpeed\CheatProgressSpeed.csproj", "{AB5DBF6D-7CC5-4DC9-B3C7-3E0C0C079E78}"
@@ -79,8 +79,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTests", "XUnitTests\XUnitTests.csproj", "{FCC0679F-9B8C-4EB9-B03E-73E3588E597C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UITranslationTChinese", "UITranslationTChinese\UITranslationTChinese.csproj", "{20AAB25C-D565-43D6-A967-D572364C4220}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatLuaModManager", "FeatLuaModManager\FeatLuaModManager.csproj", "{035D4811-25EF-4EC9-BC3A-09A85013879F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UITranslationVietnamese", "UITranslationVietnamese\UITranslationVietnamese.csproj", "{E32C41AE-80EA-42C8-87C9-A89448DFE4CB}"
 EndProject
@@ -182,10 +180,6 @@ Global
 		{20AAB25C-D565-43D6-A967-D572364C4220}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20AAB25C-D565-43D6-A967-D572364C4220}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20AAB25C-D565-43D6-A967-D572364C4220}.Release|Any CPU.Build.0 = Release|Any CPU
-		{035D4811-25EF-4EC9-BC3A-09A85013879F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{035D4811-25EF-4EC9-BC3A-09A85013879F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{035D4811-25EF-4EC9-BC3A-09A85013879F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{035D4811-25EF-4EC9-BC3A-09A85013879F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E32C41AE-80EA-42C8-87C9-A89448DFE4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E32C41AE-80EA-42C8-87C9-A89448DFE4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E32C41AE-80EA-42C8-87C9-A89448DFE4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
