@@ -125,23 +125,25 @@ namespace CheatProgressSpeed
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(CDrone), "SetTimes")]
-        static void CDrone_SetTimes(
+        [HarmonyPatch(typeof(CDrone), "SetupMove")]
+        static void CDrone_SetupMove(
             ref double ___startTime, 
-            ref double ___endTime, 
-            ref CTransform ___startTransform, 
-            ref CTransform ___endTransform)
+            ref double ___endTime,
+            int ___droneDepotIndex,
+            int2 coordsStart, int2 coordsend)
         {
             if (!modEnabled.Value)
             {
                 return;
             }
 
-            float magnitude = (___startTransform.pos - ___endTransform.pos).magnitude;
-            
+            float magnitude = (GHexes.Pos(coordsStart) - GHexes.Pos(coordsend)).magnitude;
+            float num = 0.01f * (float)___droneDepotIndex;
             ___endTime = ___startTime 
-                + (double)(GDrones.durationTakeOff + droneTakeoffDuration.Value)
-                + (double)(magnitude / (GDrones.speed + droneSpeed.Value));
+                + (double)(GDrones.durationTakeOff + droneTakeoffDuration.Value) 
+                + (double)(magnitude / (GDrones.speed + droneSpeed.Value)) 
+                + (double)num;
+
         }
 
         [HarmonyPostfix]
