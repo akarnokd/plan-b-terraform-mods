@@ -5,9 +5,7 @@ Unity/BepInEx mods for the game **Plan B Terraform** [@ Steam](https://store.ste
 
 [![Github All Releases](https://img.shields.io/github/downloads/akarnokd/plan-b-terraform-mods/total.svg)](https://github.com/akarnokd/plan-b-terraform-mods/releases)
 
-## Supported version: Early Access (v0.9.5 build 1066)
-
-:information_source: **The plan is to support the main branch of the (Early Access) game**, depending on how differences will accumulate between it and the beta branch. Afaik, the Demo will completely go away and may return later, but it is unknown how far behind it will be kept mechanics-vise.
+## Supported version: Release (v1.0 build 1159)
 
 ### Notable file paths
 
