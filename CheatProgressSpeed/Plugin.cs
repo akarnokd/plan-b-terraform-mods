@@ -78,7 +78,9 @@ namespace CheatProgressSpeed
             {
                 return true;
             }
-            if (__instance is CItem_ContentSpaceLift)
+            if (__instance is CItem_ContentSpaceLift
+                || __instance is CItem_ContentConstructionSite
+                || __instance is CItem_ContentLabo)
             {
                 return true;
             }
