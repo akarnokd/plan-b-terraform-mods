@@ -23,37 +23,44 @@ namespace CheatBuildIceExtractorsAnywhere
             Harmony.CreateAndPatchAll(typeof(Plugin));
         }
 
-        static bool getIceValueOverride;
+        static bool isIceOverride;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentIceExtractor), nameof(CItem_ContentIceExtractor.Update01s))]
         static void CItem_ContentIceExtractor_Update01s()
         {
-            getIceValueOverride = modEnabled.Value;
+            isIceOverride = modEnabled.Value;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentIceExtractor), "IsBuildable")]
         static void CItem_ContentIceExtractor_IsBuildable()
         {
-            getIceValueOverride = modEnabled.Value;
+            isIceOverride = modEnabled.Value;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CItem_ContentIceExtractor), "IsExtracting")]
         static void CItem_ContentIceExtractor_IsExtracting()
         {
-            getIceValueOverride = modEnabled.Value;
+            isIceOverride = modEnabled.Value;
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(SWorld), nameof(SWorld.GetIceValue))]
-        static bool SWorld_GetIceValue(ref float __result)
+        [HarmonyPatch(typeof(CItem_ContentIceExtractor), "GetBuildFailedInfosMessage")]
+        static void CItem_ContentIceExtractor_GetBuildFailedInfosMessage()
         {
-            if (getIceValueOverride)
+            isIceOverride = modEnabled.Value;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SPlanet), nameof(SPlanet.IsIce))]
+        static bool SPlanet_IsIce(ref bool __result)
+        {
+            if (isIceOverride)
             {
-                getIceValueOverride = false;
-                __result = 0.5f;
+                isIceOverride = false;
+                __result = true;
                 return false;
             }
             return true;
