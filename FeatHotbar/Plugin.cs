@@ -774,7 +774,7 @@ namespace FeatHotbar
             }
 
             // check if item is designated to be unlocked at all?
-            foreach (var ggl in GGame.levels)
+            foreach (var ggl in GGame.oldLevels)
             {
                 foreach (var ul in ggl.unlockItems)
                 {
